@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-27T11:25:01.537705",
+  "timestamp": "2026-03-27T12:04:46.688259",
   "refresh_interval_minutes": 30,
   "baltic": {
     "data": [
@@ -87,15 +87,15 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-03-27T11:24:59.005387"
+    "updated_at": "2026-03-27T12:04:45.884746"
   },
   "crude": {
     "cl": {
       "code": "CL",
       "name": "WTI原油",
-      "latest": 96.926,
+      "latest": 96.797,
       "previous": 94.48,
-      "change": 2.446,
+      "change": 2.317,
       "series": [
         {
           "date": "03-23",
@@ -115,20 +115,20 @@
         },
         {
           "date": "03-27",
-          "value": 96.926
+          "value": 96.797
         }
       ],
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
       "chart_source": "Sina current quote + recent trading days alignment",
-      "updated_at": "2026-03-27T11:25:01.537551"
+      "updated_at": "2026-03-27T12:04:46.688130"
     },
     "oil": {
       "code": "OIL",
       "name": "布伦特原油CFD",
-      "latest": 104.264,
+      "latest": 104.291,
       "previous": 106.697,
-      "change": -2.433,
+      "change": -2.406,
       "series": [
         {
           "date": "03-23",
@@ -148,13 +148,13 @@
         },
         {
           "date": "03-27",
-          "value": 104.264
+          "value": 104.291
         }
       ],
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
       "chart_source": "Sina history page",
-      "updated_at": "2026-03-27T11:25:00.222335"
+      "updated_at": "2026-03-27T12:04:45.400570"
     }
   },
   "iron_ore": {
@@ -169,28 +169,28 @@
     },
     "change_percent": -0.23,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-03-27T11:24:57.895349"
+    "updated_at": "2026-03-27T12:04:45.094762"
   },
   "boc_usd": {
     "currency": "美元",
-    "spot_buy": 689.97,
-    "cash_buy": 689.97,
-    "spot_sell": 692.87,
-    "cash_sell": 692.87,
+    "spot_buy": 690.09,
+    "cash_buy": 690.09,
+    "spot_sell": 692.99,
+    "cash_sell": 692.99,
     "conversion_price": 691.41,
-    "published_at": "2026/03/27 19:22:45",
-    "published_time": "19:22:45",
+    "published_at": "2026/03/27 20:02:45",
+    "published_time": "20:02:45",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-03-27T11:24:59.325214"
+    "updated_at": "2026-03-27T12:04:44.767308"
   },
   "forex": {
     "DINIW": {
       "code": "DINIW",
       "title": "美元指数",
-      "latest": 100.059,
+      "latest": 100.127,
       "previous_close": 99.8007,
-      "change": 0.2583,
-      "change_percent": 0.2588,
+      "change": 0.3263,
+      "change_percent": 0.327,
       "series": [
         {
           "date": "03-23",
@@ -210,21 +210,21 @@
         },
         {
           "date": "03-27",
-          "value": 100.059
+          "value": 100.127
         }
       ],
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-27T11:24:57.078389"
+      "updated_at": "2026-03-27T12:04:43.837038"
     },
     "EURCNY": {
       "code": "EURCNY",
       "title": "欧元兑人民币",
-      "latest": 7.9541,
+      "latest": 7.9506,
       "previous_close": 7.966,
-      "change": -0.0119,
-      "change_percent": -0.1494,
+      "change": -0.0154,
+      "change_percent": -0.1933,
       "series": [
         {
           "date": "03-23",
@@ -244,21 +244,21 @@
         },
         {
           "date": "03-27",
-          "value": 7.9541
+          "value": 7.9506
         }
       ],
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURCNY.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-27T11:24:57.067769"
+      "updated_at": "2026-03-27T12:04:43.839030"
     },
     "GBPUSD": {
       "code": "GBPUSD",
       "title": "英镑兑美元",
-      "latest": 1.33,
+      "latest": 1.3278,
       "previous_close": 1.3326,
-      "change": -0.0026,
-      "change_percent": -0.1951,
+      "change": -0.0048,
+      "change_percent": -0.3602,
       "series": [
         {
           "date": "03-23",
@@ -278,21 +278,21 @@
         },
         {
           "date": "03-27",
-          "value": 1.33
+          "value": 1.3278
         }
       ],
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-27T11:24:57.296154"
+      "updated_at": "2026-03-27T12:04:44.072398"
     },
     "USDCNY": {
       "code": "USDCNY",
       "title": "美元兑人民币",
-      "latest": 6.9106,
+      "latest": 6.9118,
       "previous_close": 6.915,
-      "change": -0.0044,
-      "change_percent": -0.0636,
+      "change": -0.0032,
+      "change_percent": -0.0463,
       "series": [
         {
           "date": "03-23",
@@ -312,21 +312,21 @@
         },
         {
           "date": "03-27",
-          "value": 6.9106
+          "value": 6.9118
         }
       ],
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-27T11:24:57.299602"
+      "updated_at": "2026-03-27T12:04:44.069419"
     },
     "USDHKD": {
       "code": "USDHKD",
       "title": "美元兑港元",
-      "latest": 7.8336,
+      "latest": 7.8328,
       "previous_close": 7.8253,
-      "change": 0.0083,
-      "change_percent": 0.1061,
+      "change": 0.0075,
+      "change_percent": 0.0958,
       "series": [
         {
           "date": "03-23",
@@ -346,21 +346,21 @@
         },
         {
           "date": "03-27",
-          "value": 7.8336
+          "value": 7.8328
         }
       ],
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-27T11:24:57.511650"
+      "updated_at": "2026-03-27T12:04:44.310599"
     },
     "USDJPY": {
       "code": "USDJPY",
       "title": "美元兑日元",
-      "latest": 159.86,
+      "latest": 159.82,
       "previous_close": 159.66,
-      "change": 0.2,
-      "change_percent": 0.1253,
+      "change": 0.16,
+      "change_percent": 0.1002,
       "series": [
         {
           "date": "03-23",
@@ -380,17 +380,17 @@
         },
         {
           "date": "03-27",
-          "value": 159.86
+          "value": 159.82
         }
       ],
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-27T11:24:57.571225"
+      "updated_at": "2026-03-27T12:04:44.306551"
     }
   },
   "bunker_index": {
     "error": "全球主要港口油价抓取失败: Expecting value: line 1 column 1 (char 0)",
-    "updated_at": "2026-03-27T11:25:00.151821"
+    "updated_at": "2026-03-27T12:04:46.163732"
   }
 }
