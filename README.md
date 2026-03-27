@@ -38,6 +38,51 @@ py app.py
 http://127.0.0.1:5000
 ```
 
+## GitHub Pages 免信用卡发布
+
+这个项目现在支持直接发布为 GitHub Pages 静态网站，不需要信用卡。
+
+原理：
+
+- `docs/index.html` 是公开页面
+- `docs/data/dashboard.json` 是最新数据文件
+- GitHub Actions 每 30 分钟自动运行一次抓取脚本并更新 `dashboard.json`
+
+### 开启方式
+
+1. 打开你的 GitHub 仓库
+2. 进入 `Settings`
+3. 打开 `Pages`
+4. 在 `Build and deployment` 里选择：
+   `Deploy from a branch`
+5. Branch 选择：
+   `main`
+6. Folder 选择：
+   `/docs`
+7. 保存
+
+GitHub Pages 生效后，访问地址通常是：
+
+```text
+https://JANhaha.github.io/shipping-test/
+```
+
+第一次启用后，通常需要等待几分钟。
+
+### 自动更新
+
+仓库里已经带有 GitHub Actions 工作流：
+
+```text
+.github/workflows/update-pages-data.yml
+```
+
+它会：
+
+- 每 30 分钟自动抓取一次最新数据
+- 更新 `docs/data/dashboard.json`
+- 自动提交回仓库
+
 ## 局域网给别人访问
 
 ```bash
@@ -61,48 +106,7 @@ http://192.168.1.20:8080
 - Windows 防火墙要放行 `8080` 端口
 - 你的电脑运行期间，别人才能访问
 
-## 部署成公网网站
-
-当前项目已经补好了 Render 一键部署配置。
-
-### Render 一键部署
-
-1. 把当前项目上传到你的 GitHub 仓库
-2. 登录 Render
-3. 进入 `New` -> `Blueprint`
-4. 选择你的 GitHub 仓库
-5. Render 会自动识别仓库里的 `render.yaml`
-6. 点击创建并等待构建完成
-
-部署完成后，Render 会给你一个公网网址，类似：
-
-```text
-https://shipping-dashboard.onrender.com
-```
-
-你和别人访问首页都用这个网址：
-
-```text
-https://你的Render服务名.onrender.com
-```
-
-接口地址：
-
-```text
-https://你的Render服务名.onrender.com/api/dashboard
-```
-
-健康检查：
-
-```text
-https://你的Render服务名.onrender.com/api/health
-```
-
-如果你把 `render.yaml` 里的服务名改成别的，最终网址也会对应变化。
-
-Render 会自动注入 `PORT` 环境变量，当前项目已经兼容，不需要你手动改端口。
-
-### 云服务器部署
+## 云服务器部署
 
 WSGI 入口：
 
