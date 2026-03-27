@@ -1,6 +1,5 @@
 import hashlib
 import json
-import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -19,6 +18,7 @@ class ShippingDashboardService:
     HIFLEET_BALTIC_TABLE_API = "https://www.hifleet.com/shipdetail/getBalticexchangeToTable"
     MYSTEEL_APP_KEY = "47EE3F12CF0C443F8FD51EFDA73AC815"
     MYSTEEL_APP_SECRET = "3BA6477330684B19AA6AF4485497B5F2"
+    SINA_HISTORY_URL = "https://vip.stock.finance.sina.com.cn/q/view/vFutures_History.php"
 
     def __init__(self):
         self.session = requests.Session()
@@ -39,32 +39,31 @@ class ShippingDashboardService:
     def _load_dashboard(self):
         with ThreadPoolExecutor(max_workers=8) as executor:
             futures = {
-                "baltic": executor.submit(self._call_safe, self.get_baltic_indices, "Baltic Exchange"),
+                "shipping_indices": executor.submit(self._call_safe, self.get_baltic_indices, "航运相关指数"),
                 "iron_ore": executor.submit(self._call_safe, self.get_iron_ore_index, "进口矿指数"),
                 "boc_usd": executor.submit(self._call_safe, self.get_boc_usd_rate, "中行美元折算价"),
-                "bunker_index": executor.submit(self._call_safe, self.get_bunker_prices, "Bunker Index"),
-                "zhoushan": executor.submit(self._call_safe, self.get_zhoushan_bunker, "舟山油价"),
-                "cl": executor.submit(
+                "bunker_index": executor.submit(self._call_safe, self.get_bunker_prices, "全球主要港口油价"),
+                "wti": executor.submit(
                     self._call_safe,
-                    self.get_market_series,
+                    self.get_crude_series,
+                    "WTI原油",
                     "CL",
-                    name="NYMEX WTI (CL)",
-                    yahoo_symbol="CL=F",
+                    name="WTI原油",
                     source_url="https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
                 ),
-                "oil": executor.submit(
+                "brent": executor.submit(
                     self._call_safe,
-                    self.get_market_series,
+                    self.get_crude_series,
+                    "布伦特原油CFD",
                     "OIL",
-                    name="Brent (OIL)",
-                    yahoo_symbol="BZ=F",
+                    name="布伦特原油CFD",
                     source_url="https://finance.sina.com.cn/futures/quotes/OIL.shtml",
                 ),
                 "DINIW": executor.submit(
                     self._call_safe,
                     self.get_forex_series,
                     "DINIW",
-                    code="DINIW",
+                    "DINIW",
                     title="美元指数",
                     yahoo_symbol="DX-Y.NYB",
                     quote_symbol="DINIW",
@@ -74,7 +73,7 @@ class ShippingDashboardService:
                     self._call_safe,
                     self.get_forex_series,
                     "EURCNY",
-                    code="EURCNY",
+                    "EURCNY",
                     title="欧元兑人民币",
                     yahoo_symbol="EURCNY=X",
                     quote_symbol="EURCNY",
@@ -84,7 +83,7 @@ class ShippingDashboardService:
                     self._call_safe,
                     self.get_forex_series,
                     "GBPUSD",
-                    code="GBPUSD",
+                    "GBPUSD",
                     title="英镑兑美元",
                     yahoo_symbol="GBPUSD=X",
                     quote_symbol="GBPUSD",
@@ -94,7 +93,7 @@ class ShippingDashboardService:
                     self._call_safe,
                     self.get_forex_series,
                     "USDCNY",
-                    code="USDCNY",
+                    "USDCNY",
                     title="美元兑人民币",
                     yahoo_symbol="USDCNY=X",
                     quote_symbol="USDCNY",
@@ -104,7 +103,7 @@ class ShippingDashboardService:
                     self._call_safe,
                     self.get_forex_series,
                     "USDHKD",
-                    code="USDHKD",
+                    "USDHKD",
                     title="美元兑港元",
                     yahoo_symbol="USDHKD=X",
                     quote_symbol="USDHKD",
@@ -114,7 +113,7 @@ class ShippingDashboardService:
                     self._call_safe,
                     self.get_forex_series,
                     "USDJPY",
-                    code="USDJPY",
+                    "USDJPY",
                     title="美元兑日元",
                     yahoo_symbol="USDJPY=X",
                     quote_symbol="USDJPY",
@@ -125,8 +124,11 @@ class ShippingDashboardService:
         return {
             "timestamp": datetime.now().isoformat(),
             "refresh_interval_minutes": 30,
-            "baltic": futures["baltic"].result(),
-            "crude": {"cl": futures["cl"].result(), "oil": futures["oil"].result()},
+            "baltic": futures["shipping_indices"].result(),
+            "crude": {
+                "cl": futures["wti"].result(),
+                "oil": futures["brent"].result(),
+            },
             "iron_ore": futures["iron_ore"].result(),
             "boc_usd": futures["boc_usd"].result(),
             "forex": {
@@ -138,7 +140,6 @@ class ShippingDashboardService:
                 "USDJPY": futures["USDJPY"].result(),
             },
             "bunker_index": futures["bunker_index"].result(),
-            "zhoushan": futures["zhoushan"].result(),
         }
 
     def get_baltic_indices(self):
@@ -160,15 +161,15 @@ class ShippingDashboardService:
         table_map = {row.get("indexName"): row for row in table_rows}
 
         names = {
-            "BDI": "Baltic Dry Index",
-            "BCI": "Baltic Capesize Index",
-            "BPI": "Baltic Panamax Index",
-            "BSI": "Baltic Supramax Index",
-            "BHSI": "Baltic Handysize Index",
-            "BCTI": "Baltic Clean Tanker Index",
-            "BDTI": "Baltic Dirty Tanker Index",
-            "BLNG": "Baltic LNG Index",
-            "BLPG": "Baltic LPG Index",
+            "BDI": "波罗的海干散货指数",
+            "BCI": "海岬型船指数",
+            "BPI": "巴拿马型船指数",
+            "BSI": "超灵便型船指数",
+            "BHSI": "灵便型船指数",
+            "BCTI": "成品油轮指数",
+            "BDTI": "原油轮指数",
+            "BLNG": "LNG指数",
+            "BLPG": "LPG指数",
         }
         rows = []
         for code, name in names.items():
@@ -177,7 +178,7 @@ class ShippingDashboardService:
             table_row = table_map.get(code, {})
             current = table_row.get("current") or latest.get("value")
             daily = self._signed_float(table_row.get("daily"))
-            rate_change = self._signed_float(table_row.get("rateOfChange"))
+            change = self._signed_float(table_row.get("rateOfChange"))
             rows.append(
                 {
                     "code": code,
@@ -185,37 +186,50 @@ class ShippingDashboardService:
                     "value": self._to_float(current),
                     "trend": daily is not None and daily >= 0,
                     "daily_percent": daily,
-                    "change": rate_change,
+                    "change": change,
                     "date": (table_row.get("currentTime") or latest.get("indexDate") or "")[:10],
                 }
             )
 
         return {
             "data": rows,
-            "error": None if rows else "未能从 HiFleet 解析出 Baltic 指数数据。",
+            "error": None if rows else "未能获取航运相关指数数据。",
             "source_url": self.HIFLEET_URL,
             "updated_at": datetime.now().isoformat(),
         }
 
-    def get_market_series(self, name, yahoo_symbol, source_url):
-        series = self._yahoo_series(yahoo_symbol)
-        latest = series[-1]["value"] if series else None
+    def get_crude_series(self, code, name, source_url):
+        quote = self._sina_global_future_quote(code)
+        history_series = self._sina_global_history_series(code)
+        series = history_series
+        if not history_series:
+            fallback_symbol = {"CL": "CL=F", "OIL": "BZ=F"}[code]
+            series = self._yahoo_series(fallback_symbol)
+
+        if quote:
+            series = self._merge_series_with_current(series, quote["date"], quote["current"])
+
+        latest = quote["current"] if quote else (series[-1]["value"] if series else None)
         previous = series[-2]["value"] if len(series) > 1 else None
         change = round(latest - previous, 4) if latest is not None and previous is not None else None
         return {
+            "code": code,
             "name": name,
             "latest": latest,
             "previous": previous,
             "change": change,
-            "series": series,
+            "series": series[-5:],
             "source_url": source_url,
-            "chart_source": "Yahoo Finance chart API",
+            "quote_source": "Sina HQ",
+            "chart_source": "Sina history page" if history_series else "Sina current quote + recent trading days alignment",
             "updated_at": datetime.now().isoformat(),
         }
 
     def get_forex_series(self, code, title, yahoo_symbol, quote_symbol, source_url):
         series = self._yahoo_series(yahoo_symbol)
         quote = self._sina_quote(quote_symbol)
+        if quote:
+            series = self._merge_series_with_current(series, quote.get("date"), quote.get("current"))
         latest = quote.get("current") if quote else (series[-1]["value"] if series else None)
         previous_close = quote.get("previous_close") if quote else None
         return {
@@ -225,10 +239,10 @@ class ShippingDashboardService:
             "previous_close": previous_close,
             "change": quote.get("change") if quote else None,
             "change_percent": quote.get("change_percent") if quote else None,
-            "series": series,
+            "series": series[-5:],
             "source_url": source_url,
-            "chart_source": "Yahoo Finance chart API",
-            "quote_source": "Sina HQ" if quote else "Yahoo Finance chart API",
+            "chart_source": "Recent trading days series",
+            "quote_source": "Sina HQ" if quote else "Recent trading days series",
             "updated_at": datetime.now().isoformat(),
         }
 
@@ -312,6 +326,24 @@ class ShippingDashboardService:
                         "date": cells[8],
                     }
                 )
+
+        zhoushan = self.get_zhoushan_bunker()
+        if zhoushan.get("prices"):
+            rows.insert(
+                0,
+                {
+                    "port": zhoushan.get("port") or "Zhoushan",
+                    "country": "China",
+                    "ifo380": zhoushan["prices"].get("IFO380"),
+                    "ifo380_change": None,
+                    "vlsfo": zhoushan["prices"].get("VLSFO"),
+                    "vlsfo_change": None,
+                    "mgo": zhoushan["prices"].get("LSMGO"),
+                    "mgo_change": None,
+                    "date": zhoushan.get("date"),
+                },
+            )
+
         return {
             "ports": rows,
             "source_url": self.BUNKER_INDEX_URL,
@@ -330,9 +362,9 @@ class ShippingDashboardService:
             "port": latest.get("portName", "Zhoushan"),
             "date": self._format_millis(latest.get("updateDate")),
             "prices": {
-                "IFO380": latest.get("ifo380"),
-                "LSMGO": latest.get("lsmgo"),
-                "VLSFO": latest.get("vlsfo"),
+                "IFO380": self._to_float(latest.get("ifo380")),
+                "LSMGO": self._to_float(latest.get("lsmgo")),
+                "VLSFO": self._to_float(latest.get("vlsfo")),
             },
             "source_url": "https://www.zsbunker.cn/bunker_zhoushan.jsp",
             "updated_at": datetime.now().isoformat(),
@@ -391,10 +423,10 @@ class ShippingDashboardService:
             return None
         raw = text.split('="', 1)[-1].rsplit('";', 1)[0]
         parts = raw.split(",")
-        if len(parts) < 9:
+        if len(parts) < 10:
             return None
-        current = self._to_float(parts[8])
-        previous_close = self._to_float(parts[1])
+        current = self._to_float(parts[8] if code == "DINIW" else parts[1])
+        previous_close = self._to_float(parts[7] if code == "DINIW" else parts[5])
         change = None
         change_percent = None
         if current is not None and previous_close not in (None, 0):
@@ -405,7 +437,96 @@ class ShippingDashboardService:
             "previous_close": previous_close,
             "change": change,
             "change_percent": change_percent,
+            "date": parts[-1][:10] if parts[-1] else None,
         }
+
+    def _sina_global_future_quote(self, code):
+        response = self.session.get(
+            "https://hq.sinajs.cn/",
+            params={"list": f"hf_{code}"},
+            headers={"Referer": "https://finance.sina.com.cn/"},
+            timeout=20,
+        )
+        response.encoding = "gbk"
+        text = response.text
+        if '=""' in text:
+            return None
+        raw = text.split('="', 1)[-1].rsplit('";', 1)[0]
+        parts = raw.split(",")
+        if len(parts) < 14:
+            return None
+        current = self._to_float(parts[0])
+        previous_close = self._to_float(parts[7])
+        change = None
+        change_percent = None
+        if current is not None and previous_close not in (None, 0):
+            change = round(current - previous_close, 4)
+            change_percent = round(change / previous_close * 100, 4)
+        return {
+            "current": current,
+            "previous_close": previous_close,
+            "change": change,
+            "change_percent": change_percent,
+            "date": parts[12][:10] if len(parts) > 12 and parts[12] else None,
+            "name": parts[13] if len(parts) > 13 else code,
+        }
+
+    def _sina_global_history_series(self, code):
+        exchange_guesses = {
+            "OIL": ["IPE"],
+            "CL": ["NYMEX", "CME", "ICE", "IPE"],
+        }
+        for exchange in exchange_guesses.get(code, []):
+            response = self.session.get(
+                self.SINA_HISTORY_URL,
+                params={
+                    "jys": exchange,
+                    "pz": code,
+                    "hy": "",
+                    "breed": code,
+                    "type": "global",
+                    "start": "2024-01-01",
+                    "end": datetime.now().strftime("%Y-%m-%d"),
+                },
+                timeout=30,
+            )
+            response.encoding = response.apparent_encoding or "utf-8"
+            soup = BeautifulSoup(response.text, "html.parser")
+            tables = soup.find_all("table")
+            if len(tables) < 4:
+                continue
+            rows = []
+            for tr in tables[3].find_all("tr")[2:]:
+                cells = [cell.get_text(" ", strip=True) for cell in tr.find_all("td")]
+                if len(cells) < 2:
+                    continue
+                date_value = cells[0]
+                close_value = self._to_float(cells[1])
+                if not date_value or close_value is None:
+                    continue
+                rows.append({"full_date": date_value[:10], "value": round(close_value, 4)})
+            if rows:
+                rows.sort(key=lambda item: item["full_date"])
+                try:
+                    last_date = datetime.strptime(rows[-1]["full_date"], "%Y-%m-%d")
+                    day_delta = (datetime.now() - last_date).days
+                    if day_delta > 14 or day_delta < -1:
+                        continue
+                except ValueError:
+                    continue
+                return [{"date": item["full_date"][5:10], "value": item["value"]} for item in rows[-5:]]
+        return []
+
+    def _merge_series_with_current(self, series, date_text, current):
+        if current is None:
+            return series[-5:]
+        label = self._short_date(date_text)
+        merged = list(series or [])
+        if merged and merged[-1]["date"] == label:
+            merged[-1]["value"] = round(float(current), 4)
+        else:
+            merged.append({"date": label, "value": round(float(current), 4)})
+        return merged[-5:]
 
     def _mysteel_report(self, path, params):
         timestamp = str(int(time.time() * 1000))
@@ -430,7 +551,7 @@ class ShippingDashboardService:
             return func(*args, **kwargs)
         except Exception as exc:
             return {
-                "error": f"{label} 抓取失败: {exc}",
+                "error": f"{label}抓取失败: {exc}",
                 "updated_at": datetime.now().isoformat(),
             }
 
@@ -439,6 +560,14 @@ class ShippingDashboardService:
         if value in (None, ""):
             return None
         return datetime.fromtimestamp(int(value) / 1000).strftime("%Y-%m-%d")
+
+    @staticmethod
+    def _short_date(value):
+        if not value:
+            return datetime.now().strftime("%m-%d")
+        if len(value) >= 10 and value[4] == "-":
+            return value[5:10]
+        return value
 
     @staticmethod
     def _to_float(value):
