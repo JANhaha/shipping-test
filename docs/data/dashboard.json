@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-28T19:35:23.943082",
+  "timestamp": "2026-03-28T20:38:23.646259",
   "refresh_interval_minutes": 30,
   "baltic": {
     "data": [
@@ -87,7 +87,7 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-03-28T19:34:56.560961"
+    "updated_at": "2026-03-28T20:38:21.019448"
   },
   "crude": {
     "cl": {
@@ -121,7 +121,7 @@
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
       "chart_source": "Sina current quote + recent trading days alignment",
-      "updated_at": "2026-03-28T19:34:56.998097"
+      "updated_at": "2026-03-28T20:38:23.646117"
     },
     "oil": {
       "code": "OIL",
@@ -154,12 +154,22 @@
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
       "chart_source": "Sina history page",
-      "updated_at": "2026-03-28T19:34:55.920597"
+      "updated_at": "2026-03-28T20:38:22.428432"
     }
   },
   "iron_ore": {
-    "error": "进口矿指数抓取失败: HTTPSConnectionPool(host='index.mysteel.com', port=443): Read timed out. (read timeout=30)",
-    "updated_at": "2026-03-28T19:35:23.942952"
+    "name": "进口矿指数",
+    "today": {
+      "date": "2026/03/27",
+      "value": 110.44
+    },
+    "yesterday": {
+      "date": "2026/03/26",
+      "value": 110.7
+    },
+    "change_percent": -0.23,
+    "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
+    "updated_at": "2026-03-28T20:38:19.019591"
   },
   "boc_usd": {
     "currency": "美元",
@@ -171,7 +181,7 @@
     "published_at": "2026/03/29 00:00:05",
     "published_time": "00:00:05",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-03-28T19:34:56.816485"
+    "updated_at": "2026-03-28T20:38:20.184777"
   },
   "forex": {
     "DINIW": {
@@ -206,7 +216,7 @@
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-28T19:34:54.477654"
+      "updated_at": "2026-03-28T20:38:19.927501"
     },
     "EURCNY": {
       "code": "EURCNY",
@@ -240,7 +250,7 @@
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURCNY.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-28T19:34:54.476685"
+      "updated_at": "2026-03-28T20:38:19.947926"
     },
     "GBPUSD": {
       "code": "GBPUSD",
@@ -274,7 +284,7 @@
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-28T19:34:54.691142"
+      "updated_at": "2026-03-28T20:38:19.926682"
     },
     "USDCNY": {
       "code": "USDCNY",
@@ -308,7 +318,7 @@
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-28T19:34:54.692216"
+      "updated_at": "2026-03-28T20:38:20.185117"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -342,7 +352,7 @@
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-28T19:34:54.905216"
+      "updated_at": "2026-03-28T20:38:20.156937"
     },
     "USDJPY": {
       "code": "USDJPY",
@@ -376,11 +386,11 @@
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "chart_source": "Recent trading days series",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-03-28T19:34:54.907272"
+      "updated_at": "2026-03-28T20:38:20.205365"
     }
   },
   "bunker_index": {
     "error": "全球主要港口油价抓取失败: Expecting value: line 1 column 1 (char 0)",
-    "updated_at": "2026-03-28T19:34:56.794296"
+    "updated_at": "2026-03-28T20:38:21.110167"
   }
 }
