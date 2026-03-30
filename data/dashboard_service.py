@@ -200,47 +200,27 @@ class ShippingDashboardService:
 
     def get_crude_series(self, code, name, source_url):
         quote = self._sina_global_future_quote(code)
-        history_series = self._sina_global_history_series(code)
-        series = history_series
-        if not history_series:
-            fallback_symbol = {"CL": "CL=F", "OIL": "BZ=F"}[code]
-            series = self._yahoo_series(fallback_symbol)
-
-        if quote:
-            series = self._merge_series_with_current(series, quote["date"], quote["current"])
-
-        latest = quote["current"] if quote else (series[-1]["value"] if series else None)
-        previous = series[-2]["value"] if len(series) > 1 else None
-        change = round(latest - previous, 4) if latest is not None and previous is not None else None
         return {
             "code": code,
             "name": name,
-            "latest": latest,
-            "previous": previous,
-            "change": change,
-            "series": series[-5:],
+            "latest": quote["current"] if quote else None,
+            "open": quote["open"] if quote else None,
+            "previous_close": quote["previous_close"] if quote else None,
             "source_url": source_url,
             "quote_source": "Sina HQ",
-            "chart_source": "Sina history page" if history_series else "Sina current quote + recent trading days alignment",
             "updated_at": datetime.now().isoformat(),
         }
 
     def get_forex_series(self, code, title, yahoo_symbol, quote_symbol, source_url):
-        series = self._yahoo_series(yahoo_symbol)
         quote = self._sina_quote(quote_symbol)
         previous_close = quote.get("previous_close") if quote else None
-        latest = previous_close if previous_close is not None else (series[-1]["value"] if series else None)
         return {
             "code": code,
             "title": title,
-            "latest": latest,
+            "latest": previous_close,
             "previous_close": previous_close,
-            "change": quote.get("change") if quote else None,
-            "change_percent": quote.get("change_percent") if quote else None,
-            "series": series[-5:],
             "source_url": source_url,
-            "chart_source": "Recent trading days series",
-            "quote_source": "Sina HQ" if quote else "Recent trading days series",
+            "quote_source": "Sina HQ" if quote else None,
             "updated_at": datetime.now().isoformat(),
         }
 
@@ -454,6 +434,7 @@ class ShippingDashboardService:
         if len(parts) < 14:
             return None
         current = self._to_float(parts[0])
+        open_price = self._to_float(parts[2])
         previous_close = self._to_float(parts[7])
         change = None
         change_percent = None
@@ -462,6 +443,7 @@ class ShippingDashboardService:
             change_percent = round(change / previous_close * 100, 4)
         return {
             "current": current,
+            "open": open_price,
             "previous_close": previous_close,
             "change": change,
             "change_percent": change_percent,

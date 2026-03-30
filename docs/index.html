@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>漢洋航运信息看板</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root{--bg:#f6efe6;--panel:#fffdf9ee;--ink:#1f2a30;--muted:#66757c;--line:#18323e18;--accent:#0b5d6b;--accent-2:#c6802c;--up:#167246;--down:#ad3947;--warn:#fff2df;--warnink:#8a4f16}
     *{box-sizing:border-box}body{margin:0;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,#0b5d6b1f,transparent 24%),radial-gradient(circle at top right,#c6802c1c,transparent 20%),linear-gradient(180deg,#f7f2ea,#f0ebe3)}
@@ -13,7 +12,7 @@
     h1{margin:0;font-size:clamp(30px,4vw,46px)}h2{margin:0;font-size:20px}.subtitle,.meta,.source{color:var(--muted)}.subtitle{margin-top:10px;line-height:1.6}.meta,.source{font-size:12px}
     .toolbar,.panel-head,.chart-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.toolbar{margin-top:18px;font-size:14px}.button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:10px 16px;cursor:pointer}.button:disabled{opacity:.6}
     .card,.mini-card,.ticker-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px}.mini-card{padding:18px}.ticker-code,.mini-title{font-size:13px;color:var(--muted);margin-bottom:6px}.ticker-value,.mini-value,.price{font-size:28px;font-weight:700}.price{font-size:30px}
-    .chart-wrap{height:250px}.warning{padding:14px 16px;border-radius:16px;background:var(--warn);color:var(--warnink);border:1px solid #bc6c2526}.change.up{color:var(--up)}.change.down{color:var(--down)}
+    .warning{padding:14px 16px;border-radius:16px;background:var(--warn);color:var(--warnink);border:1px solid #bc6c2526}.change.up{color:var(--up)}.change.down{color:var(--down)}
     table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted)}a{color:var(--accent)}
     @media (max-width:1120px){.span-8,.span-4,.cards-6>div{grid-column:span 12}.cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media (max-width:760px){.shell{padding:14px 10px 30px}.hero-card,.panel{padding:18px;border-radius:18px}.cards-2,.cards-6{grid-template-columns:1fr}.price,.ticker-value,.mini-value{font-size:24px}}
@@ -44,7 +43,7 @@
 
       <section class="panel span-8">
         <div class="panel-head">
-          <h2>原油近五日</h2>
+          <h2>原油开盘价</h2>
           <div class="meta">WTI原油 / 布伦特原油CFD</div>
         </div>
         <div class="cards-2">
@@ -54,9 +53,8 @@
                 <div class="mini-title">WTI原油</div>
                 <div id="clPrice" class="price">-</div>
               </div>
-              <div id="clChange" class="meta"></div>
+              <div id="clMeta" class="meta"></div>
             </div>
-            <div class="chart-wrap"><canvas id="clChart"></canvas></div>
           </div>
           <div class="card">
             <div class="chart-header">
@@ -64,9 +62,8 @@
                 <div class="mini-title">布伦特原油CFD</div>
                 <div id="oilPrice" class="price">-</div>
               </div>
-              <div id="oilChange" class="meta"></div>
+              <div id="oilMeta" class="meta"></div>
             </div>
-            <div class="chart-wrap"><canvas id="oilChart"></canvas></div>
           </div>
         </div>
       </section>
@@ -96,12 +93,12 @@
           <div class="meta">美元指数 / 欧元兑人民币 / 英镑兑美元 / 美元兑人民币 / 美元兑港元 / 美元兑日元</div>
         </div>
         <div class="cards-6">
-          <div class="card"><div class="mini-title">美元指数</div><div id="fx_DINIW" class="meta"></div><div class="chart-wrap"><canvas id="chart_DINIW"></canvas></div></div>
-          <div class="card"><div class="mini-title">欧元兑人民币</div><div id="fx_EURCNY" class="meta"></div><div class="chart-wrap"><canvas id="chart_EURCNY"></canvas></div></div>
-          <div class="card"><div class="mini-title">英镑兑美元</div><div id="fx_GBPUSD" class="meta"></div><div class="chart-wrap"><canvas id="chart_GBPUSD"></canvas></div></div>
-          <div class="card"><div class="mini-title">美元兑人民币</div><div id="fx_USDCNY" class="meta"></div><div class="chart-wrap"><canvas id="chart_USDCNY"></canvas></div></div>
-          <div class="card"><div class="mini-title">美元兑港元</div><div id="fx_USDHKD" class="meta"></div><div class="chart-wrap"><canvas id="chart_USDHKD"></canvas></div></div>
-          <div class="card"><div class="mini-title">美元兑日元</div><div id="fx_USDJPY" class="meta"></div><div class="chart-wrap"><canvas id="chart_USDJPY"></canvas></div></div>
+          <div class="card"><div class="mini-title">美元指数</div><div id="fxValue_DINIW" class="price">-</div><div id="fx_DINIW" class="meta"></div></div>
+          <div class="card"><div class="mini-title">欧元兑人民币</div><div id="fxValue_EURCNY" class="price">-</div><div id="fx_EURCNY" class="meta"></div></div>
+          <div class="card"><div class="mini-title">英镑兑美元</div><div id="fxValue_GBPUSD" class="price">-</div><div id="fx_GBPUSD" class="meta"></div></div>
+          <div class="card"><div class="mini-title">美元兑人民币</div><div id="fxValue_USDCNY" class="price">-</div><div id="fx_USDCNY" class="meta"></div></div>
+          <div class="card"><div class="mini-title">美元兑港元</div><div id="fxValue_USDHKD" class="price">-</div><div id="fx_USDHKD" class="meta"></div></div>
+          <div class="card"><div class="mini-title">美元兑日元</div><div id="fxValue_USDJPY" class="price">-</div><div id="fx_USDJPY" class="meta"></div></div>
         </div>
       </section>
 
@@ -131,40 +128,8 @@
 
   <script>
     const DATA_URL = "./data/dashboard.json";
-    const charts = {};
-    const colors = {DINIW:"#9b2226",EURCNY:"#0a9396",GBPUSD:"#ae2012",USDCNY:"#005f73",USDHKD:"#ca6702",USDJPY:"#6a4c93",CL:"#0b5d6b",OIL:"#c6802c"};
     const fmt = (v, d = 4) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
     const maybe = (v) => v === null || v === undefined || v === "" ? "-" : v;
-
-    function draw(id, series, color) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (charts[id]) charts[id].destroy();
-      charts[id] = new Chart(el, {
-        type: "line",
-        data: {
-          labels: (series || []).map((item) => item.date),
-          datasets: [{
-            data: (series || []).map((item) => item.value),
-            borderColor: color,
-            backgroundColor: color + "20",
-            fill: true,
-            borderWidth: 2.5,
-            tension: 0,
-            pointRadius: 3,
-            pointHoverRadius: 4
-          }]
-        },
-        options: {
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            x: { grid: { display: false } },
-            y: { grid: { color: "rgba(29,42,48,0.08)" } }
-          }
-        }
-      });
-    }
 
     function setChange(id, value) {
       const node = document.getElementById(id);
@@ -195,12 +160,10 @@
     }
 
     function renderCrude(data) {
-      document.getElementById("clPrice").textContent = fmt(data.cl?.latest, 4);
-      document.getElementById("oilPrice").textContent = fmt(data.oil?.latest, 4);
-      setChange("clChange", data.cl?.change);
-      setChange("oilChange", data.oil?.change);
-      draw("clChart", data.cl?.series || [], colors.CL);
-      draw("oilChart", data.oil?.series || [], colors.OIL);
+      document.getElementById("clPrice").textContent = fmt(data.cl?.open, 4);
+      document.getElementById("oilPrice").textContent = fmt(data.oil?.open, 4);
+      document.getElementById("clMeta").textContent = `最新 ${fmt(data.cl?.latest, 4)} / 昨收 ${fmt(data.cl?.previous_close, 4)}`;
+      document.getElementById("oilMeta").textContent = `最新 ${fmt(data.oil?.latest, 4)} / 昨收 ${fmt(data.oil?.previous_close, 4)}`;
     }
 
     function renderIronOre(data) {
@@ -215,8 +178,8 @@
 
     function renderFx(key, item) {
       const closeValue = item.previous_close ?? item.latest;
-      document.getElementById(`fx_${key}`).textContent = `昨日收盘 ${fmt(closeValue, 4)}`;
-      draw(`chart_${key}`, item.series || [], colors[key]);
+      document.getElementById(`fxValue_${key}`).textContent = fmt(closeValue, 4);
+      document.getElementById(`fx_${key}`).textContent = "昨日收盘";
     }
 
     function renderBunker(rows) {
