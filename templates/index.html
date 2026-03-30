@@ -128,20 +128,8 @@
 
   <script>
     const DATA_URL = "/api/dashboard";
-    const fmt = (v, d = 4) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
+    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
     const maybe = (v) => v === null || v === undefined || v === "" ? "-" : v;
-
-    function setChange(id, value) {
-      const node = document.getElementById(id);
-      if (value === null || value === undefined) {
-        node.textContent = "";
-        node.className = "meta";
-        return;
-      }
-      const up = Number(value) >= 0;
-      node.textContent = `${up ? "+" : ""}${fmt(value, 4)}`;
-      node.className = `change ${up ? "up" : "down"}`;
-    }
 
     function renderShippingIndices(data) {
       const root = document.getElementById("shippingIndices");
@@ -150,20 +138,20 @@
         return;
       }
       root.innerHTML = `<div class="stats">${(data.data || []).map((item) => `
-        <div class="ticker-card">
-          <div class="ticker-code">${item.code}</div>
-          <div class="ticker-value">${fmt(item.value, 0)}</div>
+          <div class="ticker-card">
+            <div class="ticker-code">${item.code}</div>
+          <div class="ticker-value">${fmt(item.value)}</div>
           <div class="meta">${maybe(item.name)}</div>
-          <div class="meta">${maybe(item.date)}${item.daily_percent === null || item.daily_percent === undefined ? "" : ` / ${item.daily_percent >= 0 ? "+" : ""}${fmt(item.daily_percent, 2)}%`}</div>
+          <div class="meta">${maybe(item.date)}${item.daily_percent === null || item.daily_percent === undefined ? "" : ` / ${item.daily_percent >= 0 ? "+" : ""}${fmt(item.daily_percent)}%`}</div>
         </div>
       `).join("")}</div>`;
     }
 
     function renderCrude(data) {
-      document.getElementById("clPrice").textContent = fmt(data.cl?.open, 4);
-      document.getElementById("oilPrice").textContent = fmt(data.oil?.open, 4);
-      document.getElementById("clMeta").textContent = `最新 ${fmt(data.cl?.latest, 4)} / 昨收 ${fmt(data.cl?.previous_close, 4)}`;
-      document.getElementById("oilMeta").textContent = `最新 ${fmt(data.oil?.latest, 4)} / 昨收 ${fmt(data.oil?.previous_close, 4)}`;
+      document.getElementById("clPrice").textContent = fmt(data.cl?.open);
+      document.getElementById("oilPrice").textContent = fmt(data.oil?.open);
+      document.getElementById("clMeta").textContent = `最新 ${fmt(data.cl?.latest)} / 涨跌 ${data.cl?.change_from_open >= 0 ? "+" : ""}${fmt(data.cl?.change_from_open)} / ${data.cl?.change_percent_from_open >= 0 ? "+" : ""}${fmt(data.cl?.change_percent_from_open)}%`;
+      document.getElementById("oilMeta").textContent = `最新 ${fmt(data.oil?.latest)} / 涨跌 ${data.oil?.change_from_open >= 0 ? "+" : ""}${fmt(data.oil?.change_from_open)} / ${data.oil?.change_percent_from_open >= 0 ? "+" : ""}${fmt(data.oil?.change_percent_from_open)}%`;
     }
 
     function renderIronOre(data) {
@@ -173,13 +161,12 @@
 
     function renderBoc(data) {
       document.getElementById("bocPrice").textContent = fmt(data.conversion_price, 2);
-      document.getElementById("bocMeta").textContent = `现汇买入 ${fmt(data.spot_buy, 2)} / 现汇卖出 ${fmt(data.spot_sell, 2)} / ${maybe(data.published_at)}`;
+      document.getElementById("bocMeta").textContent = `现汇买入 ${fmt(data.spot_buy)} / 现汇卖出 ${fmt(data.spot_sell)} / ${maybe(data.published_at)}`;
     }
 
     function renderFx(key, item) {
-      const closeValue = item.previous_close ?? item.latest;
-      document.getElementById(`fxValue_${key}`).textContent = fmt(closeValue, 4);
-      document.getElementById(`fx_${key}`).textContent = "昨日收盘";
+      document.getElementById(`fxValue_${key}`).textContent = fmt(item.previous_close);
+      document.getElementById(`fx_${key}`).textContent = `最新 ${fmt(item.latest)} / 开盘 ${fmt(item.open)} / 涨跌 ${item.change_from_open >= 0 ? "+" : ""}${fmt(item.change_from_open)} / ${item.change_percent_from_open >= 0 ? "+" : ""}${fmt(item.change_percent_from_open)}%`;
     }
 
     function renderBunker(rows) {

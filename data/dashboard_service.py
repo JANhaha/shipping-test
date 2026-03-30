@@ -200,12 +200,21 @@ class ShippingDashboardService:
 
     def get_crude_series(self, code, name, source_url):
         quote = self._sina_global_future_quote(code)
+        open_price = quote["open"] if quote else None
+        latest = quote["current"] if quote else None
+        change_from_open = None
+        change_percent_from_open = None
+        if latest is not None and open_price not in (None, 0):
+            change_from_open = round(latest - open_price, 4)
+            change_percent_from_open = round(change_from_open / open_price * 100, 4)
         return {
             "code": code,
             "name": name,
-            "latest": quote["current"] if quote else None,
-            "open": quote["open"] if quote else None,
+            "latest": latest,
+            "open": open_price,
             "previous_close": quote["previous_close"] if quote else None,
+            "change_from_open": change_from_open,
+            "change_percent_from_open": change_percent_from_open,
             "source_url": source_url,
             "quote_source": "Sina HQ",
             "updated_at": datetime.now().isoformat(),
@@ -214,11 +223,21 @@ class ShippingDashboardService:
     def get_forex_series(self, code, title, yahoo_symbol, quote_symbol, source_url):
         quote = self._sina_quote(quote_symbol)
         previous_close = quote.get("previous_close") if quote else None
+        latest = quote.get("current") if quote else None
+        open_price = quote.get("open") if quote else None
+        change_from_open = None
+        change_percent_from_open = None
+        if latest is not None and open_price not in (None, 0):
+            change_from_open = round(latest - open_price, 4)
+            change_percent_from_open = round(change_from_open / open_price * 100, 4)
         return {
             "code": code,
             "title": title,
-            "latest": previous_close,
+            "latest": latest,
             "previous_close": previous_close,
+            "open": open_price,
+            "change_from_open": change_from_open,
+            "change_percent_from_open": change_percent_from_open,
             "source_url": source_url,
             "quote_source": "Sina HQ" if quote else None,
             "updated_at": datetime.now().isoformat(),
@@ -404,6 +423,7 @@ class ShippingDashboardService:
         if len(parts) < 10:
             return None
         current = self._to_float(parts[8])
+        open_price = self._to_float(parts[5])
         previous_close = self._to_float(parts[3])
         change = None
         change_percent = None
@@ -412,6 +432,7 @@ class ShippingDashboardService:
             change_percent = round(change / previous_close * 100, 4)
         return {
             "current": current,
+            "open": open_price,
             "previous_close": previous_close,
             "change": change,
             "change_percent": change_percent,
