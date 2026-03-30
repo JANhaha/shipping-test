@@ -12,7 +12,7 @@
     h1{margin:0;font-size:clamp(30px,4vw,46px)}h2{margin:0;font-size:20px}.subtitle,.meta,.source{color:var(--muted)}.subtitle{margin-top:10px;line-height:1.6}.meta,.source{font-size:12px}
     .toolbar,.panel-head,.chart-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.toolbar{margin-top:18px;font-size:14px}.button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:10px 16px;cursor:pointer}.button:disabled{opacity:.6}
     .card,.mini-card,.ticker-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px}.mini-card{padding:18px}.ticker-code,.mini-title{font-size:13px;color:var(--muted);margin-bottom:6px}.ticker-value,.mini-value,.price{font-size:28px;font-weight:700}.price{font-size:30px}
-    .warning{padding:14px 16px;border-radius:16px;background:var(--warn);color:var(--warnink);border:1px solid #bc6c2526}.change.up{color:var(--up)}.change.down{color:var(--down)}
+    .warning{padding:14px 16px;border-radius:16px;background:var(--warn);color:var(--warnink);border:1px solid #bc6c2526}.change.up{color:var(--up)}.change.down{color:var(--down)}.up{color:var(--up)}.down{color:var(--down)}
     table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted)}a{color:var(--accent)}
     @media (max-width:1120px){.span-8,.span-4,.cards-6>div{grid-column:span 12}.cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media (max-width:760px){.shell{padding:14px 10px 30px}.hero-card,.panel{padding:18px;border-radius:18px}.cards-2,.cards-6{grid-template-columns:1fr}.price,.ticker-value,.mini-value{font-size:24px}}
@@ -130,6 +130,13 @@
     const DATA_URL = "./data/dashboard.json";
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
     const maybe = (v) => v === null || v === undefined || v === "" ? "-" : v;
+    const coloredChange = (value, suffix = "") => {
+      if (value === null || value === undefined || Number.isNaN(Number(value))) return "-";
+      const num = Number(value);
+      const cls = num >= 0 ? "up" : "down";
+      const sign = num >= 0 ? "+" : "";
+      return `<span class="${cls}">${sign}${fmt(num)}${suffix}</span>`;
+    };
 
     function renderShippingIndices(data) {
       const root = document.getElementById("shippingIndices");
@@ -150,8 +157,8 @@
     function renderCrude(data) {
       document.getElementById("clPrice").textContent = fmt(data.cl?.open);
       document.getElementById("oilPrice").textContent = fmt(data.oil?.open);
-      document.getElementById("clMeta").textContent = `最新 ${fmt(data.cl?.latest)} / 涨跌 ${data.cl?.change_from_open >= 0 ? "+" : ""}${fmt(data.cl?.change_from_open)} / ${data.cl?.change_percent_from_open >= 0 ? "+" : ""}${fmt(data.cl?.change_percent_from_open)}%`;
-      document.getElementById("oilMeta").textContent = `最新 ${fmt(data.oil?.latest)} / 涨跌 ${data.oil?.change_from_open >= 0 ? "+" : ""}${fmt(data.oil?.change_from_open)} / ${data.oil?.change_percent_from_open >= 0 ? "+" : ""}${fmt(data.oil?.change_percent_from_open)}%`;
+      document.getElementById("clMeta").innerHTML = `最新 ${fmt(data.cl?.latest)} / 涨跌 ${coloredChange(data.cl?.change_from_open)} / ${coloredChange(data.cl?.change_percent_from_open, "%")}`;
+      document.getElementById("oilMeta").innerHTML = `最新 ${fmt(data.oil?.latest)} / 涨跌 ${coloredChange(data.oil?.change_from_open)} / ${coloredChange(data.oil?.change_percent_from_open, "%")}`;
     }
 
     function renderIronOre(data) {
@@ -166,7 +173,7 @@
 
     function renderFx(key, item) {
       document.getElementById(`fxValue_${key}`).textContent = fmt(item.previous_close);
-      document.getElementById(`fx_${key}`).textContent = `最新 ${fmt(item.latest)} / 开盘 ${fmt(item.open)} / 涨跌 ${item.change_from_open >= 0 ? "+" : ""}${fmt(item.change_from_open)} / ${item.change_percent_from_open >= 0 ? "+" : ""}${fmt(item.change_percent_from_open)}%`;
+      document.getElementById(`fx_${key}`).innerHTML = `最新 ${fmt(item.latest)} / 开盘 ${fmt(item.open)} / 涨跌 ${coloredChange(item.change_from_open)} / ${coloredChange(item.change_percent_from_open, "%")}`;
     }
 
     function renderBunker(rows) {
