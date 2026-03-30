@@ -423,8 +423,8 @@ class ShippingDashboardService:
         parts = raw.split(",")
         if len(parts) < 10:
             return None
-        current = self._to_float(parts[8] if code == "DINIW" else parts[1])
-        previous_close = self._to_float(parts[7] if code == "DINIW" else parts[5])
+        current = self._to_float(parts[8])
+        previous_close = self._to_float(parts[3])
         change = None
         change_percent = None
         if current is not None and previous_close not in (None, 0):
