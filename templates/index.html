@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>漢洋航运信息看板</title>
   <style>
-    :root{--bg:#f6efe6;--panel:#fffdf9ee;--ink:#1f2a30;--muted:#66757c;--line:#18323e18;--accent:#0b5d6b;--accent-2:#c6802c;--up:#167246;--down:#ad3947;--warn:#fff2df;--warnink:#8a4f16}
+    :root{--bg:#f6efe6;--panel:#fffdf9ee;--ink:#1f2a30;--muted:#66757c;--line:#18323e18;--accent:#0b5d6b;--accent-2:#c6802c;--up:#0aa84f;--down:#e53935;--warn:#fff2df;--warnink:#8a4f16}
     *{box-sizing:border-box}body{margin:0;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,#0b5d6b1f,transparent 24%),radial-gradient(circle at top right,#c6802c1c,transparent 20%),linear-gradient(180deg,#f7f2ea,#f0ebe3)}
     .shell{max-width:1500px;margin:0 auto;padding:24px 16px 48px}.grid,.hero,.stats,.cards-2,.cards-6{display:grid;gap:16px}.grid{grid-template-columns:repeat(12,minmax(0,1fr))}.hero-card,.panel{background:var(--panel);border:1px solid #ffffffaa;border-radius:22px;box-shadow:0 18px 40px #14262e16}.hero-card{padding:28px}.panel{padding:22px}
     .span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-4{grid-column:span 4}.cards-2{grid-template-columns:repeat(2,minmax(0,1fr))}.cards-6{grid-template-columns:repeat(6,minmax(0,1fr))}.stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
     h1{margin:0;font-size:clamp(30px,4vw,46px)}h2{margin:0;font-size:20px}.subtitle,.meta,.source{color:var(--muted)}.subtitle{margin-top:10px;line-height:1.6}.meta,.source{font-size:12px}
     .toolbar,.panel-head,.chart-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.toolbar{margin-top:18px;font-size:14px}.button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:10px 16px;cursor:pointer}.button:disabled{opacity:.6}
     .card,.mini-card,.ticker-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px}.mini-card{padding:18px}.ticker-code,.mini-title{font-size:13px;color:var(--muted);margin-bottom:6px}.ticker-value,.mini-value,.price{font-size:28px;font-weight:700}.price{font-size:30px}
-    .warning{padding:14px 16px;border-radius:16px;background:var(--warn);color:var(--warnink);border:1px solid #bc6c2526}.change.up{color:var(--up)}.change.down{color:var(--down)}.up{color:var(--up)}.down{color:var(--down)}
+    .warning{padding:14px 16px;border-radius:16px;background:var(--warn);color:var(--warnink);border:1px solid #bc6c2526}.change.up{color:var(--up)}.change.down{color:var(--down)}.up{color:var(--up);font-weight:700}.down{color:var(--down);font-weight:700}
     table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted)}a{color:var(--accent)}
     @media (max-width:1120px){.span-8,.span-4,.cards-6>div{grid-column:span 12}.cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media (max-width:760px){.shell{padding:14px 10px 30px}.hero-card,.panel{padding:18px;border-radius:18px}.cards-2,.cards-6{grid-template-columns:1fr}.price,.ticker-value,.mini-value{font-size:24px}}
@@ -149,7 +149,7 @@
             <div class="ticker-code">${item.code}</div>
           <div class="ticker-value">${fmt(item.value)}</div>
           <div class="meta">${maybe(item.name)}</div>
-          <div class="meta">${maybe(item.date)}${item.daily_percent === null || item.daily_percent === undefined ? "" : ` / ${item.daily_percent >= 0 ? "+" : ""}${fmt(item.daily_percent)}%`}</div>
+          <div class="meta">${maybe(item.date)}${item.daily_percent === null || item.daily_percent === undefined ? "" : ` / ${coloredChange(item.daily_percent, "%")}`}</div>
         </div>
       `).join("")}</div>`;
     }
@@ -163,7 +163,7 @@
 
     function renderIronOre(data) {
       document.getElementById("oreToday").textContent = fmt(data.today?.value, 2);
-      document.getElementById("oreMeta").textContent = `昨日 ${fmt(data.yesterday?.value, 2)} / 变化 ${fmt(data.change_percent, 2)}%`;
+      document.getElementById("oreMeta").innerHTML = `昨日 ${fmt(data.yesterday?.value)} / 变化 ${coloredChange(data.change_percent, "%")}`;
     }
 
     function renderBoc(data) {
