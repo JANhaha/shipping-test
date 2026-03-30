@@ -228,10 +228,8 @@ class ShippingDashboardService:
     def get_forex_series(self, code, title, yahoo_symbol, quote_symbol, source_url):
         series = self._yahoo_series(yahoo_symbol)
         quote = self._sina_quote(quote_symbol)
-        if quote:
-            series = self._merge_series_with_current(series, quote.get("date"), quote.get("current"))
-        latest = quote.get("current") if quote else (series[-1]["value"] if series else None)
         previous_close = quote.get("previous_close") if quote else None
+        latest = previous_close if previous_close is not None else (series[-1]["value"] if series else None)
         return {
             "code": code,
             "title": title,
@@ -333,7 +331,7 @@ class ShippingDashboardService:
                 0,
                 {
                     "port": zhoushan.get("port") or "Zhoushan",
-                    "country": "China",
+                    "country": "CN",
                     "ifo380": zhoushan["prices"].get("IFO380"),
                     "ifo380_change": None,
                     "vlsfo": zhoushan["prices"].get("VLSFO"),
@@ -360,7 +358,7 @@ class ShippingDashboardService:
         latest = rows[0] if rows else {}
         return {
             "port": latest.get("portName", "Zhoushan"),
-            "date": self._format_millis(latest.get("updateDate")),
+            "date": self._format_bunker_date(latest.get("updateDate")),
             "prices": {
                 "IFO380": self._to_float(latest.get("ifo380")),
                 "LSMGO": self._to_float(latest.get("lsmgo")),
@@ -560,6 +558,12 @@ class ShippingDashboardService:
         if value in (None, ""):
             return None
         return datetime.fromtimestamp(int(value) / 1000).strftime("%Y-%m-%d")
+
+    @staticmethod
+    def _format_bunker_date(value):
+        if value in (None, ""):
+            return None
+        return datetime.fromtimestamp(int(value) / 1000).strftime("%d %b")
 
     @staticmethod
     def _short_date(value):

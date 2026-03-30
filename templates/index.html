@@ -214,7 +214,8 @@
     }
 
     function renderFx(key, item) {
-      document.getElementById(`fx_${key}`).textContent = `最新 ${fmt(item.latest, 4)} / 昨收 ${fmt(item.previous_close, 4)}`;
+      const closeValue = item.previous_close ?? item.latest;
+      document.getElementById(`fx_${key}`).textContent = `昨日收盘 ${fmt(closeValue, 4)}`;
       draw(`chart_${key}`, item.series || [], colors[key]);
     }
 

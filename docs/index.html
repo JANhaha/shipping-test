@@ -24,7 +24,7 @@
     <section class="hero">
       <div class="hero-card">
         <h1>漢洋航运信息看板</h1>
-        <div class="subtitle">公开静态网页版本。数据由 GitHub Actions 每 30 分钟抓取一次并更新到页面，适合直接对外查看。</div>
+        <div class="subtitle">整合航运相关指数、原油、汇率、进口矿、中行折算价与全球主要港口油价，服务端与页面均按 30 分钟自动刷新。</div>
         <div class="toolbar">
           <button id="refreshBtn" class="button">重新读取最新数据</button>
           <span>自动刷新周期：30 分钟</span>
@@ -214,7 +214,8 @@
     }
 
     function renderFx(key, item) {
-      document.getElementById(`fx_${key}`).textContent = `最新 ${fmt(item.latest, 4)} / 昨收 ${fmt(item.previous_close, 4)}`;
+      const closeValue = item.previous_close ?? item.latest;
+      document.getElementById(`fx_${key}`).textContent = `昨日收盘 ${fmt(closeValue, 4)}`;
       draw(`chart_${key}`, item.series || [], colors[key]);
     }
 
