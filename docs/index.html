@@ -130,6 +130,11 @@
     const DATA_URL = "./data/dashboard.json";
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
     const maybe = (v) => v === null || v === undefined || v === "" ? "-" : v;
+    const formatCell = (v) => {
+      if (v === null || v === undefined || v === "") return "-";
+      const num = Number(String(v).replace(/,/g, ""));
+      return Number.isNaN(num) ? String(v) : num.toFixed(2);
+    };
     const coloredChange = (value, suffix = "") => {
       if (value === null || value === undefined || Number.isNaN(Number(value))) return "-";
       const num = Number(value);
@@ -181,9 +186,9 @@
         <tr>
           <td>${maybe(row.port)}</td>
           <td>${maybe(row.country)}</td>
-          <td>${maybe(row.ifo380)}</td>
-          <td>${maybe(row.vlsfo)}</td>
-          <td>${maybe(row.mgo)}</td>
+          <td>${formatCell(row.ifo380)}</td>
+          <td>${formatCell(row.vlsfo)}</td>
+          <td>${formatCell(row.mgo)}</td>
           <td>${maybe(row.date)}</td>
         </tr>
       `).join("");
