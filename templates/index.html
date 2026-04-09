@@ -5,34 +5,132 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>漢洋航运信息看板</title>
   <style>
-    :root{--bg:#f6efe6;--panel:#fffdf9ee;--ink:#1f2a30;--muted:#66757c;--line:#18323e18;--accent:#0b5d6b;--accent-2:#c6802c;--up:#0aa84f;--down:#e53935;--warn:#fff2df;--warnink:#8a4f16}
-    *{box-sizing:border-box}body{margin:0;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:radial-gradient(circle at top left,#0b5d6b1f,transparent 24%),radial-gradient(circle at top right,#c6802c1c,transparent 20%),linear-gradient(180deg,#f7f2ea,#f0ebe3)}
-    .shell{max-width:1500px;margin:0 auto;padding:24px 16px 48px}.grid,.hero,.stats,.cards-2,.cards-6{display:grid;gap:16px}.grid{grid-template-columns:repeat(12,minmax(0,1fr))}.hero-card,.panel{background:var(--panel);border:1px solid #ffffffaa;border-radius:22px;box-shadow:0 18px 40px #14262e16}.hero-card{padding:28px}.panel{padding:22px}
-    .span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-4{grid-column:span 4}.cards-2{grid-template-columns:repeat(2,minmax(0,1fr))}.cards-6{grid-template-columns:repeat(6,minmax(0,1fr))}.stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
-    h1{margin:0;font-size:clamp(30px,4vw,46px)}h2{margin:0;font-size:20px}.subtitle,.meta,.source{color:var(--muted)}.subtitle{margin-top:10px;line-height:1.6}.meta,.source{font-size:12px}
-    .toolbar,.panel-head,.chart-header{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.toolbar{margin-top:18px;font-size:14px}.button{border:0;border-radius:999px;background:var(--accent);color:#fff;padding:10px 16px;cursor:pointer}.button:disabled{opacity:.6}
-    .card,.mini-card,.ticker-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px}.mini-card{padding:18px}.ticker-code,.mini-title{font-size:13px;color:var(--muted);margin-bottom:6px}.ticker-value,.mini-value,.price{font-size:28px;font-weight:700}.price{font-size:30px}
-    .warning{padding:14px 16px;border-radius:16px;background:var(--warn);color:var(--warnink);border:1px solid #bc6c2526}.change.up{color:var(--up)}.change.down{color:var(--down)}.up{color:var(--up);font-weight:700}.down{color:var(--down);font-weight:700}
-    table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted)}a{color:var(--accent)}
-    @media (max-width:1120px){.span-8,.span-4,.cards-6>div{grid-column:span 12}.cards-6{grid-template-columns:repeat(2,minmax(0,1fr))}}
-    @media (max-width:760px){.shell{padding:14px 10px 30px}.hero-card,.panel{padding:18px;border-radius:18px}.cards-2,.cards-6{grid-template-columns:1fr}.price,.ticker-value,.mini-value{font-size:24px}}
+    :root{
+      --bg:#f5efe7;
+      --panel:rgba(255,255,255,.9);
+      --panel-strong:#fffdf9;
+      --ink:#1d2a30;
+      --muted:#61737d;
+      --line:rgba(18,50,62,.12);
+      --accent:#0b5969;
+      --accent-2:#c4832b;
+      --up:#00b050;
+      --down:#ff3b30;
+      --shadow:0 18px 44px rgba(17,34,41,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(11,89,105,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(196,131,43,.12), transparent 24%),
+        linear-gradient(180deg,#f8f3ec,#efe8df);
+    }
+    .shell{max-width:1520px;margin:0 auto;padding:24px 16px 48px}
+    .hero-card,.panel{
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.78);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(8px);
+    }
+    .hero-card{padding:28px}
+    .panel{padding:22px}
+    .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+    .span-12{grid-column:span 12}
+    .span-8{grid-column:span 8}
+    .span-4{grid-column:span 4}
+    .cards-2,.cards-4,.cards-6,.stats{display:grid;gap:16px}
+    .cards-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .cards-6{grid-template-columns:repeat(6,minmax(0,1fr))}
+    .stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+    h1{margin:0;font-size:clamp(30px,4vw,46px);letter-spacing:.5px}
+    h2{margin:0;font-size:20px}
+    .subtitle,.meta,.source,.mini-label{color:var(--muted)}
+    .subtitle{margin-top:10px;line-height:1.7;max-width:900px}
+    .meta,.source,.mini-label{font-size:12px}
+    .toolbar,.panel-head,.card-top{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .toolbar{margin-top:18px;font-size:14px}
+    .button{
+      border:0;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--accent),#0f7487);
+      color:#fff;
+      padding:10px 16px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .button:disabled{opacity:.65;cursor:default}
+    .card,.ticker-card,.mini-card,.feature-card{
+      background:var(--panel-strong);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+    }
+    .feature-card{padding:18px}
+    .ticker-code{font-size:12px;color:var(--muted);letter-spacing:.08em}
+    .ticker-value,.primary-number,.mini-value{font-size:30px;font-weight:700;line-height:1.1}
+    .mini-value{font-size:28px}
+    .stat-name{font-size:13px;color:var(--muted);margin-top:6px}
+    .metric-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+    .metric{
+      padding:10px 12px;
+      border-radius:14px;
+      background:linear-gradient(180deg,rgba(11,89,105,.05),rgba(11,89,105,.02));
+      border:1px solid rgba(11,89,105,.08);
+    }
+    .metric-value{font-size:18px;font-weight:700;margin-top:4px}
+    .overview-strip{
+      display:grid;
+      grid-template-columns:minmax(260px,1.2fr) minmax(0,2fr);
+      gap:16px;
+      align-items:start;
+    }
+    .table-wrap{overflow:auto;border-radius:18px;border:1px solid var(--line);background:var(--panel-strong)}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:11px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{color:var(--muted);font-weight:600;background:rgba(11,89,105,.03)}
+    a{color:var(--accent)}
+    .warning{
+      padding:14px 16px;
+      border-radius:16px;
+      background:#fff2df;
+      color:#8a4f16;
+      border:1px solid rgba(188,108,37,.15);
+    }
+    .up{color:var(--up);font-weight:700}
+    .down{color:var(--down);font-weight:700}
+    @media (max-width:1200px){
+      .span-8,.span-4{grid-column:span 12}
+      .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .cards-4{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .overview-strip{grid-template-columns:1fr}
+    }
+    @media (max-width:760px){
+      .shell{padding:14px 10px 30px}
+      .hero-card,.panel{padding:18px;border-radius:18px}
+      .cards-2,.cards-4,.cards-6,.metric-grid{grid-template-columns:1fr}
+      .ticker-value,.primary-number,.mini-value{font-size:24px}
+      th,td{padding:9px 8px}
+    }
   </style>
 </head>
 <body>
   <div class="shell">
-    <section class="hero">
-      <div class="hero-card">
-        <h1>漢洋航运信息看板</h1>
-        <div class="subtitle">整合航运相关指数、原油、汇率、进口矿、中行折算价与全球主要港口油价，服务端与页面均按 30 分钟自动刷新。</div>
-        <div class="toolbar">
-          <button id="refreshBtn" class="button">立即刷新</button>
-          <span>自动刷新周期：30 分钟</span>
-          <span id="lastUpdated">最后更新：加载中</span>
-        </div>
+    <section class="hero-card">
+      <h1>漢洋航运信息看板</h1>
+      <div class="subtitle">整合航运相关指数、原油信息、相关汇率信息、中国沿海散货运价指数、进口矿指数、中行美元折算价与全球主要港口油价，页面每 30 分钟自动抓取并刷新。</div>
+      <div class="toolbar">
+        <button id="refreshBtn" class="button">重新读取最新数据</button>
+        <span>自动刷新周期：30 分钟</span>
+        <span id="lastUpdated">最后更新：加载中</span>
       </div>
     </section>
 
-    <div class="grid">
+    <div class="grid" style="margin-top:16px">
       <section class="panel span-12">
         <div class="panel-head">
           <h2>航运相关指数</h2>
@@ -46,43 +144,24 @@
           <h2>原油信息</h2>
           <div class="meta">WTI原油 / 布伦特原油CFD</div>
         </div>
-        <div class="cards-2">
-          <div class="card">
-            <div class="chart-header">
-              <div>
-                <div class="mini-title">WTI原油</div>
-                <div id="clPrice" class="price">-</div>
-              </div>
-              <div id="clMeta" class="meta"></div>
-            </div>
-          </div>
-          <div class="card">
-            <div class="chart-header">
-              <div>
-                <div class="mini-title">布伦特原油CFD</div>
-                <div id="oilPrice" class="price">-</div>
-              </div>
-              <div id="oilMeta" class="meta"></div>
-            </div>
-          </div>
-        </div>
+        <div class="cards-2" id="crudeCards"></div>
       </section>
 
       <section class="panel span-4">
         <div class="panel-head">
           <h2>重点现货信息</h2>
-          <div class="meta">今日重点</div>
+          <div class="meta">进口矿指数 / 中行美元折算价</div>
         </div>
         <div class="cards-2" style="grid-template-columns:1fr">
-          <div class="mini-card">
-            <div class="mini-title">进口矿指数</div>
+          <div class="feature-card">
+            <div class="mini-label">进口矿指数</div>
             <div id="oreToday" class="mini-value">-</div>
-            <div id="oreMeta" class="meta"></div>
+            <div id="oreMeta" class="meta" style="margin-top:8px"></div>
           </div>
-          <div class="mini-card">
-            <div class="mini-title">中行美元折算价</div>
+          <div class="feature-card">
+            <div class="mini-label">中行美元折算价</div>
             <div id="bocPrice" class="mini-value">-</div>
-            <div id="bocMeta" class="meta"></div>
+            <div id="bocMeta" class="meta" style="margin-top:8px"></div>
           </div>
         </div>
       </section>
@@ -90,24 +169,25 @@
       <section class="panel span-12">
         <div class="panel-head">
           <h2>相关汇率信息</h2>
-          <div class="meta">美元指数 / 欧元兑人民币 / 英镑兑美元 / 美元兑人民币 / 美元兑港元 / 美元兑日元</div>
+          <div class="meta">美元指数 / 欧元兑美元 / 英镑兑美元 / 美元兑人民币 / 美元兑港元 / 美元兑日元</div>
         </div>
-        <div class="cards-6">
-          <div class="card"><div class="mini-title">美元指数</div><div id="fxValue_DINIW" class="price">-</div><div id="fx_DINIW" class="meta"></div></div>
-          <div class="card"><div class="mini-title">欧元兑人民币</div><div id="fxValue_EURCNY" class="price">-</div><div id="fx_EURCNY" class="meta"></div></div>
-          <div class="card"><div class="mini-title">英镑兑美元</div><div id="fxValue_GBPUSD" class="price">-</div><div id="fx_GBPUSD" class="meta"></div></div>
-          <div class="card"><div class="mini-title">美元兑人民币</div><div id="fxValue_USDCNY" class="price">-</div><div id="fx_USDCNY" class="meta"></div></div>
-          <div class="card"><div class="mini-title">美元兑港元</div><div id="fxValue_USDHKD" class="price">-</div><div id="fx_USDHKD" class="meta"></div></div>
-          <div class="card"><div class="mini-title">美元兑日元</div><div id="fxValue_USDJPY" class="price">-</div><div id="fx_USDJPY" class="meta"></div></div>
+        <div class="cards-6" id="forexCards"></div>
+      </section>
+
+      <section class="panel span-12">
+        <div class="panel-head">
+          <h2>中国沿海散货运价指数</h2>
+          <div id="cbfiDate" class="meta">加载中</div>
         </div>
+        <div id="cbfiRoot"></div>
       </section>
 
       <section class="panel span-12">
         <div class="panel-head">
           <h2>全球主要港口油价</h2>
-          <div class="meta">仅展示有真实价格的港口，已集成舟山</div>
+          <div class="meta">已整合舟山自动抓取数据，仅展示存在真实报价的港口</div>
         </div>
-        <div style="overflow:auto">
+        <div class="table-wrap">
           <table>
             <thead>
               <tr>
@@ -142,6 +222,12 @@
       const sign = num >= 0 ? "+" : "";
       return `<span class="${cls}">${sign}${fmt(num)}${suffix}</span>`;
     };
+    const metricBlock = (label, value, isChange = false, suffix = "") => `
+      <div class="metric">
+        <div class="mini-label">${label}</div>
+        <div class="metric-value">${isChange ? coloredChange(value, suffix) : fmt(value)}</div>
+      </div>
+    `;
 
     function renderShippingIndices(data) {
       const root = document.getElementById("shippingIndices");
@@ -150,35 +236,122 @@
         return;
       }
       root.innerHTML = `<div class="stats">${(data.data || []).map((item) => `
-          <div class="ticker-card">
-            <div class="ticker-code">${item.code}</div>
+        <div class="ticker-card">
+          <div class="ticker-code">${item.code}</div>
           <div class="ticker-value">${fmt(item.value)}</div>
-          <div class="meta">${maybe(item.name)}</div>
-          <div class="meta">${maybe(item.date)}${item.daily_percent === null || item.daily_percent === undefined ? "" : ` / ${coloredChange(item.daily_percent, "%")}`}</div>
+          <div class="stat-name">${maybe(item.name)}</div>
+          <div class="meta" style="margin-top:8px">${maybe(item.date)} / 日涨跌 ${coloredChange(item.daily_percent, "%")}</div>
         </div>
       `).join("")}</div>`;
     }
 
     function renderCrude(data) {
-      document.getElementById("clPrice").textContent = fmt(data.cl?.open);
-      document.getElementById("oilPrice").textContent = fmt(data.oil?.open);
-      document.getElementById("clMeta").innerHTML = `最新 ${fmt(data.cl?.latest)} / 涨跌 ${coloredChange(data.cl?.change_from_open)} / ${coloredChange(data.cl?.change_percent_from_open, "%")}`;
-      document.getElementById("oilMeta").innerHTML = `最新 ${fmt(data.oil?.latest)} / 涨跌 ${coloredChange(data.oil?.change_from_open)} / ${coloredChange(data.oil?.change_percent_from_open, "%")}`;
+      const items = [data.cl, data.oil].filter(Boolean);
+      document.getElementById("crudeCards").innerHTML = items.map((item) => `
+        <div class="card">
+          <div class="card-top">
+            <div>
+              <div class="mini-label">${maybe(item.name)}</div>
+              <div class="primary-number">${fmt(item.latest)}</div>
+            </div>
+            <div class="meta">最新价格</div>
+          </div>
+          <div class="metric-grid">
+            ${metricBlock("开盘价", item.open)}
+            ${metricBlock("昨收", item.previous_close)}
+            ${metricBlock("较开盘涨跌", item.change_from_open, true)}
+            ${metricBlock("涨跌幅", item.change_percent_from_open, true, "%")}
+          </div>
+        </div>
+      `).join("");
     }
 
     function renderIronOre(data) {
-      document.getElementById("oreToday").textContent = fmt(data.today?.value, 2);
-      document.getElementById("oreMeta").innerHTML = `昨日 ${fmt(data.yesterday?.value)} / 变化 ${coloredChange(data.change_percent, "%")}`;
+      document.getElementById("oreToday").textContent = fmt(data.today?.value);
+      document.getElementById("oreMeta").innerHTML = `昨日 ${fmt(data.yesterday?.value)} / 变化 ${coloredChange(data.change_percent, "%")} / ${maybe(data.today?.date)}`;
     }
 
     function renderBoc(data) {
-      document.getElementById("bocPrice").textContent = fmt(data.conversion_price, 2);
-      document.getElementById("bocMeta").textContent = `现汇买入 ${fmt(data.spot_buy)} / 现汇卖出 ${fmt(data.spot_sell)} / ${maybe(data.published_at)}`;
+      document.getElementById("bocPrice").textContent = fmt(data.conversion_price);
+      document.getElementById("bocMeta").textContent = `现汇买入 ${fmt(data.spot_buy)} / 现汇卖出 ${fmt(data.spot_sell)} / ${maybe(data.published_at)} ${maybe(data.published_time)}`;
     }
 
-    function renderFx(key, item) {
-      document.getElementById(`fxValue_${key}`).textContent = fmt(item.previous_close);
-      document.getElementById(`fx_${key}`).innerHTML = `最新 ${fmt(item.latest)} / 开盘 ${fmt(item.open)} / 涨跌 ${coloredChange(item.change_from_open)} / ${coloredChange(item.change_percent_from_open, "%")}`;
+    function renderForex(data) {
+      const order = ["DINIW", "EURUSD", "GBPUSD", "USDCNY", "USDHKD", "USDJPY"];
+      document.getElementById("forexCards").innerHTML = order.map((key) => {
+        const item = data[key] || {};
+        return `
+          <div class="card">
+            <div class="card-top">
+              <div>
+                <div class="mini-label">${maybe(item.title)}</div>
+                <div class="primary-number">${fmt(item.latest)}</div>
+              </div>
+              <div class="meta">当前价格</div>
+            </div>
+            <div class="metric-grid">
+              ${metricBlock("开盘价", item.open)}
+              ${metricBlock("昨收", item.previous_close)}
+              ${metricBlock("较开盘涨跌", item.change_from_open, true)}
+              ${metricBlock("涨跌幅", item.change_percent_from_open, true, "%")}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderCbfi(data) {
+      const root = document.getElementById("cbfiRoot");
+      const dateNode = document.getElementById("cbfiDate");
+      if (!data || data.error) {
+        dateNode.textContent = "加载失败";
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "中国沿海散货运价指数加载失败"}</div>`;
+        return;
+      }
+      dateNode.textContent = `${maybe(data.previous_date)} -> ${maybe(data.current_date)}`;
+      const highlights = (data.highlights || []).map((item) => `
+        <div class="feature-card">
+          <div class="mini-label">${maybe(item.route)}</div>
+          <div class="mini-value">${fmt(item.current)}</div>
+          <div class="meta" style="margin-top:8px">上期 ${fmt(item.previous)} / 涨跌 ${coloredChange(item.change_percent, "%")}</div>
+        </div>
+      `).join("");
+      const routes = (data.routes || []).map((item) => `
+        <tr>
+          <td>${maybe(item.route)}</td>
+          <td>${maybe(item.ship_type)}</td>
+          <td>${fmt(item.previous)}</td>
+          <td>${fmt(item.current)}</td>
+          <td>${coloredChange(item.change_percent, "%")}</td>
+        </tr>
+      `).join("");
+      root.innerHTML = `
+        <div class="overview-strip">
+          <div class="feature-card">
+            <div class="mini-label">${maybe(data.name)}</div>
+            <div class="primary-number">${fmt(data.overview?.current)}</div>
+            <div class="metric-grid">
+              ${metricBlock("上期", data.overview?.previous)}
+              ${metricBlock("本期涨跌", data.overview?.change_percent, true, "%")}
+            </div>
+          </div>
+          <div class="cards-4">${highlights}</div>
+        </div>
+        <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead>
+              <tr>
+                <th>航线</th>
+                <th>参考船型</th>
+                <th>上期</th>
+                <th>本期</th>
+                <th>涨跌幅</th>
+              </tr>
+            </thead>
+            <tbody>${routes}</tbody>
+          </table>
+        </div>
+      `;
     }
 
     function renderBunker(rows) {
@@ -204,14 +377,10 @@
         renderCrude(payload.crude);
         renderIronOre(payload.iron_ore);
         renderBoc(payload.boc_usd);
-        renderFx("DINIW", payload.forex.DINIW);
-        renderFx("EURCNY", payload.forex.EURCNY);
-        renderFx("GBPUSD", payload.forex.GBPUSD);
-        renderFx("USDCNY", payload.forex.USDCNY);
-        renderFx("USDHKD", payload.forex.USDHKD);
-        renderFx("USDJPY", payload.forex.USDJPY);
+        renderForex(payload.forex);
+        renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || []);
-        document.getElementById("lastUpdated").textContent = `最后更新：${new Date(payload.timestamp || payload.served_at).toLocaleString("zh-CN")}`;
+        document.getElementById("lastUpdated").textContent = `最后更新：${new Date(payload.timestamp).toLocaleString("zh-CN")}`;
       } catch (error) {
         document.getElementById("lastUpdated").textContent = `加载失败：${error}`;
       } finally {
