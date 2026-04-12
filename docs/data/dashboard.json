@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-04-12T16:02:14.350597",
+  "timestamp": "2026-04-12T17:06:06.768599",
   "refresh_interval_minutes": 30,
   "baltic": {
     "data": [
@@ -78,11 +78,200 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-04-12T16:01:45.769812"
+    "updated_at": "2026-04-12T17:05:52.633739"
   },
   "cbfi": {
-    "error": "中国沿海散货运价指数抓取失败: HTTPSConnectionPool(host='www.sse.net.cn', port=443): Read timed out. (read timeout=30)",
-    "updated_at": "2026-04-12T16:02:14.350487"
+    "name": "中国沿海散货运价指数",
+    "overview": {
+      "route": "综合指数",
+      "ship_type": "",
+      "previous": 1194.92,
+      "current": 1199.88,
+      "change_percent": 0.4
+    },
+    "highlights": [
+      {
+        "route": "综合指数",
+        "ship_type": "",
+        "previous": 1194.92,
+        "current": 1199.88,
+        "change_percent": 0.4
+      },
+      {
+        "route": "沿海干散货指数",
+        "ship_type": "",
+        "previous": 1163.81,
+        "current": 1169.43,
+        "change_percent": 0.5
+      },
+      {
+        "route": "煤炭货种指数",
+        "ship_type": "",
+        "previous": 1235.91,
+        "current": 1243.03,
+        "change_percent": 0.6
+      },
+      {
+        "route": "粮食货种指数",
+        "ship_type": "",
+        "previous": 1229.4,
+        "current": 1309.03,
+        "change_percent": 6.5
+      },
+      {
+        "route": "金属矿石货种指数",
+        "ship_type": "",
+        "previous": 1152.42,
+        "current": 1135.97,
+        "change_percent": -1.4
+      },
+      {
+        "route": "沿海油品指数",
+        "ship_type": "",
+        "previous": 1412.68,
+        "current": 1413.02,
+        "change_percent": 0.0
+      }
+    ],
+    "routes": [
+      {
+        "route": "秦皇岛-广州",
+        "ship_type": "6-7万DWT",
+        "previous": 1232.94,
+        "current": 1221.78,
+        "change_percent": -0.9
+      },
+      {
+        "route": "秦皇岛-广州",
+        "ship_type": "5-6万DWT",
+        "previous": 1217.05,
+        "current": 1203.08,
+        "change_percent": -1.1
+      },
+      {
+        "route": "秦皇岛-厦门",
+        "ship_type": "5-6万DWT",
+        "previous": 986.89,
+        "current": 974.8,
+        "change_percent": -1.2
+      },
+      {
+        "route": "秦皇岛-福州",
+        "ship_type": "3-4万DWT",
+        "previous": 883.73,
+        "current": 875.95,
+        "change_percent": -0.9
+      },
+      {
+        "route": "秦皇岛-上海",
+        "ship_type": "4-5万DWT",
+        "previous": 1289.97,
+        "current": 1282.76,
+        "change_percent": -0.6
+      },
+      {
+        "route": "黄骅-上海",
+        "ship_type": "3-4万DWT",
+        "previous": 915.37,
+        "current": 912.4,
+        "change_percent": -0.3
+      },
+      {
+        "route": "天津-上海",
+        "ship_type": "2-3万DWT",
+        "previous": 1116.37,
+        "current": 1231.28,
+        "change_percent": 10.3
+      },
+      {
+        "route": "京唐/曹妃甸-宁波",
+        "ship_type": "4-5万DWT",
+        "previous": 1286.64,
+        "current": 1273.17,
+        "change_percent": -1.0
+      },
+      {
+        "route": "秦皇岛-宁波",
+        "ship_type": "1.5-2万DWT",
+        "previous": 1206.13,
+        "current": 1189.69,
+        "change_percent": -1.4
+      },
+      {
+        "route": "秦皇岛-张家港",
+        "ship_type": "4-5万DWT",
+        "previous": 1288.3,
+        "current": 1284.62,
+        "change_percent": -0.3
+      },
+      {
+        "route": "秦皇岛-张家港",
+        "ship_type": "2-3万DWT",
+        "previous": 1219.49,
+        "current": 1216.22,
+        "change_percent": -0.3
+      },
+      {
+        "route": "天津-镇江",
+        "ship_type": "2-3万DWT",
+        "previous": 1224.34,
+        "current": 1225.28,
+        "change_percent": 0.1
+      },
+      {
+        "route": "天津-镇江",
+        "ship_type": "1-1.5万DWT",
+        "previous": 1431.84,
+        "current": 1412.11,
+        "change_percent": -1.4
+      },
+      {
+        "route": "秦皇岛-南京",
+        "ship_type": "3-4万DWT",
+        "previous": 1229.59,
+        "current": 1225.66,
+        "change_percent": -0.3
+      },
+      {
+        "route": "锦州-广州",
+        "ship_type": "5-6万DWT",
+        "previous": 1198.33,
+        "current": 1326.89,
+        "change_percent": 10.7
+      },
+      {
+        "route": "营口-深圳",
+        "ship_type": "4-5万DWT",
+        "previous": 1229.74,
+        "current": 1261.28,
+        "change_percent": 2.6
+      },
+      {
+        "route": "青岛/日照-张家港",
+        "ship_type": "2-3万DWT",
+        "previous": 728.07,
+        "current": 722.68,
+        "change_percent": -0.7
+      },
+      {
+        "route": "北仑-镇江",
+        "ship_type": "3-4万DWT",
+        "previous": 1115.58,
+        "current": 1097.54,
+        "change_percent": -1.6
+      },
+      {
+        "route": "舟山-张家港",
+        "ship_type": "0.5-1万DWT",
+        "previous": 1151.73,
+        "current": 1131.81,
+        "change_percent": -1.7
+      }
+    ],
+    "previous_date": "2026-04-03",
+    "current_date": "2026-04-10",
+    "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
+    "updated_at": "2026-04-12T17:06:06.768458"
   },
   "crude": {
     "cl": {
@@ -95,7 +284,7 @@
       "change_percent_from_open": -0.0021,
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:43.910051"
+      "updated_at": "2026-04-12T17:05:52.121724"
     },
     "oil": {
       "code": "OIL",
@@ -107,7 +296,7 @@
       "change_percent_from_open": -0.0053,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:43.901760"
+      "updated_at": "2026-04-12T17:05:52.133939"
     }
   },
   "iron_ore": {
@@ -122,7 +311,7 @@
     },
     "change_percent": -1.69,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-04-12T16:01:44.529687"
+    "updated_at": "2026-04-12T17:05:50.948410"
   },
   "boc_usd": {
     "currency": "美元",
@@ -131,10 +320,10 @@
     "spot_sell": 685.0,
     "cash_sell": 685.0,
     "conversion_price": 686.54,
-    "published_at": "2026/04/12 10:30:00",
-    "published_time": "10:30:00",
+    "published_at": "2026/04/13 00:00:05",
+    "published_time": "00:00:05",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-04-12T16:01:46.677828"
+    "updated_at": "2026-04-12T17:05:53.536114"
   },
   "forex": {
     "DINIW": {
@@ -147,7 +336,7 @@
       "change_percent_from_open": -0.1109,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:43.895945"
+      "updated_at": "2026-04-12T17:05:52.134959"
     },
     "EURUSD": {
       "code": "EURUSD",
@@ -159,7 +348,7 @@
       "change_percent_from_open": 0.1881,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:43.920939"
+      "updated_at": "2026-04-12T17:05:52.140233"
     },
     "GBPUSD": {
       "code": "GBPUSD",
@@ -171,7 +360,7 @@
       "change_percent_from_open": 0.1861,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:43.918734"
+      "updated_at": "2026-04-12T17:05:52.135378"
     },
     "USDCNY": {
       "code": "USDCNY",
@@ -183,7 +372,7 @@
       "change_percent_from_open": 0.0073,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:44.079705"
+      "updated_at": "2026-04-12T17:05:52.146550"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -195,7 +384,7 @@
       "change_percent_from_open": -0.046,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:44.091228"
+      "updated_at": "2026-04-12T17:05:52.321965"
     },
     "USDJPY": {
       "code": "USDJPY",
@@ -207,7 +396,7 @@
       "change_percent_from_open": 0.2139,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-04-12T16:01:44.100673"
+      "updated_at": "2026-04-12T17:05:52.334204"
     }
   },
   "bunker_index": {
@@ -221,6 +410,28 @@
         "vlsfo_change": null,
         "mgo": 1705.0,
         "mgo_change": null,
+        "date": "10 Apr"
+      },
+      {
+        "port": "Kaohsiung",
+        "country": "TW",
+        "ifo380": "740.00",
+        "ifo380_change": "5.00",
+        "vlsfo": "880.00",
+        "vlsfo_change": "10.00",
+        "mgo": "1785.00",
+        "mgo_change": "-5.00",
+        "date": "10 Apr"
+      },
+      {
+        "port": "Hong Kong",
+        "country": "HK",
+        "ifo380": "730.00",
+        "ifo380_change": "-10.00",
+        "vlsfo": "830.00",
+        "vlsfo_change": "-20.00",
+        "mgo": "1615.00",
+        "mgo_change": "-15.00",
         "date": "10 Apr"
       },
       {
@@ -266,31 +477,9 @@
         "mgo": "1560.00",
         "mgo_change": "-90.00",
         "date": "10 Apr"
-      },
-      {
-        "port": "Kaohsiung",
-        "country": "TW",
-        "ifo380": "740.00",
-        "ifo380_change": "5.00",
-        "vlsfo": "880.00",
-        "vlsfo_change": "10.00",
-        "mgo": "1785.00",
-        "mgo_change": "-5.00",
-        "date": "10 Apr"
-      },
-      {
-        "port": "Hong Kong",
-        "country": "HK",
-        "ifo380": "730.00",
-        "ifo380_change": "-10.00",
-        "vlsfo": "830.00",
-        "vlsfo_change": "-20.00",
-        "mgo": "1615.00",
-        "mgo_change": "-15.00",
-        "date": "10 Apr"
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-04-12T16:01:47.646097"
+    "updated_at": "2026-04-12T17:05:52.992438"
   }
 }
