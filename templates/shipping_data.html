@@ -6,165 +6,206 @@
   <title>Shipping Data 数据看板</title>
   <style>
     :root{
-      --bg:#f5efe7;
-      --panel:rgba(255,255,255,.92);
-      --card:#fffdf9;
-      --ink:#1d2a30;
-      --muted:#66757c;
-      --line:rgba(18,50,62,.12);
-      --accent:#0b5969;
-      --accent-soft:#eef6f8;
-      --up:#0aa84f;
-      --down:#e53935;
-      --shadow:0 18px 40px rgba(17,34,41,.10);
+      --bg:#f2ede4;
+      --ink:#18262d;
+      --muted:#63757d;
+      --line:rgba(24,54,64,.12);
+      --panel:rgba(255,255,255,.94);
+      --card:#fffdfa;
+      --accent:#0f5c6c;
+      --accent-2:#d68a2a;
+      --accent-soft:#edf6f8;
+      --up:#00a651;
+      --down:#ef3d32;
+      --shadow:0 20px 48px rgba(22,34,41,.10);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
       color:var(--ink);
+      font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(11,89,105,.14), transparent 28%),
-        radial-gradient(circle at top right, rgba(210,142,42,.12), transparent 24%),
-        linear-gradient(180deg,#f8f3ec,#efe8df);
+        radial-gradient(circle at top left, rgba(15,92,108,.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(214,138,42,.14), transparent 26%),
+        linear-gradient(180deg,#f6f2ea,#eee7dd);
     }
-    .shell{max-width:1520px;margin:0 auto;padding:24px 16px 48px}
-    .hero,.section,.report-card,.metric-card,.daily-card{
+    .shell{max-width:1560px;margin:0 auto;padding:24px 16px 56px}
+    .hero,.section,.card,.metric-card,.daily-card,details{
       background:var(--panel);
-      border:1px solid rgba(255,255,255,.78);
+      border:1px solid rgba(255,255,255,.76);
       border-radius:24px;
       box-shadow:var(--shadow);
     }
     .hero,.section{padding:24px}
-    .section{margin-top:16px}
-    .report-card,.metric-card,.daily-card{
+    .section{margin-top:18px}
+    .card,.metric-card,.daily-card,details{
       background:var(--card);
       border:1px solid var(--line);
       box-shadow:none;
     }
-    .hero-head,.section-head,.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-    .toolbar{margin-top:10px}
-    h1,h2,h3{margin:0}
-    h1{font-size:clamp(30px,4vw,42px)}
-    h2{font-size:22px}
+    .hero-grid,.section-head,.toolbar,.meta-row{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
+    .hero-grid{align-items:center}
+    h1,h2,h3,h4,p{margin:0}
+    h1{font-size:clamp(30px,4vw,44px)}
+    h2{font-size:24px}
     h3{font-size:18px}
-    .small{color:var(--muted);font-size:12px}
+    h4{font-size:15px}
+    .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-size:12px;font-weight:700}
+    .sub{color:var(--muted);font-size:13px;line-height:1.7}
+    .toolbar{margin-top:14px}
     .button{
       border:0;
       border-radius:999px;
-      background:linear-gradient(135deg,var(--accent),#0f7487);
+      background:linear-gradient(135deg,var(--accent),#14819a);
       color:#fff;
-      padding:10px 16px;
+      padding:11px 17px;
       cursor:pointer;
-      font-weight:600;
+      font-weight:700;
       text-decoration:none;
       display:inline-flex;
       align-items:center;
+      gap:8px;
     }
-    .button.secondary{background:#edf3f5;color:var(--accent)}
-    .stack{display:grid;gap:16px}
-    .tables-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
-    .daily-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-    .report-card{padding:18px}
-    .metric-card{padding:14px}
+    .button.secondary{background:#eef4f6;color:var(--accent)}
+    .summary-grid,.metrics,.daily-grid,.attachment-grid,.mail-grid{display:grid;gap:16px}
+    .summary-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px}
+    .metrics{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+    .daily-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .attachment-grid,.mail-grid{grid-template-columns:1.2fr .8fr}
+    .card{padding:18px}
+    .metric-card{padding:16px}
     .daily-card{padding:16px}
-    .metric-value{font-size:22px;font-weight:700;margin-top:4px}
-    .up{color:var(--up);font-weight:700}
-    .down{color:var(--down);font-weight:700}
-    .table-wrap{
-      overflow:auto;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:#fff;
-      margin-top:14px;
-    }
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{padding:10px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    th{color:var(--muted);background:#f8fbfc;font-weight:600}
-    tr:hover td{background:#fbfdfe}
-    .pill{
+    .metric-value{font-size:24px;font-weight:800;margin-top:6px}
+    .tag{
       display:inline-flex;
       align-items:center;
+      gap:6px;
       padding:6px 10px;
       border-radius:999px;
       background:var(--accent-soft);
       color:var(--accent);
       font-size:12px;
-      font-weight:600;
+      font-weight:700;
+    }
+    .up{color:var(--up);font-weight:700}
+    .down{color:var(--down);font-weight:700}
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#fff;
+      margin-top:14px;
+    }
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{background:#f6fafb;color:var(--muted);font-weight:700}
+    tr:hover td{background:#fbfdfe}
+    .content-block{
+      margin-top:14px;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      line-height:1.8;
+      white-space:pre-wrap;
+      word-break:break-word;
+      max-height:520px;
+      overflow:auto;
+    }
+    .compact{
+      max-height:220px;
     }
     .empty{
       padding:18px;
       border-radius:16px;
-      background:#fff7eb;
-      color:#8a4f16;
-      border:1px solid rgba(188,108,37,.15);
+      background:#fff6eb;
+      color:#8b5519;
+      border:1px solid rgba(188,108,37,.16);
     }
-    @media (max-width:1200px){
-      .tables-3,.daily-grid{grid-template-columns:1fr}
+    details{
+      padding:0;
+      overflow:hidden;
+    }
+    details + details{margin-top:14px}
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:18px 20px;
+    }
+    summary::-webkit-details-marker{display:none}
+    .summary-title{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .summary-sub{color:var(--muted);font-size:12px;margin-top:8px}
+    .detail-body{padding:0 20px 20px}
+    .muted{color:var(--muted)}
+    .mono{font-family:Consolas,"SFMono-Regular",monospace}
+    @media (max-width:1180px){
+      .summary-grid,.daily-grid,.attachment-grid,.mail-grid{grid-template-columns:1fr}
     }
     @media (max-width:760px){
-      .shell{padding:14px 10px 30px}
-      .hero,.section{padding:18px;border-radius:18px}
+      .shell{padding:14px 10px 36px}
+      .hero,.section{padding:18px;border-radius:20px}
+      .summary-grid{grid-template-columns:1fr 1fr}
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="hero">
-      <div class="hero-head">
-        <h1>Shipping Data 数据看板</h1>
-        <span id="status" class="small">加载中</span>
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">Shipping Data</div>
+          <h1>最新邮件与附件完整展示</h1>
+          <p class="sub" id="heroDesc">读取 shipping-data 标签下最新一封邮件，完整展示邮件正文、附件结构化数据、附件全文与表格内容。</p>
+        </div>
+        <div class="sub" id="status">正在加载</div>
       </div>
       <div class="toolbar">
         <button id="refreshBtn" class="button">刷新数据</button>
         <button id="syncBtn" class="button secondary">手动同步附件</button>
-        <a class="button secondary" href="/">返回看板首页</a>
+        <a class="button secondary" href="/">返回首页</a>
       </div>
+      <div id="heroStats" class="summary-grid"></div>
     </section>
 
     <section class="section">
       <div class="section-head">
-        <h2>指数类</h2>
-        <span class="small">航线代码 / 航线 / 数值 / 涨跌</span>
+        <div>
+          <div class="eyebrow">Mail Body</div>
+          <h2>邮件正文</h2>
+        </div>
+        <div class="sub" id="mailMeta">暂无邮件</div>
       </div>
-      <div id="indexRoot" class="tables-3" style="margin-top:16px"></div>
+      <div id="mailRoot" class="mail-grid" style="margin-top:18px"></div>
     </section>
 
     <section class="section">
       <div class="section-head">
-        <h2>航线日报</h2>
-        <span class="small">精选内容卡片</span>
+        <div>
+          <div class="eyebrow">Structured Data</div>
+          <h2>附件结构化数据</h2>
+        </div>
+        <div class="sub">按业务分类展示表格、关键指标和市场摘要</div>
       </div>
-      <div id="dailyRoot" class="stack" style="margin-top:16px"></div>
+      <div id="categoryRoot" class="stack" style="margin-top:18px"></div>
     </section>
 
     <section class="section">
       <div class="section-head">
-        <h2>FFA</h2>
-        <span class="small">关键指标与期限表</span>
+        <div>
+          <div class="eyebrow">Attachment Content</div>
+          <h2>附件完整内容</h2>
+        </div>
+        <div class="sub">包含 PDF 与 Excel 解析后的完整文本，默认折叠</div>
       </div>
-      <div id="ffaRoot" class="stack" style="margin-top:16px"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-head">
-        <h2>矿石煤焦</h2>
-        <span class="small">核心报价表</span>
-      </div>
-      <div id="metalsRoot" class="stack" style="margin-top:16px"></div>
-    </section>
-
-    <section class="section">
-      <div class="section-head">
-        <h2>成交报告</h2>
-        <span class="small">成交样本表</span>
-      </div>
-      <div id="fixturesRoot" class="stack" style="margin-top:16px"></div>
+      <div id="attachmentRoot" style="margin-top:18px"></div>
     </section>
   </div>
 
   <script>
+    const DATA_URL = "/api/shipping-data";
+    const SYNC_URL = "/api/shipping-data/sync";
+    const ENABLE_SYNC = true;
+
     const esc = (value) => {
       const div = document.createElement("div");
       div.textContent = value ?? "";
@@ -178,21 +219,43 @@
       if (text.startsWith("+")) return "up";
       return "";
     };
+    const sizeText = (bytes) => {
+      if (!bytes && bytes !== 0) return "-";
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+    };
+    const timeText = (value) => {
+      if (!value) return "-";
+      return String(value).replace("T", " ").slice(0, 16);
+    };
+    const formatLongText = (value) => {
+      if (value === null || value === undefined) return "-";
+      return String(value)
+        .replace(/\s+\[(?=[^\]]+\])/g, "\n\n[")
+        .replace(/\s+(Market Comments|Recent Fixtures|Physical Markets|Baltic Routes|Exchange Rates|Freight Futures|Bunker Prices|TIMECHARTER|VOYAGES|ATLANTIC:|PACIFIC:|MID EAST:|INDIAN OCEAN:|ECSA:|US GULF:)/g, "\n\n$1")
+        .replace(/([a-z0-9%])\. ([A-Z])/g, "$1.\n\n$2")
+        .trim();
+    };
+
+    function statCard(label, value, note = "") {
+      return `
+        <article class="metric-card">
+          <div class="sub">${esc(label)}</div>
+          <div class="metric-value">${esc(maybe(value))}</div>
+          ${note ? `<div class="sub">${esc(note)}</div>` : ""}
+        </article>
+      `;
+    }
 
     function renderTable(table) {
       if (!table || !table.rows || !table.rows.length) return "";
       return `
         <div class="table-wrap">
           <table>
-            <thead>
-              <tr>${table.columns.map((col) => `<th>${esc(col)}</th>`).join("")}</tr>
-            </thead>
+            <thead><tr>${table.columns.map((col) => `<th>${esc(col)}</th>`).join("")}</tr></thead>
             <tbody>
-              ${table.rows.map((row) => `
-                <tr>
-                  ${row.map((cell) => `<td class="${signClass(cell)}">${esc(maybe(cell))}</td>`).join("")}
-                </tr>
-              `).join("")}
+              ${table.rows.map((row) => `<tr>${row.map((cell) => `<td class="${signClass(cell)}">${esc(maybe(cell))}</td>`).join("")}</tr>`).join("")}
             </tbody>
           </table>
         </div>
@@ -202,119 +265,201 @@
     function renderMetrics(metrics) {
       if (!metrics || !metrics.length) return "";
       return `
-        <div class="metrics">
+        <div class="metrics" style="margin-top:14px">
           ${metrics.map((item) => `
             <div class="metric-card">
-              <div class="small">${esc(maybe(item.label))}</div>
+              <div class="sub">${esc(maybe(item.label))}</div>
               <div class="metric-value">${esc(maybe(item.value))}</div>
-              ${item.change ? `<div class="small ${signClass(item.change)}">${esc(item.change)}</div>` : ``}
+              ${item.change ? `<div class="sub ${signClass(item.change)}">${esc(item.change)}</div>` : ""}
             </div>
           `).join("")}
         </div>
       `;
     }
 
-    function renderIndex(items) {
-      const root = document.getElementById("indexRoot");
-      if (!items.length) {
-        root.innerHTML = `<div class="empty">暂无指数类附件数据。</div>`;
-        return;
-      }
-      root.innerHTML = items.map((item) => `
-        <article class="report-card">
-          <div class="section-head">
-            <div class="pill">${esc(maybe(item.report_type))}</div>
-            <div class="small">接收日期：${esc(maybe(item.received_at ? item.received_at.slice(0, 10) : "-"))}</div>
-          </div>
-          ${renderTable(item.table)}
-        </article>
-      `).join("");
+    function renderSelectedCards(cards) {
+      if (!cards || !cards.length) return "";
+      return `
+        <div class="daily-grid" style="margin-top:14px">
+          ${cards.map((card) => `
+            <div class="daily-card">
+              <div class="tag">${esc(maybe(card.title))}</div>
+              <div class="content-block compact">${esc(maybe(card.content))}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
     }
 
-    function renderDaily(items) {
-      const root = document.getElementById("dailyRoot");
-      if (!items.length) {
-        root.innerHTML = `<div class="empty">暂无航线日报数据。</div>`;
+    function renderHero(payload, latestMail) {
+      const categories = payload.attachment_categories || [];
+      document.getElementById("heroStats").innerHTML = [
+        statCard("最近同步", timeText(payload.latest_sync_at)),
+        statCard("最新接收", timeText(latestMail?.received_at), latestMail?.subject || ""),
+        statCard("附件数量", payload.attachments_total || 0),
+        statCard("分类数量", categories.length)
+      ].join("");
+      document.getElementById("mailMeta").textContent = latestMail
+        ? `接收时间 ${timeText(latestMail.received_at)}`
+        : "暂无邮件";
+    }
+
+    function renderMail(latestMail) {
+      const root = document.getElementById("mailRoot");
+      if (!latestMail) {
+        root.innerHTML = `<div class="empty">当前没有可展示的邮件内容。</div>`;
         return;
       }
-      root.innerHTML = items.map((item) => `
-        <article class="report-card">
-          <div class="section-head">
-            <h3>${esc(maybe(item.report_type))}</h3>
-            <div class="small">接收日期：${esc(maybe(item.received_at ? item.received_at.slice(0, 10) : "-"))}</div>
+      root.innerHTML = `
+        <article class="card">
+          <div class="meta-row">
+            <div>
+              <div class="eyebrow">Subject</div>
+              <h3>${esc(maybe(latestMail.subject))}</h3>
+            </div>
+            <div class="tag">接收于 ${esc(timeText(latestMail.received_at))}</div>
           </div>
-          <div class="daily-grid" style="margin-top:16px">
-            ${(item.selected_cards || []).map((card) => `
-              <div class="daily-card">
-                <div class="pill">${esc(maybe(card.title))}</div>
-                <div style="margin-top:10px;line-height:1.75">${esc(maybe(card.content))}</div>
-              </div>
+          <div class="content-block" style="margin-top:16px">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div>
+        </article>
+        <article class="card">
+          <div class="eyebrow">Mail Snapshot</div>
+          <div class="metrics" style="margin-top:14px">
+            <div class="metric-card">
+              <div class="sub">主题</div>
+              <div style="margin-top:8px;font-weight:700;line-height:1.6">${esc(maybe(latestMail.subject))}</div>
+            </div>
+            <div class="metric-card">
+              <div class="sub">正文摘要</div>
+              <div style="margin-top:8px;line-height:1.7">${esc(maybe(latestMail.body_summary || latestMail.snippet))}</div>
+            </div>
+            <div class="metric-card">
+              <div class="sub">附件数</div>
+              <div class="metric-value">${esc((latestMail.attachments || []).length)}</div>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderCategories(payload) {
+      const root = document.getElementById("categoryRoot");
+      const categories = payload.attachment_categories || [];
+      if (!categories.length) {
+        root.innerHTML = `<div class="empty">当前没有结构化附件数据。</div>`;
+        return;
+      }
+      root.innerHTML = categories.map((category) => `
+        <section class="section" style="margin-top:0">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Category</div>
+              <h2>${esc(category.name)}</h2>
+            </div>
+            <div class="tag">${esc(category.count)} 个附件</div>
+          </div>
+          <div style="margin-top:18px">
+            ${category.items.map((item) => `
+              <article class="card" style="margin-top:16px">
+                <div class="section-head">
+                  <div>
+                    <div class="tag">${esc(maybe(item.report_type))}</div>
+                    <h3 style="margin-top:10px">${esc(maybe(item.display_name))}</h3>
+                  </div>
+                  <div class="sub">接收时间 ${esc(timeText(item.received_at))}</div>
+                </div>
+                ${item.summary ? `<div class="content-block compact">${esc(item.summary)}</div>` : ""}
+                ${renderMetrics(item.headline_metrics)}
+                ${renderSelectedCards(item.selected_cards)}
+                ${renderTable(item.table)}
+              </article>
             `).join("")}
           </div>
-        </article>
+        </section>
       `).join("");
     }
 
-    function renderMetricSection(rootId, items, emptyText) {
-      const root = document.getElementById(rootId);
-      if (!items.length) {
-        root.innerHTML = `<div class="empty">${esc(emptyText)}</div>`;
+    function renderAttachments(payload) {
+      const root = document.getElementById("attachmentRoot");
+      const latestMail = (payload.items || [])[0];
+      const categoryItems = {};
+      (payload.attachment_categories || []).forEach((category) => {
+        (category.items || []).forEach((item) => {
+          categoryItems[item.id] = item;
+        });
+      });
+      const attachments = latestMail?.attachments || [];
+      if (!attachments.length) {
+        root.innerHTML = `<div class="empty">当前没有附件可展示。</div>`;
         return;
       }
-      root.innerHTML = items.map((item) => `
-        <article class="report-card">
-          <div class="section-head">
-            <h3>${esc(maybe(item.report_type))}</h3>
-            <div class="small">接收日期：${esc(maybe(item.received_at ? item.received_at.slice(0, 10) : "-"))}</div>
-          </div>
-          ${renderMetrics(item.headline_metrics)}
-          ${renderTable(item.table)}
-        </article>
-      `).join("");
+      root.innerHTML = attachments.map((attachment, index) => {
+        const enriched = categoryItems[attachment.id] || {};
+        return `
+          <details ${index === 0 ? "open" : ""}>
+            <summary>
+              <div class="summary-title">
+                <div>
+                  <h3>${esc(maybe(enriched.display_name || attachment.filename))}</h3>
+                  <div class="summary-sub">
+                    ${esc(maybe(enriched.business_category || "未分类"))} ·
+                    ${esc(maybe(enriched.report_type || attachment.mime_type))} ·
+                    ${esc(sizeText(attachment.size_bytes))}
+                  </div>
+                </div>
+                <span class="tag">接收于 ${esc(timeText(enriched.received_at || latestMail.received_at))}</span>
+              </div>
+            </summary>
+            <div class="detail-body">
+              ${attachment.parsed_summary ? `<div class="content-block compact">${esc(formatLongText(attachment.parsed_summary))}</div>` : ""}
+              ${renderMetrics(enriched.headline_metrics)}
+              ${renderSelectedCards(enriched.selected_cards)}
+              ${renderTable(enriched.table)}
+              <div class="content-block">${esc(formatLongText(attachment.parsed_text))}</div>
+            </div>
+          </details>
+        `;
+      }).join("");
+    }
+
+    function renderAll(payload) {
+      const latestMail = (payload.items || [])[0];
+      renderHero(payload, latestMail);
+      renderMail(latestMail);
+      renderCategories(payload);
+      renderAttachments(payload);
     }
 
     async function loadData() {
       document.getElementById("status").textContent = "正在加载";
       try {
-        const response = await fetch("/api/shipping-data", { cache: "no-store" });
+        const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         const payload = await response.json();
-        const categories = payload.attachment_categories || [];
-        const byName = Object.fromEntries(categories.map((item) => [item.name, item.items || []]));
-        renderIndex(byName["指数类"] || []);
-        renderDaily(byName["航线日报"] || []);
-        renderMetricSection("ffaRoot", byName["FFA"] || [], "暂无 FFA 数据。");
-        renderMetricSection("metalsRoot", byName["矿石煤焦"] || [], "暂无矿石煤焦数据。");
-        renderMetricSection("fixturesRoot", byName["成交报告"] || [], "暂无成交报告数据。");
-        document.getElementById("status").textContent = "已加载";
+        renderAll(payload);
+        document.getElementById("status").textContent = `已加载 ${payload.attachments_total || 0} 个附件`;
       } catch (error) {
-        const html = `<div class="empty">加载失败：${esc(String(error))}</div>`;
-        document.getElementById("indexRoot").innerHTML = html;
-        document.getElementById("dailyRoot").innerHTML = html;
-        document.getElementById("ffaRoot").innerHTML = html;
-        document.getElementById("metalsRoot").innerHTML = html;
-        document.getElementById("fixturesRoot").innerHTML = html;
         document.getElementById("status").textContent = "加载失败";
+        const html = `<div class="empty">加载失败: ${esc(String(error))}</div>`;
+        document.getElementById("mailRoot").innerHTML = html;
+        document.getElementById("categoryRoot").innerHTML = html;
+        document.getElementById("attachmentRoot").innerHTML = html;
       }
     }
 
     async function syncData() {
+      if (!ENABLE_SYNC) return;
       const btn = document.getElementById("syncBtn");
-      const statusNode = document.getElementById("status");
       btn.disabled = true;
-      statusNode.textContent = "正在同步附件";
+      document.getElementById("status").textContent = "正在同步";
       try {
-        const response = await fetch("/api/shipping-data/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" }
-        });
+        const response = await fetch(SYNC_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
         const payload = await response.json();
         if (!response.ok || payload.status !== "ok") {
           throw new Error(payload.message || "同步失败");
         }
-        statusNode.textContent = `同步完成，邮件 ${payload.result.synced_count} 封`;
+        document.getElementById("status").textContent = `同步完成，邮件 ${payload.result.synced_count} 封`;
         await loadData();
       } catch (error) {
-        statusNode.textContent = `同步失败：${error}`;
+        document.getElementById("status").textContent = `同步失败: ${error}`;
       } finally {
         btn.disabled = false;
       }
