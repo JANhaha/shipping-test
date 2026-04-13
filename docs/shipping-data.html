@@ -1,20 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Shipping Data 鏁版嵁鐪嬫澘</title>
+  <title>Shipping Data</title>
   <style>
     :root{
-      --bg:#f2ede4;
-      --ink:#18262d;
-      --muted:#63757d;
-      --line:rgba(24,54,64,.12);
-      --panel:rgba(255,255,255,.94);
+      --bg:#f3eee6;
+      --panel:rgba(255,255,255,.95);
       --card:#fffdfa;
+      --ink:#17252c;
+      --muted:#667880;
+      --line:rgba(23,47,58,.12);
       --accent:#0f5c6c;
-      --accent-2:#d68a2a;
-      --accent-soft:#edf6f8;
+      --accent-soft:#eef6f8;
       --up:#00a651;
       --down:#ef3d32;
       --shadow:0 20px 48px rgba(22,34,41,.10);
@@ -25,31 +24,29 @@
       color:var(--ink);
       font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
       background:
-        radial-gradient(circle at top left, rgba(15,92,108,.16), transparent 28%),
-        radial-gradient(circle at top right, rgba(214,138,42,.14), transparent 26%),
-        linear-gradient(180deg,#f6f2ea,#eee7dd);
+        radial-gradient(circle at top left, rgba(15,92,108,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(214,138,42,.12), transparent 24%),
+        linear-gradient(180deg,#f7f3ec,#ece4da);
     }
     .shell{max-width:1560px;margin:0 auto;padding:24px 16px 56px}
-    .hero,.section,.card,.metric-card,.daily-card,details{
+    .hero,.section,.card,.metric-card,.text-card{
       background:var(--panel);
-      border:1px solid rgba(255,255,255,.76);
+      border:1px solid rgba(255,255,255,.75);
       border-radius:24px;
       box-shadow:var(--shadow);
     }
     .hero,.section{padding:24px}
     .section{margin-top:18px}
-    .card,.metric-card,.daily-card,details{
+    .card,.metric-card,.text-card{
       background:var(--card);
       border:1px solid var(--line);
       box-shadow:none;
     }
-    .hero-grid,.section-head,.toolbar,.meta-row{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
-    .hero-grid{align-items:center}
-    h1,h2,h3,h4,p{margin:0}
-    h1{font-size:clamp(30px,4vw,44px)}
+    .hero-head,.section-head,.toolbar{display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}
+    h1,h2,h3,p{margin:0}
+    h1{font-size:clamp(30px,4vw,42px)}
     h2{font-size:24px}
     h3{font-size:18px}
-    h4{font-size:15px}
     .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-size:12px;font-weight:700}
     .sub{color:var(--muted);font-size:13px;line-height:1.7}
     .toolbar{margin-top:14px}
@@ -67,18 +64,17 @@
       gap:8px;
     }
     .button.secondary{background:#eef4f6;color:var(--accent)}
-    .metrics,.daily-grid,.mail-grid{display:grid;gap:16px}
+    .mail-grid,.metrics,.cards-grid{display:grid;gap:16px}
+    .mail-grid{grid-template-columns:1fr 1fr}
     .metrics{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
-    .daily-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .mail-grid{grid-template-columns:1.2fr .8fr}
+    .cards-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
     .card{padding:18px}
     .metric-card{padding:16px}
-    .daily-card{padding:16px}
+    .text-card{padding:16px}
     .metric-value{font-size:24px;font-weight:800;margin-top:6px}
-    .tag{
+    .pill{
       display:inline-flex;
       align-items:center;
-      gap:6px;
       padding:6px 10px;
       border-radius:999px;
       background:var(--accent-soft);
@@ -97,7 +93,7 @@
     }
     table{width:100%;border-collapse:collapse;font-size:14px}
     th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-    th{background:#f6fafb;color:var(--muted);font-weight:700}
+    th{background:#f7fafb;color:var(--muted);font-weight:700}
     tr:hover td{background:#fbfdfe}
     .content-block{
       margin-top:14px;
@@ -108,11 +104,8 @@
       line-height:1.8;
       white-space:pre-wrap;
       word-break:break-word;
-      max-height:520px;
+      max-height:420px;
       overflow:auto;
-    }
-    .compact{
-      max-height:220px;
     }
     .empty{
       padding:18px;
@@ -121,45 +114,28 @@
       color:#8b5519;
       border:1px solid rgba(188,108,37,.16);
     }
-    details{
-      padding:0;
-      overflow:hidden;
-    }
-    details + details{margin-top:14px}
-    summary{
-      list-style:none;
-      cursor:pointer;
-      padding:18px 20px;
-    }
-    summary::-webkit-details-marker{display:none}
-    .summary-title{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-    .summary-sub{color:var(--muted);font-size:12px;margin-top:8px}
-    .detail-body{padding:0 20px 20px}
-    .muted{color:var(--muted)}
-    .mono{font-family:Consolas,"SFMono-Regular",monospace}
     @media (max-width:1180px){
-      .daily-grid,.mail-grid{grid-template-columns:1fr}
+      .mail-grid,.cards-grid{grid-template-columns:1fr}
     }
     @media (max-width:760px){
       .shell{padding:14px 10px 36px}
-      .hero,.section{padding:18px;border-radius:20px}
+      .hero,.section{padding:18px}
     }
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="hero">
-      <div class="hero-grid">
+      <div class="hero-head">
         <div>
           <div class="eyebrow">Shipping Data</div>
           <h1>Shipping Data</h1>
         </div>
-        <div class="sub" id="status">姝ｅ湪鍔犺浇</div>
+        <div class="sub" id="status">正在加载</div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">鍒锋柊鏁版嵁</button>
-        <button id="syncBtn" class="button secondary">鎵嬪姩鍚屾闄勪欢</button>
-        <a class="button secondary" href="/">杩斿洖棣栭〉</a>
+        <button id="refreshBtn" class="button">刷新数据</button>
+        <a class="button secondary" href="./">返回首页</a>
       </div>
     </section>
 
@@ -167,9 +143,9 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Mail Body</div>
-          <h2>閭欢姝ｆ枃</h2>
+          <h2>邮件正文</h2>
         </div>
-        <div class="sub" id="mailMeta">鏆傛棤閭欢</div>
+        <div class="sub" id="mailMeta">暂无邮件</div>
       </div>
       <div id="mailRoot" class="mail-grid" style="margin-top:18px"></div>
     </section>
@@ -178,19 +154,15 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Structured Data</div>
-          <h2>鏁版嵁灞曠ず</h2>
+          <h2>数据展示</h2>
         </div>
-        <div class="sub">鎸変笟鍔″垎绫诲睍绀鸿〃鏍笺€佸叧閿寚鏍囧拰甯傚満鎽樿</div>
       </div>
-      <div id="categoryRoot" class="stack" style="margin-top:18px"></div>
+      <div id="categoryRoot" style="margin-top:18px"></div>
     </section>
-
   </div>
 
   <script>
     const DATA_URL = "./data/shipping_data.json";
-    const SYNC_URL = "";
-    const ENABLE_SYNC = false;
 
     const esc = (value) => {
       const div = document.createElement("div");
@@ -205,13 +177,12 @@
       if (text.startsWith("+")) return "up";
       return "";
     };
-    const timeText = (value) => {
-      if (!value) return "-";
-      return String(value).replace("T", " ").slice(0, 16);
-    };
+    const timeText = (value) => value ? String(value).replace("T", " ").slice(0, 16) : "-";
     const formatLongText = (value) => {
       if (value === null || value === undefined) return "-";
       return String(value)
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
         .replace(/\s+\[(?=[^\]]+\])/g, "\n\n[")
         .replace(/\s+(Market Comments|Recent Fixtures|Physical Markets|Baltic Routes|Exchange Rates|Freight Futures|Bunker Prices|TIMECHARTER|VOYAGES|ATLANTIC:|PACIFIC:|MID EAST:|INDIAN OCEAN:|ECSA:|US GULF:)/g, "\n\n$1")
         .replace(/([a-z0-9%])\. ([A-Z])/g, "$1.\n\n$2")
@@ -220,56 +191,20 @@
 
     function renderTable(table) {
       if (!table || !table.rows || !table.rows.length) return "";
-      return `
-        <div class="table-wrap">
-          <table>
-            <thead><tr>${table.columns.map((col) => `<th>${esc(col)}</th>`).join("")}</tr></thead>
-            <tbody>
-              ${table.rows.map((row) => `<tr>${row.map((cell) => `<td class="${signClass(cell)}">${esc(maybe(cell))}</td>`).join("")}</tr>`).join("")}
-            </tbody>
-          </table>
-        </div>
-      `;
+      return `<div class="table-wrap"><table><thead><tr>${table.columns.map((col) => `<th>${esc(col)}</th>`).join("")}</tr></thead><tbody>${table.rows.map((row) => `<tr>${row.map((cell) => `<td class="${signClass(cell)}">${esc(maybe(cell))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
     }
 
     function renderMetrics(metrics) {
       if (!metrics || !metrics.length) return "";
-      return `
-        <div class="metrics" style="margin-top:14px">
-          ${metrics.map((item) => `
-            <div class="metric-card">
-              <div class="sub">${esc(maybe(item.label))}</div>
-              <div class="metric-value">${esc(maybe(item.value))}</div>
-              ${item.change ? `<div class="sub ${signClass(item.change)}">${esc(item.change)}</div>` : ""}
-            </div>
-          `).join("")}
-        </div>
-      `;
+      return `<div class="metrics" style="margin-top:14px">${metrics.map((item) => `<div class="metric-card"><div class="sub">${esc(maybe(item.label))}</div><div class="metric-value">${esc(maybe(item.value))}</div>${item.change ? `<div class="sub ${signClass(item.change)}">${esc(item.change)}</div>` : ""}</div>`).join("")}</div>`;
     }
 
-    function renderSelectedCards(cards) {
+    function renderTextCards(cards) {
       if (!cards || !cards.length) return "";
-      return `
-        <div class="daily-grid" style="margin-top:14px">
-          ${cards.map((card) => `
-            <div class="daily-card">
-              <div class="tag">${esc(maybe(card.title))}</div>
-              <div class="content-block compact">${esc(maybe(card.content))}</div>
-            </div>
-          `).join("")}
-        </div>
-      `;
-    }
-
-    function normalizeTextLines(value) {
-      return String(value || "")
-        .split(/\n+/)
-        .map((line) => line.trim())
-        .filter(Boolean);
+      return `<div class="cards-grid" style="margin-top:14px">${cards.map((card) => `<div class="text-card"><div class="pill">${esc(maybe(card.title))}</div><div class="content-block">${esc(maybe(card.content))}</div></div>`).join("")}</div>`;
     }
 
     function extractMailMetrics(text) {
-      const lines = normalizeTextLines(text);
       const rows = [];
       const patterns = [
         ["Baltic Dry Index", /Baltic Dry Index:\s*([0-9,]+)\s*\(([-+0-9,]+)\)/i],
@@ -279,113 +214,59 @@
         ["Baltic Handysize Index", /Baltic Handysize Index:\s*([0-9,]+)\s*\(([-+0-9,]+)\)/i],
       ];
       for (const [label, pattern] of patterns) {
-        const match = text.match(pattern);
+        const match = String(text || "").match(pattern);
         if (match) rows.push([label, match[1], match[2]]);
       }
-      return {
-        title: "閭欢鎸囨爣",
-        columns: ["椤圭洰", "鏁板€?, "娑ㄨ穼"],
-        rows
-      };
+      return { columns: ["项目", "数值", "涨跌"], rows };
     }
 
     function extractMailSections(text) {
-      const titles = ["CAPESIZE", "PANAMAX", "SUPRAMAX", "HANDYSIZE", "Atlantic", "Pacific"];
+      const names = ["CAPESIZE", "PANAMAX", "SUPRAMAX", "HANDYSIZE", "Atlantic", "Pacific"];
+      const source = String(text || "");
       const sections = [];
-      const normalized = String(text || "");
-      for (let i = 0; i < titles.length; i++) {
-        const title = titles[i];
-        const regex = new RegExp(`(?:^|\\n)${title}\\n`, "i");
-        const match = regex.exec(normalized);
+      for (let i = 0; i < names.length; i++) {
+        const name = names[i];
+        const regex = new RegExp(`(?:^|\\n)${name}\\n`, "i");
+        const match = regex.exec(source);
         if (!match) continue;
         const start = match.index + match[0].length;
-        let end = normalized.length;
-        for (let j = 0; j < titles.length; j++) {
-          const nextTitle = titles[j];
-          if (nextTitle === title) continue;
-          const nextRegex = new RegExp(`(?:^|\\n)${nextTitle}\\n`, "ig");
+        let end = source.length;
+        for (let j = 0; j < names.length; j++) {
+          if (i === j) continue;
+          const nextRegex = new RegExp(`(?:^|\\n)${names[j]}\\n`, "ig");
           nextRegex.lastIndex = start;
-          const nextMatch = nextRegex.exec(normalized);
-          if (nextMatch && nextMatch.index < end) end = nextMatch.index;
+          const next = nextRegex.exec(source);
+          if (next && next.index < end) end = next.index;
         }
-        const content = normalized.slice(start, end).trim();
-        if (content) sections.push({ title, content: formatLongText(content) });
+        const content = formatLongText(source.slice(start, end));
+        if (content) sections.push({ title: name, content });
       }
       return sections.slice(0, 6);
     }
 
-    function buildCombinedTable(item) {
-      if (item.table && item.table.rows && item.table.rows.length) {
-        return item.table;
-      }
-      return null;
-    }
-
     function renderHero(latestMail) {
-      document.getElementById("mailMeta").textContent = latestMail ? `鎺ユ敹鏃堕棿 ${timeText(latestMail.received_at)}` : "鏆傛棤閭欢";
+      document.getElementById("mailMeta").textContent = latestMail ? `接收时间 ${timeText(latestMail.received_at)}` : "暂无邮件";
     }
 
     function renderMail(latestMail) {
       const root = document.getElementById("mailRoot");
       if (!latestMail) {
-        root.innerHTML = `<div class="empty">褰撳墠娌℃湁鍙睍绀虹殑閭欢鍐呭銆?/div>`;
+        root.innerHTML = `<div class="empty">当前没有可展示的邮件内容。</div>`;
         return;
       }
-      const mailTable = extractMailMetrics(latestMail.body_text || "");
-      const mailSections = extractMailSections(latestMail.body_text || "");
-      root.innerHTML = `
-        <article class="card">
-          <div class="meta-row">
-            <div>
-              <div class="eyebrow">Mail Data</div>
-              <h3>閭欢鏁版嵁</h3>
-            </div>
-            <div class="tag">鎺ユ敹浜?${esc(timeText(latestMail.received_at))}</div>
-          </div>
-          ${mailTable.rows.length ? renderTable(mailTable) : `<div class="content-block">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div>`}
-        </article>
-        <article class="card">
-          <div class="eyebrow">Market Blocks</div>
-          <h3>閲嶇偣鏂囨湰</h3>
-          ${mailSections.length ? renderSelectedCards(mailSections) : `<div class="content-block">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div>`}
-        </article>
-      `;
+      const metricTable = extractMailMetrics(latestMail.body_text || "");
+      const sections = extractMailSections(latestMail.body_text || "");
+      root.innerHTML = `<article class="card"><div class="section-head"><h3>邮件指标</h3><div class="pill">接收于 ${esc(timeText(latestMail.received_at))}</div></div>${metricTable.rows.length ? renderTable(metricTable) : `<div class="content-block">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div>`}</article><article class="card"><div class="section-head"><h3>重点文本</h3><div class="pill">正文分段</div></div>${sections.length ? renderTextCards(sections) : `<div class="content-block">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div>`}</article>`;
     }
 
     function renderCategories(payload) {
       const root = document.getElementById("categoryRoot");
       const categories = payload.attachment_categories || [];
       if (!categories.length) {
-        root.innerHTML = `<div class="empty">褰撳墠娌℃湁缁撴瀯鍖栭檮浠舵暟鎹€?/div>`;
+        root.innerHTML = `<div class="empty">当前没有结构化附件数据。</div>`;
         return;
       }
-      root.innerHTML = categories.map((category) => `
-        <section class="section" style="margin-top:0">
-          <div class="section-head">
-            <div>
-              <div class="eyebrow">Category</div>
-              <h2>${esc(category.name)}</h2>
-            </div>
-            <div class="tag">${esc(category.count)} 涓檮浠?/div>
-          </div>
-          <div style="margin-top:18px">
-            ${category.items.map((item) => `
-              <article class="card" style="margin-top:16px">
-                <div class="section-head">
-                  <div>
-                    <div class="tag">${esc(maybe(item.report_type))}</div>
-                  </div>
-                  <div class="sub">鎺ユ敹鏃堕棿 ${esc(timeText(item.received_at))}</div>
-                </div>
-                ${item.summary ? `<div class="content-block compact">${esc(item.summary)}</div>` : ""}
-                ${renderMetrics(item.headline_metrics)}
-                ${renderSelectedCards(item.selected_cards)}
-                ${renderTable(buildCombinedTable(item))}
-              </article>
-            `).join("")}
-          </div>
-        </section>
-      `).join("");
+      root.innerHTML = categories.map((category) => `<section class="section" style="margin-top:0"><div class="section-head"><div><div class="eyebrow">Category</div><h2>${esc(category.name)}</h2></div></div><div style="margin-top:18px">${category.items.map((item) => `<article class="card" style="margin-top:16px"><div class="section-head"><div class="pill">${esc(maybe(item.report_type))}</div><div class="sub">接收时间 ${esc(timeText(item.received_at))}</div></div>${item.summary ? `<div class="content-block">${esc(item.summary)}</div>` : ""}${renderMetrics(item.headline_metrics)}${renderTextCards(item.selected_cards)}${renderTable(item.table)}</article>`).join("")}</div></section>`).join("");
     }
 
     function renderAll(payload) {
@@ -396,45 +277,22 @@
     }
 
     async function loadData() {
-      document.getElementById("status").textContent = "姝ｅ湪鍔犺浇";
+      document.getElementById("status").textContent = "正在加载";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         const payload = await response.json();
         renderAll(payload);
-        document.getElementById("status").textContent = `宸插姞杞?${payload.attachments_total || 0} 涓檮浠禶;
+        document.getElementById("status").textContent = "已加载";
       } catch (error) {
-        document.getElementById("status").textContent = "鍔犺浇澶辫触";
-        const html = `<div class="empty">鍔犺浇澶辫触: ${esc(String(error))}</div>`;
+        document.getElementById("status").textContent = "加载失败";
+        const html = `<div class="empty">加载失败: ${esc(String(error))}</div>`;
         document.getElementById("mailRoot").innerHTML = html;
         document.getElementById("categoryRoot").innerHTML = html;
       }
     }
 
-    async function syncData() {
-      if (!ENABLE_SYNC) return;
-      const btn = document.getElementById("syncBtn");
-      btn.disabled = true;
-      document.getElementById("status").textContent = "姝ｅ湪鍚屾";
-      try {
-        const response = await fetch(SYNC_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
-        const payload = await response.json();
-        if (!response.ok || payload.status !== "ok") {
-          throw new Error(payload.message || "鍚屾澶辫触");
-        }
-        document.getElementById("status").textContent = `鍚屾瀹屾垚锛岄偖浠?${payload.result.synced_count} 灏乣;
-        await loadData();
-      } catch (error) {
-        document.getElementById("status").textContent = `鍚屾澶辫触: ${error}`;
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
     document.getElementById("refreshBtn").addEventListener("click", loadData);
-    const syncBtn = document.getElementById("syncBtn");
-    if (syncBtn) syncBtn.addEventListener("click", syncData);
     loadData();
   </script>
 </body>
 </html>
-
