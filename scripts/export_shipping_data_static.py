@@ -6,16 +6,13 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from data.attachment_visualization import build_attachment_dashboard
-from data.gmail_store import get_latest_sync_time, init_db
+from data.gmail_store import init_db
+from data.shipping_data_payload import build_shipping_data_payload
 
 
 def main():
     init_db()
-    payload = {
-        "attachment_categories": build_attachment_dashboard(limit=300)["categories"],
-        "latest_sync_at": get_latest_sync_time(),
-    }
+    payload = build_shipping_data_payload(limit=300)
     target = ROOT / "docs" / "data" / "shipping_data.json"
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
