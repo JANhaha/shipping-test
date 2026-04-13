@@ -67,7 +67,7 @@
     .mail-grid,.metrics,.cards-grid{display:grid;gap:16px}
     .mail-grid{grid-template-columns:1fr 1fr}
     .metrics{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
-    .cards-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
     .card{padding:18px}
     .metric-card{padding:16px}
     .text-card{padding:16px}
@@ -106,6 +106,23 @@
       word-break:break-word;
       max-height:420px;
       overflow:auto;
+    }
+    .text-card .content-block{
+      max-height:none;
+      margin-top:12px;
+      background:#fbfdfd;
+    }
+    .bullet-list{
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+    .bullet-item{
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fbfdfe;
+      line-height:1.75;
     }
     .empty{
       padding:18px;
@@ -228,11 +245,22 @@
           ${cards.map((card) => `
             <div class="text-card">
               <div class="pill">${esc(maybe(card.title))}</div>
-              <div class="content-block">${esc(maybe(card.content))}</div>
+              <div class="bullet-list">
+                ${splitSummary(card.content).map((line) => `<div class="bullet-item">${esc(line)}</div>`).join("")}
+              </div>
             </div>
           `).join("")}
         </div>
       `;
+    }
+
+    function splitSummary(text) {
+      const parts = String(text || "")
+        .replace(/\n+/g, " ")
+        .split(/(?<=[.!?。；;])\s+/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+      return (parts.length ? parts : [text]).slice(0, 4);
     }
 
     function normalizeLines(text) {
