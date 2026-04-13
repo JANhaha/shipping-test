@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Shipping Data 数据看板</title>
+  <title>Shipping Data 鏁版嵁鐪嬫澘</title>
   <style>
     :root{
       --bg:#f2ede4;
@@ -67,8 +67,7 @@
       gap:8px;
     }
     .button.secondary{background:#eef4f6;color:var(--accent)}
-    .summary-grid,.metrics,.daily-grid,.mail-grid{display:grid;gap:16px}
-    .summary-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px}
+    .metrics,.daily-grid,.mail-grid{display:grid;gap:16px}
     .metrics{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
     .daily-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
     .mail-grid{grid-template-columns:1.2fr .8fr}
@@ -112,7 +111,9 @@
       max-height:520px;
       overflow:auto;
     }
-    .compact{max-height:220px}
+    .compact{
+      max-height:220px;
+    }
     .empty{
       padding:18px;
       border-radius:16px;
@@ -134,13 +135,14 @@
     .summary-title{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
     .summary-sub{color:var(--muted);font-size:12px;margin-top:8px}
     .detail-body{padding:0 20px 20px}
+    .muted{color:var(--muted)}
+    .mono{font-family:Consolas,"SFMono-Regular",monospace}
     @media (max-width:1180px){
-      .summary-grid,.daily-grid,.mail-grid{grid-template-columns:1fr}
+      .daily-grid,.mail-grid{grid-template-columns:1fr}
     }
     @media (max-width:760px){
       .shell{padding:14px 10px 36px}
       .hero,.section{padding:18px;border-radius:20px}
-      .summary-grid{grid-template-columns:1fr 1fr}
     }
   </style>
 </head>
@@ -150,25 +152,24 @@
       <div class="hero-grid">
         <div>
           <div class="eyebrow">Shipping Data</div>
-          <h1>最新邮件与附件完整展示</h1>
-          <p class="sub">读取 shipping-data 标签下最新一封邮件，完整展示邮件正文、附件结构化数据、附件全文与表格内容。</p>
+          <h1>Shipping Data</h1>
         </div>
-        <div class="sub" id="status">正在加载</div>
+        <div class="sub" id="status">姝ｅ湪鍔犺浇</div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">刷新数据</button>
-        <a class="button secondary" href="./">返回首页</a>
+        <button id="refreshBtn" class="button">鍒锋柊鏁版嵁</button>
+        <button id="syncBtn" class="button secondary">鎵嬪姩鍚屾闄勪欢</button>
+        <a class="button secondary" href="/">杩斿洖棣栭〉</a>
       </div>
-      <div id="heroStats" class="summary-grid"></div>
     </section>
 
     <section class="section">
       <div class="section-head">
         <div>
           <div class="eyebrow">Mail Body</div>
-          <h2>邮件正文</h2>
+          <h2>閭欢姝ｆ枃</h2>
         </div>
-        <div class="sub" id="mailMeta">暂无邮件</div>
+        <div class="sub" id="mailMeta">鏆傛棤閭欢</div>
       </div>
       <div id="mailRoot" class="mail-grid" style="margin-top:18px"></div>
     </section>
@@ -177,9 +178,9 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Structured Data</div>
-          <h2>附件结构化数据</h2>
+          <h2>鏁版嵁灞曠ず</h2>
         </div>
-        <div class="sub">按业务分类展示表格、关键指标和市场摘要</div>
+        <div class="sub">鎸変笟鍔″垎绫诲睍绀鸿〃鏍笺€佸叧閿寚鏍囧拰甯傚満鎽樿</div>
       </div>
       <div id="categoryRoot" class="stack" style="margin-top:18px"></div>
     </section>
@@ -188,6 +189,9 @@
 
   <script>
     const DATA_URL = "./data/shipping_data.json";
+    const SYNC_URL = "";
+    const ENABLE_SYNC = false;
+
     const esc = (value) => {
       const div = document.createElement("div");
       div.textContent = value ?? "";
@@ -213,70 +217,224 @@
         .replace(/([a-z0-9%])\. ([A-Z])/g, "$1.\n\n$2")
         .trim();
     };
-    function statCard(label, value, note = "") {
-      return `<article class="metric-card"><div class="sub">${esc(label)}</div><div class="metric-value">${esc(maybe(value))}</div>${note ? `<div class="sub">${esc(note)}</div>` : ""}</article>`;
-    }
+
     function renderTable(table) {
       if (!table || !table.rows || !table.rows.length) return "";
-      return `<div class="table-wrap"><table><thead><tr>${table.columns.map((col) => `<th>${esc(col)}</th>`).join("")}</tr></thead><tbody>${table.rows.map((row) => `<tr>${row.map((cell) => `<td class="${signClass(cell)}">${esc(maybe(cell))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead><tr>${table.columns.map((col) => `<th>${esc(col)}</th>`).join("")}</tr></thead>
+            <tbody>
+              ${table.rows.map((row) => `<tr>${row.map((cell) => `<td class="${signClass(cell)}">${esc(maybe(cell))}</td>`).join("")}</tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
     }
+
     function renderMetrics(metrics) {
       if (!metrics || !metrics.length) return "";
-      return `<div class="metrics" style="margin-top:14px">${metrics.map((item) => `<div class="metric-card"><div class="sub">${esc(maybe(item.label))}</div><div class="metric-value">${esc(maybe(item.value))}</div>${item.change ? `<div class="sub ${signClass(item.change)}">${esc(item.change)}</div>` : ""}</div>`).join("")}</div>`;
+      return `
+        <div class="metrics" style="margin-top:14px">
+          ${metrics.map((item) => `
+            <div class="metric-card">
+              <div class="sub">${esc(maybe(item.label))}</div>
+              <div class="metric-value">${esc(maybe(item.value))}</div>
+              ${item.change ? `<div class="sub ${signClass(item.change)}">${esc(item.change)}</div>` : ""}
+            </div>
+          `).join("")}
+        </div>
+      `;
     }
+
     function renderSelectedCards(cards) {
       if (!cards || !cards.length) return "";
-      return `<div class="daily-grid" style="margin-top:14px">${cards.map((card) => `<div class="daily-card"><div class="tag">${esc(maybe(card.title))}</div><div class="content-block compact">${esc(maybe(card.content))}</div></div>`).join("")}</div>`;
+      return `
+        <div class="daily-grid" style="margin-top:14px">
+          ${cards.map((card) => `
+            <div class="daily-card">
+              <div class="tag">${esc(maybe(card.title))}</div>
+              <div class="content-block compact">${esc(maybe(card.content))}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
     }
-    function renderHero(payload, latestMail) {
-      const categories = payload.attachment_categories || [];
-      document.getElementById("heroStats").innerHTML = [
-        statCard("最近同步", timeText(payload.latest_sync_at)),
-        statCard("最新接收", timeText(latestMail?.received_at), latestMail?.subject || ""),
-        statCard("附件数量", payload.attachments_total || 0),
-        statCard("分类数量", categories.length)
-      ].join("");
-      document.getElementById("mailMeta").textContent = latestMail ? `接收时间 ${timeText(latestMail.received_at)}` : "暂无邮件";
+
+    function normalizeTextLines(value) {
+      return String(value || "")
+        .split(/\n+/)
+        .map((line) => line.trim())
+        .filter(Boolean);
     }
+
+    function extractMailMetrics(text) {
+      const lines = normalizeTextLines(text);
+      const rows = [];
+      const patterns = [
+        ["Baltic Dry Index", /Baltic Dry Index:\s*([0-9,]+)\s*\(([-+0-9,]+)\)/i],
+        ["Baltic Capesize Index", /Baltic Capesize Index:\s*([0-9,]+)\s*\(([-+0-9,]+)\)/i],
+        ["Baltic Panamax Index", /Baltic Panamax Index:\s*([0-9,]+)\s*\(([-+0-9,]+)\)/i],
+        ["Baltic Supramax Index", /Baltic Supramax Index:\s*([0-9,]+)\s*\(([-+0-9,]+)\)/i],
+        ["Baltic Handysize Index", /Baltic Handysize Index:\s*([0-9,]+)\s*\(([-+0-9,]+)\)/i],
+      ];
+      for (const [label, pattern] of patterns) {
+        const match = text.match(pattern);
+        if (match) rows.push([label, match[1], match[2]]);
+      }
+      return {
+        title: "閭欢鎸囨爣",
+        columns: ["椤圭洰", "鏁板€?, "娑ㄨ穼"],
+        rows
+      };
+    }
+
+    function extractMailSections(text) {
+      const titles = ["CAPESIZE", "PANAMAX", "SUPRAMAX", "HANDYSIZE", "Atlantic", "Pacific"];
+      const sections = [];
+      const normalized = String(text || "");
+      for (let i = 0; i < titles.length; i++) {
+        const title = titles[i];
+        const regex = new RegExp(`(?:^|\\n)${title}\\n`, "i");
+        const match = regex.exec(normalized);
+        if (!match) continue;
+        const start = match.index + match[0].length;
+        let end = normalized.length;
+        for (let j = 0; j < titles.length; j++) {
+          const nextTitle = titles[j];
+          if (nextTitle === title) continue;
+          const nextRegex = new RegExp(`(?:^|\\n)${nextTitle}\\n`, "ig");
+          nextRegex.lastIndex = start;
+          const nextMatch = nextRegex.exec(normalized);
+          if (nextMatch && nextMatch.index < end) end = nextMatch.index;
+        }
+        const content = normalized.slice(start, end).trim();
+        if (content) sections.push({ title, content: formatLongText(content) });
+      }
+      return sections.slice(0, 6);
+    }
+
+    function buildCombinedTable(item) {
+      if (item.table && item.table.rows && item.table.rows.length) {
+        return item.table;
+      }
+      return null;
+    }
+
+    function renderHero(latestMail) {
+      document.getElementById("mailMeta").textContent = latestMail ? `鎺ユ敹鏃堕棿 ${timeText(latestMail.received_at)}` : "鏆傛棤閭欢";
+    }
+
     function renderMail(latestMail) {
       const root = document.getElementById("mailRoot");
       if (!latestMail) {
-        root.innerHTML = `<div class="empty">当前没有可展示的邮件内容。</div>`;
+        root.innerHTML = `<div class="empty">褰撳墠娌℃湁鍙睍绀虹殑閭欢鍐呭銆?/div>`;
         return;
       }
-      root.innerHTML = `<article class="card"><div class="meta-row"><div><div class="eyebrow">Subject</div><h3>${esc(maybe(latestMail.subject))}</h3></div><div class="tag">接收于 ${esc(timeText(latestMail.received_at))}</div></div><div class="content-block" style="margin-top:16px">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div></article><article class="card"><div class="eyebrow">Mail Snapshot</div><div class="metrics" style="margin-top:14px"><div class="metric-card"><div class="sub">主题</div><div style="margin-top:8px;font-weight:700;line-height:1.6">${esc(maybe(latestMail.subject))}</div></div><div class="metric-card"><div class="sub">正文摘要</div><div style="margin-top:8px;line-height:1.7">${esc(maybe(latestMail.body_summary || latestMail.snippet))}</div></div><div class="metric-card"><div class="sub">附件数</div><div class="metric-value">${esc((latestMail.attachments || []).length)}</div></div></div></article>`;
+      const mailTable = extractMailMetrics(latestMail.body_text || "");
+      const mailSections = extractMailSections(latestMail.body_text || "");
+      root.innerHTML = `
+        <article class="card">
+          <div class="meta-row">
+            <div>
+              <div class="eyebrow">Mail Data</div>
+              <h3>閭欢鏁版嵁</h3>
+            </div>
+            <div class="tag">鎺ユ敹浜?${esc(timeText(latestMail.received_at))}</div>
+          </div>
+          ${mailTable.rows.length ? renderTable(mailTable) : `<div class="content-block">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div>`}
+        </article>
+        <article class="card">
+          <div class="eyebrow">Market Blocks</div>
+          <h3>閲嶇偣鏂囨湰</h3>
+          ${mailSections.length ? renderSelectedCards(mailSections) : `<div class="content-block">${esc(formatLongText(latestMail.body_text || latestMail.snippet || latestMail.body_summary))}</div>`}
+        </article>
+      `;
     }
+
     function renderCategories(payload) {
       const root = document.getElementById("categoryRoot");
       const categories = payload.attachment_categories || [];
       if (!categories.length) {
-        root.innerHTML = `<div class="empty">当前没有结构化附件数据。</div>`;
+        root.innerHTML = `<div class="empty">褰撳墠娌℃湁缁撴瀯鍖栭檮浠舵暟鎹€?/div>`;
         return;
       }
-      root.innerHTML = categories.map((category) => `<section class="section" style="margin-top:0"><div class="section-head"><div><div class="eyebrow">Category</div><h2>${esc(category.name)}</h2></div><div class="tag">${esc(category.count)} 个附件</div></div><div style="margin-top:18px">${category.items.map((item) => `<article class="card" style="margin-top:16px"><div class="section-head"><div><div class="tag">${esc(maybe(item.report_type))}</div></div><div class="sub">接收时间 ${esc(timeText(item.received_at))}</div></div>${item.summary ? `<div class="content-block compact">${esc(item.summary)}</div>` : ""}${renderMetrics(item.headline_metrics)}${renderSelectedCards(item.selected_cards)}${renderTable(item.table)}${item.parsed_text ? `<details style="margin-top:14px"><summary><div class="summary-title"><h3>详细内容</h3><span class="tag">展开查看</span></div></summary><div class="detail-body"><div class="content-block">${esc(formatLongText(item.parsed_text))}</div></div></details>` : ""}</article>`).join("")}</div></section>`).join("");
+      root.innerHTML = categories.map((category) => `
+        <section class="section" style="margin-top:0">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Category</div>
+              <h2>${esc(category.name)}</h2>
+            </div>
+            <div class="tag">${esc(category.count)} 涓檮浠?/div>
+          </div>
+          <div style="margin-top:18px">
+            ${category.items.map((item) => `
+              <article class="card" style="margin-top:16px">
+                <div class="section-head">
+                  <div>
+                    <div class="tag">${esc(maybe(item.report_type))}</div>
+                  </div>
+                  <div class="sub">鎺ユ敹鏃堕棿 ${esc(timeText(item.received_at))}</div>
+                </div>
+                ${item.summary ? `<div class="content-block compact">${esc(item.summary)}</div>` : ""}
+                ${renderMetrics(item.headline_metrics)}
+                ${renderSelectedCards(item.selected_cards)}
+                ${renderTable(buildCombinedTable(item))}
+              </article>
+            `).join("")}
+          </div>
+        </section>
+      `).join("");
     }
+
     function renderAll(payload) {
       const latestMail = (payload.items || [])[0];
-      renderHero(payload, latestMail);
+      renderHero(latestMail);
       renderMail(latestMail);
       renderCategories(payload);
     }
+
     async function loadData() {
-      document.getElementById("status").textContent = "正在加载";
+      document.getElementById("status").textContent = "姝ｅ湪鍔犺浇";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         const payload = await response.json();
         renderAll(payload);
-        document.getElementById("status").textContent = `已加载 ${payload.attachments_total || 0} 个附件`;
+        document.getElementById("status").textContent = `宸插姞杞?${payload.attachments_total || 0} 涓檮浠禶;
       } catch (error) {
-        document.getElementById("status").textContent = "加载失败";
-        const html = `<div class="empty">加载失败: ${esc(String(error))}</div>`;
+        document.getElementById("status").textContent = "鍔犺浇澶辫触";
+        const html = `<div class="empty">鍔犺浇澶辫触: ${esc(String(error))}</div>`;
         document.getElementById("mailRoot").innerHTML = html;
         document.getElementById("categoryRoot").innerHTML = html;
       }
     }
+
+    async function syncData() {
+      if (!ENABLE_SYNC) return;
+      const btn = document.getElementById("syncBtn");
+      btn.disabled = true;
+      document.getElementById("status").textContent = "姝ｅ湪鍚屾";
+      try {
+        const response = await fetch(SYNC_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
+        const payload = await response.json();
+        if (!response.ok || payload.status !== "ok") {
+          throw new Error(payload.message || "鍚屾澶辫触");
+        }
+        document.getElementById("status").textContent = `鍚屾瀹屾垚锛岄偖浠?${payload.result.synced_count} 灏乣;
+        await loadData();
+      } catch (error) {
+        document.getElementById("status").textContent = `鍚屾澶辫触: ${error}`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
     document.getElementById("refreshBtn").addEventListener("click", loadData);
+    const syncBtn = document.getElementById("syncBtn");
+    if (syncBtn) syncBtn.addEventListener("click", syncData);
     loadData();
   </script>
 </body>
 </html>
+
