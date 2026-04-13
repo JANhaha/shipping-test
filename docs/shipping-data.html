@@ -67,11 +67,11 @@
       gap:8px;
     }
     .button.secondary{background:#eef4f6;color:var(--accent)}
-    .summary-grid,.metrics,.daily-grid,.attachment-grid,.mail-grid{display:grid;gap:16px}
+    .summary-grid,.metrics,.daily-grid,.mail-grid{display:grid;gap:16px}
     .summary-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:18px}
     .metrics{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
     .daily-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .attachment-grid,.mail-grid{grid-template-columns:1.2fr .8fr}
+    .mail-grid{grid-template-columns:1.2fr .8fr}
     .card{padding:18px}
     .metric-card{padding:16px}
     .daily-card{padding:16px}
@@ -135,7 +135,7 @@
     .summary-sub{color:var(--muted);font-size:12px;margin-top:8px}
     .detail-body{padding:0 20px 20px}
     @media (max-width:1180px){
-      .summary-grid,.daily-grid,.attachment-grid,.mail-grid{grid-template-columns:1fr}
+      .summary-grid,.daily-grid,.mail-grid{grid-template-columns:1fr}
     }
     @media (max-width:760px){
       .shell{padding:14px 10px 36px}
@@ -184,16 +184,6 @@
       <div id="categoryRoot" class="stack" style="margin-top:18px"></div>
     </section>
 
-    <section class="section">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">Attachment Content</div>
-          <h2>附件完整内容</h2>
-        </div>
-        <div class="sub">包含 PDF 与 Excel 解析后的完整文本，默认折叠</div>
-      </div>
-      <div id="attachmentRoot" style="margin-top:18px"></div>
-    </section>
   </div>
 
   <script>
@@ -210,12 +200,6 @@
       if (text.startsWith("-")) return "down";
       if (text.startsWith("+")) return "up";
       return "";
-    };
-    const sizeText = (bytes) => {
-      if (!bytes && bytes !== 0) return "-";
-      if (bytes < 1024) return `${bytes} B`;
-      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-      return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
     };
     const timeText = (value) => {
       if (!value) return "-";
@@ -269,31 +253,13 @@
         root.innerHTML = `<div class="empty">当前没有结构化附件数据。</div>`;
         return;
       }
-      root.innerHTML = categories.map((category) => `<section class="section" style="margin-top:0"><div class="section-head"><div><div class="eyebrow">Category</div><h2>${esc(category.name)}</h2></div><div class="tag">${esc(category.count)} 个附件</div></div><div style="margin-top:18px">${category.items.map((item) => `<article class="card" style="margin-top:16px"><div class="section-head"><div><div class="tag">${esc(maybe(item.report_type))}</div><h3 style="margin-top:10px">${esc(maybe(item.display_name))}</h3></div><div class="sub">接收时间 ${esc(timeText(item.received_at))}</div></div>${item.summary ? `<div class="content-block compact">${esc(item.summary)}</div>` : ""}${renderMetrics(item.headline_metrics)}${renderSelectedCards(item.selected_cards)}${renderTable(item.table)}</article>`).join("")}</div></section>`).join("");
-    }
-    function renderAttachments(payload) {
-      const root = document.getElementById("attachmentRoot");
-      const latestMail = (payload.items || [])[0];
-      const categoryItems = {};
-      (payload.attachment_categories || []).forEach((category) => {
-        (category.items || []).forEach((item) => { categoryItems[item.id] = item; });
-      });
-      const attachments = latestMail?.attachments || [];
-      if (!attachments.length) {
-        root.innerHTML = `<div class="empty">当前没有附件可展示。</div>`;
-        return;
-      }
-      root.innerHTML = attachments.map((attachment, index) => {
-        const enriched = categoryItems[attachment.id] || {};
-        return `<details ${index === 0 ? "open" : ""}><summary><div class="summary-title"><div><h3>${esc(maybe(enriched.display_name || attachment.filename))}</h3><div class="summary-sub">${esc(maybe(enriched.business_category || "未分类"))} · ${esc(maybe(enriched.report_type || attachment.mime_type))} · ${esc(sizeText(attachment.size_bytes))}</div></div><span class="tag">接收于 ${esc(timeText(enriched.received_at || latestMail.received_at))}</span></div></summary><div class="detail-body">${attachment.parsed_summary ? `<div class="content-block compact">${esc(formatLongText(attachment.parsed_summary))}</div>` : ""}${renderMetrics(enriched.headline_metrics)}${renderSelectedCards(enriched.selected_cards)}${renderTable(enriched.table)}<div class="content-block">${esc(formatLongText(attachment.parsed_text))}</div></div></details>`;
-      }).join("");
+      root.innerHTML = categories.map((category) => `<section class="section" style="margin-top:0"><div class="section-head"><div><div class="eyebrow">Category</div><h2>${esc(category.name)}</h2></div><div class="tag">${esc(category.count)} 个附件</div></div><div style="margin-top:18px">${category.items.map((item) => `<article class="card" style="margin-top:16px"><div class="section-head"><div><div class="tag">${esc(maybe(item.report_type))}</div></div><div class="sub">接收时间 ${esc(timeText(item.received_at))}</div></div>${item.summary ? `<div class="content-block compact">${esc(item.summary)}</div>` : ""}${renderMetrics(item.headline_metrics)}${renderSelectedCards(item.selected_cards)}${renderTable(item.table)}${item.parsed_text ? `<details style="margin-top:14px"><summary><div class="summary-title"><h3>详细内容</h3><span class="tag">展开查看</span></div></summary><div class="detail-body"><div class="content-block">${esc(formatLongText(item.parsed_text))}</div></div></details>` : ""}</article>`).join("")}</div></section>`).join("");
     }
     function renderAll(payload) {
       const latestMail = (payload.items || [])[0];
       renderHero(payload, latestMail);
       renderMail(latestMail);
       renderCategories(payload);
-      renderAttachments(payload);
     }
     async function loadData() {
       document.getElementById("status").textContent = "正在加载";
@@ -307,7 +273,6 @@
         const html = `<div class="empty">加载失败: ${esc(String(error))}</div>`;
         document.getElementById("mailRoot").innerHTML = html;
         document.getElementById("categoryRoot").innerHTML = html;
-        document.getElementById("attachmentRoot").innerHTML = html;
       }
     }
     document.getElementById("refreshBtn").addEventListener("click", loadData);
