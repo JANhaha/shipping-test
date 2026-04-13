@@ -4,26 +4,30 @@ from urllib.parse import unquote
 from data.gmail_store import list_attachments_for_message_ids, list_messages
 
 
+CATEGORY_ORDER = ["指数类", "航线日报", "FFA", "矿石煤焦", "成交报告", "其他"]
+ROUTE_CODE_PATTERN = re.compile(r"\b([A-Z]{1,4}\d{1,2}[A-Z]?_[0-9]{2})\b")
+
+
 def build_attachment_dashboard(limit=300):
     latest_messages = list_messages(limit=1)
     if not latest_messages:
         return {"categories": [], "total": 0}
 
-    latest_message_id = latest_messages[0]["gmail_message_id"]
+    latest_message = latest_messages[0]
+    latest_message_id = latest_message["gmail_message_id"]
     attachments = list_attachments_for_message_ids([latest_message_id]).get(latest_message_id, [])[:limit]
-    for item in attachments:
-        item["sender"] = latest_messages[0].get("sender")
-        item["subject"] = latest_messages[0].get("subject")
-        item["received_at"] = latest_messages[0].get("received_at")
-        item["gmail_message_id"] = latest_message_id
+
     grouped = {}
     for raw in attachments:
+        raw["sender"] = latest_message.get("sender")
+        raw["subject"] = latest_message.get("subject")
+        raw["received_at"] = latest_message.get("received_at")
+        raw["gmail_message_id"] = latest_message_id
         item = _enrich_attachment(raw)
         grouped.setdefault(item["business_category"], []).append(item)
 
-    ordered = ["指数类", "航线日报", "FFA", "矿石煤焦", "成交报告", "其他"]
     categories = []
-    for name in ordered:
+    for name in CATEGORY_ORDER:
         items = grouped.pop(name, [])
         if items:
             categories.append({"name": name, "count": len(items), "items": items})
@@ -36,12 +40,12 @@ def build_attachment_dashboard(limit=300):
 def _enrich_attachment(item):
     text = _clean_text(item.get("parsed_text") or "")
     filename = unquote(item.get("filename") or "")
-    report_type = _report_type(filename, text)
     return {
         **item,
+        "parsed_text": text,
         "display_name": filename,
         "business_category": _business_category(filename, text),
-        "report_type": report_type,
+        "report_type": _report_type(filename, text),
         "headline_metrics": _headline_metrics(filename, text),
         "table": _extract_table(filename, text),
         "selected_cards": _selected_cards(filename, text),
@@ -90,7 +94,7 @@ def _report_type(filename, text):
 
 def _headline_metrics(filename, text):
     metrics = []
-    metric_patterns = [
+    patterns = [
         ("BDI", r"\bBDI\b\s*[: ]\s*([0-9,]+)(?:\s*([-+][0-9.,]+))?"),
         ("BCI", r"\bBCI\b(?:\s*\d+)?\s*[: ]\s*([0-9,]+)(?:\s*([-+][0-9.,]+))?"),
         ("BPI", r"\bBPI\b\s*[: ]\s*([0-9,]+)(?:\s*([-+][0-9.,]+))?"),
@@ -105,30 +109,19 @@ def _headline_metrics(filename, text):
         ("USD/JPY", r"USD/JPY\s*([0-9.,]+)(?:\s*([-+][0-9.,%]+))?"),
         ("GBP/USD", r"GBP/USD\s*([0-9.,]+)(?:\s*([-+][0-9.,%]+))?"),
     ]
-    for label, pattern in metric_patterns:
+    for label, pattern in patterns:
         match = re.search(pattern, text, flags=re.IGNORECASE)
         if match:
             metrics.append({"label": label, "value": match.group(1), "change": match.group(2) if match.lastindex and match.lastindex >= 2 else None})
-
-    index_patterns = [
-        ("Handysize", r"Baltic\s+Handysize.*?Index\s*([0-9,]+)\s*([-+][0-9,]+)"),
-        ("Panamax", r"Baltic\s+Panamax.*?Index\s*([0-9,]+)\s*([-+][0-9,]+)"),
-        ("Supramax", r"Baltic\s+Supramax.*?Index\s*([0-9,]+)\s*([-+][0-9,]+)"),
-    ]
-    for label, pattern in index_patterns:
-        match = re.search(pattern, text, flags=re.IGNORECASE)
-        if match:
-            metrics.insert(0, {"label": label, "value": match.group(1), "change": match.group(2)})
 
     unique = []
     seen = set()
     for metric in metrics:
         key = (metric["label"], metric["value"], metric.get("change"))
-        if key in seen:
-            continue
-        seen.add(key)
-        unique.append(metric)
-    return unique[:8]
+        if key not in seen:
+            seen.add(key)
+            unique.append(metric)
+    return unique[:10]
 
 
 def _extract_table(filename, text):
@@ -141,19 +134,45 @@ def _extract_table(filename, text):
         return _extract_metals_table(text)
     if "fixture" in lower:
         return _extract_fixtures_table(text)
-    return None
+    return _extract_route_table(text)
 
 
 def _extract_route_table(text):
+    segments = []
+    matches = list(ROUTE_CODE_PATTERN.finditer(text))
+    for idx, match in enumerate(matches):
+        start = match.start()
+        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
+        segment = text[start:end].strip()
+        if segment:
+            segments.append(segment)
+
     rows = []
-    pattern = re.compile(
-        r"\b([A-Z]{1,4}\d[A-Z]?_[0-9]{2})\b\s+(.+?)\s+([0-9,]{4,})\s+([0-9,]{1,3}(?:,[0-9]{3})*)\s+([-+][0-9,]+)",
-        flags=re.IGNORECASE,
-    )
-    for match in pattern.finditer(text):
-        rows.append([match.group(1), match.group(2).strip(), match.group(4), match.group(5)])
-        if len(rows) >= 10:
-            break
+    seen = set()
+    for segment in segments:
+        code_match = ROUTE_CODE_PATTERN.match(segment)
+        if not code_match:
+            continue
+        code = code_match.group(1)
+        rest = segment[len(code):].strip()
+        rest = rest.split(" Timecharter")[0].split(" Weighted")[0].strip()
+        number_matches = list(re.finditer(r"[-+]?\d[\d,]*(?:\.\d+)?", rest))
+        if len(number_matches) < 2:
+            continue
+        if len(number_matches) >= 3:
+            value_match = number_matches[-2]
+            change_match = number_matches[-1]
+        else:
+            value_match = number_matches[-2]
+            change_match = number_matches[-1]
+        route = rest[:value_match.start()].strip(" -")
+        value = value_match.group(0)
+        change = change_match.group(0)
+        key = (code, route, value, change)
+        if route and key not in seen:
+            seen.add(key)
+            rows.append([code, route, value, change])
+
     if not rows:
         return None
     return {
@@ -175,7 +194,7 @@ def _extract_futures_table(text):
         block = _slice_block(text, marker)
         if not block:
             continue
-        for tenor in ["Mar 26", "Apr 26", "Q2 26", "Q3 26", "Cal 27"]:
+        for tenor in ["Mar 26", "Apr 26", "May 26", "Jun 26", "Q2 26", "Q3 26", "Cal 27"]:
             match = re.search(re.escape(tenor) + r"\s+([0-9,]+)\s+([0-9,]+)", block, flags=re.IGNORECASE)
             if match:
                 rows.append([label, tenor, match.group(1), match.group(2)])
@@ -184,7 +203,7 @@ def _extract_futures_table(text):
     return {
         "title": "FFA / Freight Futures",
         "columns": ["品种", "期限", "上期", "本期"],
-        "rows": rows[:20],
+        "rows": rows,
     }
 
 
@@ -215,8 +234,6 @@ def _extract_fixtures_table(text):
     )
     for match in pattern.finditer(text):
         rows.append([match.group(1), match.group(3), match.group(4).strip(), match.group(5)])
-        if len(rows) >= 8:
-            break
     if not rows:
         return None
     return {
@@ -229,32 +246,35 @@ def _extract_fixtures_table(text):
 def _selected_cards(filename, text):
     lower = filename.lower()
     if "capesize" in lower:
-        return _extract_market_cards(text, [("PAC", "PAC"), ("ATL", "ATL"), ("Market Comments", "市场点评")])
+        return _extract_market_cards(text, [("Pacific", "Pacific"), ("Atlantic", "Atlantic"), ("Market Comments", "Market Comments")])
     if "panamax" in lower:
-        return _extract_market_cards(text, [("ATL", "ATL"), ("PAC", "PAC"), ("MID EAST", "中东"), ("Market Comments", "市场点评")])
+        return _extract_market_cards(text, [("Atlantic", "Atlantic"), ("Pacific", "Pacific"), ("MID EAST", "Mid East"), ("Market Comments", "Market Comments")])
     if "handysize" in lower or "supramax" in lower:
-        return _extract_market_cards(text, [("ATLANTIC", "Atlantic"), ("PACIFIC", "Pacific"), ("Market Comments", "市场点评")])
+        return _extract_market_cards(text, [("ATLANTIC", "Atlantic"), ("PACIFIC", "Pacific"), ("Market Comments", "Market Comments")])
     if "dry cargo" in lower:
-        return _extract_market_cards(text, [("Exchange Rates", "汇率"), ("Freight Futures", "Freight Futures")])
+        return _extract_market_cards(text, [("Exchange Rates", "Exchange Rates"), ("Freight Futures", "Freight Futures"), ("Bunker Prices", "Bunker Prices")])
     return []
 
 
 def _extract_market_cards(text, markers):
     cards = []
-    for i, (marker, title) in enumerate(markers):
-        start_match = re.search(re.escape(marker) + r"\s*:\s*", text, flags=re.IGNORECASE)
+    for index, (marker, title) in enumerate(markers):
+        start_match = re.search(re.escape(marker) + r"\s*:?\s*", text, flags=re.IGNORECASE)
         if not start_match:
             continue
         start = start_match.end()
         end = len(text)
-        for next_marker, _ in markers[i + 1:]:
-            next_match = re.search(re.escape(next_marker) + r"\s*:\s*", text[start:], flags=re.IGNORECASE)
+        for next_marker, _ in markers[index + 1:]:
+            next_match = re.search(re.escape(next_marker) + r"\s*:?\s*", text[start:], flags=re.IGNORECASE)
             if next_match:
                 end = start + next_match.start()
                 break
-        body = text[start:end].strip(" :-")
-        if body:
-            cards.append({"title": title, "content": body[:380] + ("..." if len(body) > 380 else "")})
+        content = text[start:end].strip(" :-")
+        if content:
+            cards.append({
+                "title": title,
+                "content": _compress_text(content, limit=560),
+            })
     return cards[:4]
 
 
@@ -278,13 +298,18 @@ def _summary_from_metrics(filename, text):
     if metrics:
         parts = []
         for metric in metrics[:4]:
-            tail = f" ({metric['change']})" if metric.get("change") else ""
-            parts.append(f"{metric['label']} {metric['value']}{tail}")
+            suffix = f" ({metric['change']})" if metric.get("change") else ""
+            parts.append(f"{metric['label']} {metric['value']}{suffix}")
         return " / ".join(parts)
     cards = _selected_cards(filename, text)
     if cards:
         return " / ".join(f"{card['title']}: {card['content'][:80]}" for card in cards[:2])
-    return text[:220] + ("..." if len(text) > 220 else "")
+    return _compress_text(text, limit=220)
+
+
+def _compress_text(text, limit=220):
+    value = re.sub(r"\s+", " ", text).strip()
+    return value[:limit] + ("..." if len(value) > limit else "")
 
 
 def _clean_text(text):
@@ -300,8 +325,8 @@ def _clean_text(text):
         "oﬀ": "off",
         "ﬁxing": "fixing",
         "ﬁxed": "fixed",
-        "ﬀ": "ff",
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
+    text = text.replace("↑", " ↑ ").replace("↓", " ↓ ").replace("→", " → ")
     return re.sub(r"\s+", " ", text).strip()
