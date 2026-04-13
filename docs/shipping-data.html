@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shipping Data 数据看板</title>
+  <style>
+    :root{
+      --bg:#f5efe7;
+      --panel:rgba(255,255,255,.92);
+      --card:#fffdf9;
+      --ink:#1d2a30;
+      --muted:#66757c;
+      --line:rgba(18,50,62,.12);
+      --accent:#0b5969;
+      --accent-soft:#eef6f8;
+      --up:#0aa84f;
+      --down:#e53935;
+      --shadow:0 18px 40px rgba(17,34,41,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(11,89,105,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(210,142,42,.12), transparent 24%),
+        linear-gradient(180deg,#f8f3ec,#efe8df);
+    }
+    .shell{max-width:1520px;margin:0 auto;padding:24px 16px 48px}
+    .hero,.section,.report-card,.metric-card,.daily-card{
+      background:var(--panel);
+      border:1px solid rgba(255,255,255,.78);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+    }
+    .hero,.section{padding:24px}
+    .section{margin-top:16px}
+    .report-card,.metric-card,.daily-card{
+      background:var(--card);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+    .hero-head,.section-head,.toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+    .toolbar{margin-top:10px}
+    h1,h2,h3{margin:0}
+    h1{font-size:clamp(30px,4vw,42px)}
+    h2{font-size:22px}
+    h3{font-size:18px}
+    .small{color:var(--muted);font-size:12px}
+    .button{
+      border:0;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--accent),#0f7487);
+      color:#fff;
+      padding:10px 16px;
+      cursor:pointer;
+      font-weight:600;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+    }
+    .button.secondary{background:#edf3f5;color:var(--accent)}
+    .stack{display:grid;gap:16px}
+    .tables-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+    .metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px}
+    .daily-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .report-card{padding:18px}
+    .metric-card{padding:14px}
+    .daily-card{padding:16px}
+    .metric-value{font-size:22px;font-weight:700;margin-top:4px}
+    .up{color:var(--up);font-weight:700}
+    .down{color:var(--down);font-weight:700}
+    .table-wrap{
+      overflow:auto;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#fff;
+      margin-top:14px;
+    }
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:10px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{color:var(--muted);background:#f8fbfc;font-weight:600}
+    tr:hover td{background:#fbfdfe}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--accent-soft);
+      color:var(--accent);
+      font-size:12px;
+      font-weight:600;
+    }
+    .empty{
+      padding:18px;
+      border-radius:16px;
+      background:#fff7eb;
+      color:#8a4f16;
+      border:1px solid rgba(188,108,37,.15);
+    }
+    @media (max-width:1200px){
+      .tables-3,.daily-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:760px){
+      .shell{padding:14px 10px 30px}
+      .hero,.section{padding:18px;border-radius:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-head">
+        <h1>Shipping Data 数据看板</h1>
+        <span id="status" class="small">加载中</span>
+      </div>
+      <div class="toolbar">
+        <button id="refreshBtn" class="button">刷新数据</button>
+        <a class="button secondary" href="./">返回看板首页</a>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>指数类</h2>
+        <span class="small">航线代码 / 航线 / 数值 / 涨跌</span>
+      </div>
+      <div id="indexRoot" class="tables-3" style="margin-top:16px"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>航线日报</h2>
+        <span class="small">精选内容卡片</span>
+      </div>
+      <div id="dailyRoot" class="stack" style="margin-top:16px"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>FFA</h2>
+        <span class="small">关键指标与期限表</span>
+      </div>
+      <div id="ffaRoot" class="stack" style="margin-top:16px"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>矿石煤焦</h2>
+        <span class="small">核心报价表</span>
+      </div>
+      <div id="metalsRoot" class="stack" style="margin-top:16px"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>成交报告</h2>
+        <span class="small">成交样本表</span>
+      </div>
+      <div id="fixturesRoot" class="stack" style="margin-top:16px"></div>
+    </section>
+  </div>
+
+  <script>
+    const DATA_URL = "./data/shipping_data.json";
+    const esc = (value) => {
+      const div = document.createElement("div");
+      div.textContent = value ?? "";
+      return div.innerHTML;
+    };
+    const maybe = (value) => value === null || value === undefined || value === "" ? "-" : value;
+    const signClass = (value) => {
+      if (value === null || value === undefined) return "";
+      const text = String(value).trim();
+      if (text.startsWith("-")) return "down";
+      if (text.startsWith("+")) return "up";
+      return "";
+    };
+    function renderTable(table) {
+      if (!table || !table.rows || !table.rows.length) return "";
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead><tr>${table.columns.map((col) => `<th>${esc(col)}</th>`).join("")}</tr></thead>
+            <tbody>
+              ${table.rows.map((row) => `<tr>${row.map((cell) => `<td class="${signClass(cell)}">${esc(maybe(cell))}</td>`).join("")}</tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+    function renderMetrics(metrics) {
+      if (!metrics || !metrics.length) return "";
+      return `
+        <div class="metrics">
+          ${metrics.map((item) => `
+            <div class="metric-card">
+              <div class="small">${esc(maybe(item.label))}</div>
+              <div class="metric-value">${esc(maybe(item.value))}</div>
+              ${item.change ? `<div class="small ${signClass(item.change)}">${esc(item.change)}</div>` : ``}
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+    function renderIndex(items) {
+      const root = document.getElementById("indexRoot");
+      if (!items.length) {
+        root.innerHTML = `<div class="empty">暂无指数类附件数据。</div>`;
+        return;
+      }
+      root.innerHTML = items.map((item) => `
+        <article class="report-card">
+          <div class="pill">${esc(maybe(item.report_type))}</div>
+          ${renderTable(item.table)}
+        </article>
+      `).join("");
+    }
+    function renderDaily(items) {
+      const root = document.getElementById("dailyRoot");
+      if (!items.length) {
+        root.innerHTML = `<div class="empty">暂无航线日报数据。</div>`;
+        return;
+      }
+      root.innerHTML = items.map((item) => `
+        <article class="report-card">
+          <div class="section-head"><h3>${esc(maybe(item.report_type))}</h3></div>
+          <div class="daily-grid" style="margin-top:16px">
+            ${(item.selected_cards || []).map((card) => `
+              <div class="daily-card">
+                <div class="pill">${esc(maybe(card.title))}</div>
+                <div style="margin-top:10px;line-height:1.75">${esc(maybe(card.content))}</div>
+              </div>
+            `).join("")}
+          </div>
+        </article>
+      `).join("");
+    }
+    function renderMetricSection(rootId, items, emptyText) {
+      const root = document.getElementById(rootId);
+      if (!items.length) {
+        root.innerHTML = `<div class="empty">${esc(emptyText)}</div>`;
+        return;
+      }
+      root.innerHTML = items.map((item) => `
+        <article class="report-card">
+          <div class="section-head"><h3>${esc(maybe(item.report_type))}</h3></div>
+          ${renderMetrics(item.headline_metrics)}
+          ${renderTable(item.table)}
+        </article>
+      `).join("");
+    }
+    async function loadData() {
+      document.getElementById("status").textContent = "正在加载";
+      try {
+        const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
+        const payload = await response.json();
+        const categories = payload.attachment_categories || [];
+        const byName = Object.fromEntries(categories.map((item) => [item.name, item.items || []]));
+        renderIndex(byName["指数类"] || []);
+        renderDaily(byName["航线日报"] || []);
+        renderMetricSection("ffaRoot", byName["FFA"] || [], "暂无 FFA 数据。");
+        renderMetricSection("metalsRoot", byName["矿石煤焦"] || [], "暂无矿石煤焦数据。");
+        renderMetricSection("fixturesRoot", byName["成交报告"] || [], "暂无成交报告数据。");
+        document.getElementById("status").textContent = "已加载";
+      } catch (error) {
+        const html = `<div class="empty">加载失败：${esc(String(error))}</div>`;
+        document.getElementById("indexRoot").innerHTML = html;
+        document.getElementById("dailyRoot").innerHTML = html;
+        document.getElementById("ffaRoot").innerHTML = html;
+        document.getElementById("metalsRoot").innerHTML = html;
+        document.getElementById("fixturesRoot").innerHTML = html;
+        document.getElementById("status").textContent = "加载失败";
+      }
+    }
+    document.getElementById("refreshBtn").addEventListener("click", loadData);
+    loadData();
+  </script>
+</body>
+</html>
