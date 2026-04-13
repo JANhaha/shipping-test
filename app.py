@@ -3,10 +3,10 @@ import os
 
 from flask import Flask, jsonify, render_template
 
-from data.attachment_visualization import build_attachment_dashboard
 from data.dashboard_service import ShippingDashboardService
 from data.gmail_service import GmailShippingDataService
-from data.gmail_store import get_latest_sync_time, init_db, list_attachments_for_message_ids, list_messages
+from data.gmail_store import init_db
+from data.shipping_data_payload import build_shipping_data_payload
 
 
 app = Flask(__name__, template_folder="templates")
@@ -34,25 +34,7 @@ def dashboard():
 
 @app.route("/api/shipping-data", methods=["GET"])
 def shipping_data():
-    messages = list_messages(limit=100)
-    attachments = list_attachments_for_message_ids([item["gmail_message_id"] for item in messages])
-    rows = []
-    for message in messages:
-        row = dict(message)
-        row["attachments"] = attachments.get(message["gmail_message_id"], [])
-        rows.append(row)
-
-    attachment_view = build_attachment_dashboard(limit=300)
-    return jsonify(
-        {
-            "items": rows,
-            "count": len(rows),
-            "attachments_total": attachment_view["total"],
-            "attachment_categories": attachment_view["categories"],
-            "latest_sync_at": get_latest_sync_time(),
-            "served_at": datetime.now().isoformat(),
-        }
-    )
+    return jsonify(build_shipping_data_payload(limit=300))
 
 
 @app.route("/api/shipping-data/sync", methods=["POST"])
