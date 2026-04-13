@@ -140,24 +140,34 @@ def _extract_table(filename, text):
 def _extract_route_table(text):
     rows = []
     seen = set()
-    pattern = re.compile(
-        r"\b([A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?)\b\s+"
-        r"(.+?)\s*"
-        r"(?:[0-9]{2,3},[0-9]{3}(?:\s+or\s+[0-9]{2,3},[0-9]{3})?(?:\s+(?:MT|mt))?)\s*"
-        r"([0-9]{1,3}(?:,[0-9]{3})*(?:\.\d+)?)\s+"
-        r"([-+]?[0-9]{1,3}(?:,[0-9]{3})*(?:\.\d+)?)\s*(?:↑|↓|→)?"
-        r"(?=\s+[A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?\b|\s+(?:Handysize|Panamax|Supramax|Capesize)\s+Timecharter|\s+Route\s+Description|\s+The following routes|\s+The Baltic|\s+Baltic Exchange|$)",
-        flags=re.IGNORECASE,
-    )
-    for match in pattern.finditer(text):
+    matches = list(ROUTE_CODE_PATTERN.finditer(text))
+    stop_markers = [
+        "Timecharter Average",
+        "Weighted Timecharter Average",
+        "The following routes",
+        "The Baltic",
+        "Baltic Exchange",
+        "vessel for Timecharter routes",
+        "Route Description",
+    ]
+    for index, match in enumerate(matches):
         code = match.group(1)
-        route = match.group(2).strip(" -")
-        value = match.group(3)
-        change = match.group(4)
-        key = (code, route, value, change)
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
+        segment = text[start:end].strip()
+        if not segment:
+            continue
+        for marker in stop_markers:
+            marker_pos = segment.find(marker)
+            if marker_pos >= 0:
+                segment = segment[:marker_pos].strip()
+        parsed = _parse_route_segment(code, segment)
+        if not parsed:
+            continue
+        key = tuple(parsed)
         if key not in seen:
             seen.add(key)
-            rows.append([code, route, value, change])
+            rows.append(parsed)
 
     if not rows:
         return None
@@ -166,6 +176,35 @@ def _extract_route_table(text):
         "columns": ["航线代码", "航线", "数值", "涨跌"],
         "rows": rows,
     }
+
+
+def _parse_route_segment(code, segment):
+    segment = segment.replace("↑", " ").replace("↓", " ").replace("→", " ")
+    segment = re.sub(r"\s+", " ", segment).strip()
+    if not segment:
+        return None
+
+    number_pattern = re.compile(r"[-+]?\d[\d,]*(?:\.\d+)?")
+    numbers = list(number_pattern.finditer(segment))
+    if len(numbers) < 2:
+        return None
+
+    value_match = numbers[-2]
+    change_match = numbers[-1]
+    route_part = segment[:value_match.start()].strip(" -")
+
+    size_patterns = [
+        r"\b\d{2,3},\d{3}\s+or\s+\d{2,3},\d{3}\s+(?:MT|mt)\b",
+        r"\b\d{2,3},\d{3}\s+(?:MT|mt)\b",
+        r"\b\d{2,3},\d{3}\b",
+    ]
+    for pattern in size_patterns:
+        route_part = re.sub(pattern + r"\s*$", "", route_part).strip()
+
+    if not route_part or "Timecharter Average" in route_part or route_part == code:
+        return None
+
+    return [code, route_part, value_match.group(0), change_match.group(0)]
 
 
 def _extract_futures_table(text):
