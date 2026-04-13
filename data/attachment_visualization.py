@@ -5,7 +5,7 @@ from data.gmail_store import list_attachments_for_message_ids, list_messages
 
 
 CATEGORY_ORDER = ["指数类", "航线日报", "FFA", "矿石煤焦", "成交报告", "其他"]
-ROUTE_CODE_PATTERN = re.compile(r"\b([A-Z]{1,4}\d{1,2}[A-Z]?_[0-9]{2})\b")
+ROUTE_CODE_PATTERN = re.compile(r"\b([A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?)\b")
 
 
 def build_attachment_dashboard(limit=300):
@@ -138,38 +138,24 @@ def _extract_table(filename, text):
 
 
 def _extract_route_table(text):
-    segments = []
-    matches = list(ROUTE_CODE_PATTERN.finditer(text))
-    for idx, match in enumerate(matches):
-        start = match.start()
-        end = matches[idx + 1].start() if idx + 1 < len(matches) else len(text)
-        segment = text[start:end].strip()
-        if segment:
-            segments.append(segment)
-
     rows = []
     seen = set()
-    for segment in segments:
-        code_match = ROUTE_CODE_PATTERN.match(segment)
-        if not code_match:
-            continue
-        code = code_match.group(1)
-        rest = segment[len(code):].strip()
-        rest = rest.split(" Timecharter")[0].split(" Weighted")[0].strip()
-        number_matches = list(re.finditer(r"[-+]?\d[\d,]*(?:\.\d+)?", rest))
-        if len(number_matches) < 2:
-            continue
-        if len(number_matches) >= 3:
-            value_match = number_matches[-2]
-            change_match = number_matches[-1]
-        else:
-            value_match = number_matches[-2]
-            change_match = number_matches[-1]
-        route = rest[:value_match.start()].strip(" -")
-        value = value_match.group(0)
-        change = change_match.group(0)
+    pattern = re.compile(
+        r"\b([A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?)\b\s+"
+        r"(.+?)\s*"
+        r"(?:[0-9]{2,3},[0-9]{3}(?:\s+or\s+[0-9]{2,3},[0-9]{3})?(?:\s+(?:MT|mt))?)\s*"
+        r"([0-9]{1,3}(?:,[0-9]{3})*(?:\.\d+)?)\s+"
+        r"([-+]?[0-9]{1,3}(?:,[0-9]{3})*(?:\.\d+)?)\s*(?:↑|↓|→)?"
+        r"(?=\s+[A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?\b|\s+(?:Handysize|Panamax|Supramax|Capesize)\s+Timecharter|\s+Route\s+Description|\s+The following routes|\s+The Baltic|\s+Baltic Exchange|$)",
+        flags=re.IGNORECASE,
+    )
+    for match in pattern.finditer(text):
+        code = match.group(1)
+        route = match.group(2).strip(" -")
+        value = match.group(3)
+        change = match.group(4)
         key = (code, route, value, change)
-        if route and key not in seen:
+        if key not in seen:
             seen.add(key)
             rows.append([code, route, value, change])
 
