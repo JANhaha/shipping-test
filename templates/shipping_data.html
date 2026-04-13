@@ -222,7 +222,10 @@
       }
       root.innerHTML = items.map((item) => `
         <article class="report-card">
-          <div class="pill">${esc(maybe(item.report_type))}</div>
+          <div class="section-head">
+            <div class="pill">${esc(maybe(item.report_type))}</div>
+            <div class="small">接收日期：${esc(maybe(item.received_at ? item.received_at.slice(0, 10) : "-"))}</div>
+          </div>
           ${renderTable(item.table)}
         </article>
       `).join("");
@@ -238,6 +241,7 @@
         <article class="report-card">
           <div class="section-head">
             <h3>${esc(maybe(item.report_type))}</h3>
+            <div class="small">接收日期：${esc(maybe(item.received_at ? item.received_at.slice(0, 10) : "-"))}</div>
           </div>
           <div class="daily-grid" style="margin-top:16px">
             ${(item.selected_cards || []).map((card) => `
@@ -261,6 +265,7 @@
         <article class="report-card">
           <div class="section-head">
             <h3>${esc(maybe(item.report_type))}</h3>
+            <div class="small">接收日期：${esc(maybe(item.received_at ? item.received_at.slice(0, 10) : "-"))}</div>
           </div>
           ${renderMetrics(item.headline_metrics)}
           ${renderTable(item.table)}
