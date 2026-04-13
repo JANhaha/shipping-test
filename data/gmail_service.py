@@ -128,7 +128,7 @@ class GmailShippingDataService:
             if part.get("mimeType") == "text/plain":
                 data = part.get("body", {}).get("data")
                 if data:
-                    return self._decode_base64(data)
+                    return self._normalize_text_blocks(self._decode_base64(data))
         for part in parts:
             if part.get("mimeType") == "text/html":
                 data = part.get("body", {}).get("data")
@@ -136,7 +136,7 @@ class GmailShippingDataService:
                     return self._html_to_text(self._decode_base64(data))
         body_data = payload.get("body", {}).get("data")
         if body_data:
-            return self._decode_base64(body_data)
+            return self._normalize_text_blocks(self._decode_base64(body_data))
         return ""
 
     def _collect_attachments(self, session, payload, message_id):
@@ -184,7 +184,7 @@ class GmailShippingDataService:
                 texts = []
                 for page in reader.pages[:20]:
                     texts.append(page.extract_text() or "")
-                return self._normalize_whitespace("\n".join(texts))
+                return self._normalize_text_blocks("\n\n".join(texts))
             if suffix in {".xlsx", ".xls"} or "sheet" in (mime_type or "").lower() or "excel" in (mime_type or "").lower():
                 workbook = load_workbook(filename=str(path), read_only=True, data_only=True)
                 chunks = []
@@ -194,9 +194,9 @@ class GmailShippingDataService:
                     for row in sheet.iter_rows(min_row=1, max_row=20, values_only=True):
                         values = ["" if cell is None else str(cell) for cell in row]
                         if any(values):
-                            rows.append(",".join(values))
+                            rows.append(" | ".join(values))
                     chunks.append("\n".join(rows))
-                return self._normalize_whitespace("\n".join(chunks))
+                return self._normalize_text_blocks("\n\n".join(chunks))
         except Exception as exc:
             return f"解析失败: {exc}"
         return "暂不支持该附件类型的解析。"
@@ -223,12 +223,31 @@ class GmailShippingDataService:
 
     @staticmethod
     def _html_to_text(html):
+        html = re.sub(r"<\s*br\s*/?\s*>", "\n", html, flags=re.IGNORECASE)
+        html = re.sub(r"</\s*(p|div|li|tr|h[1-6])\s*>", "\n", html, flags=re.IGNORECASE)
         text = re.sub(r"<[^>]+>", " ", html)
-        return GmailShippingDataService._normalize_whitespace(text)
+        return GmailShippingDataService._normalize_text_blocks(text)
 
     @staticmethod
     def _normalize_whitespace(text):
         return re.sub(r"\s+", " ", (text or "")).strip()
+
+    @staticmethod
+    def _normalize_text_blocks(text):
+        if not text:
+            return ""
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
+        lines = [re.sub(r"[ \t]+", " ", line).strip() for line in text.split("\n")]
+        merged = []
+        blank = False
+        for line in lines:
+            if line:
+                merged.append(line)
+                blank = False
+            elif not blank:
+                merged.append("")
+                blank = True
+        return "\n".join(merged).strip()
 
     @staticmethod
     def _format_ts(internal_date):
