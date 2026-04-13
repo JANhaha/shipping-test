@@ -64,6 +64,36 @@
       font-weight:600;
     }
     .button-link{text-decoration:none;display:inline-flex;align-items:center}
+    .hero-actions{display:flex;gap:14px;align-items:stretch;flex-wrap:wrap;margin-top:18px}
+    .shipping-entry{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      min-width:min(100%,420px);
+      padding:16px 18px;
+      border-radius:20px;
+      text-decoration:none;
+      color:#fff;
+      background:linear-gradient(135deg,#0b5969 0%,#12798d 52%,#d28e2a 100%);
+      box-shadow:0 16px 34px rgba(11,89,105,.22);
+      border:1px solid rgba(255,255,255,.16);
+    }
+    .shipping-entry:hover{transform:translateY(-1px)}
+    .shipping-entry-title{font-size:18px;font-weight:700;line-height:1.2}
+    .shipping-entry-meta{font-size:12px;opacity:.92;margin-top:6px}
+    .shipping-entry-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:54px;
+      height:54px;
+      border-radius:16px;
+      background:rgba(255,255,255,.16);
+      font-size:24px;
+      font-weight:700;
+      backdrop-filter:blur(4px);
+    }
     .button:disabled{opacity:.65;cursor:default}
     .card,.ticker-card,.mini-card,.feature-card{
       background:var(--panel-strong);
@@ -124,11 +154,19 @@
     <section class="hero-card">
       <h1>漢洋航运信息看板</h1>
       <div class="subtitle">整合航运相关指数、原油信息、相关汇率信息、中国沿海散货运价指数、进口矿指数、中行美元折算价与全球主要港口油价，页面每 30 分钟自动抓取并刷新。</div>
-      <div class="toolbar">
-        <button id="refreshBtn" class="button">重新读取最新数据</button>
-        <a href="/shipping-data" class="button button-link">查看 Shipping Data</a>
-        <span>自动刷新周期：30 分钟</span>
-        <span id="lastUpdated">最后更新：加载中</span>
+      <div class="hero-actions">
+        <a href="/shipping-data" class="shipping-entry">
+          <div>
+            <div class="shipping-entry-title">Shipping Data 数据看板</div>
+            <div class="shipping-entry-meta">查看附件结构化数据、指数表格与航线日报精选</div>
+          </div>
+          <div class="shipping-entry-badge">↗</div>
+        </a>
+        <div class="toolbar">
+          <button id="refreshBtn" class="button">重新读取最新数据</button>
+          <span>自动刷新周期：30 分钟</span>
+          <span id="lastUpdated">最后更新：加载中</span>
+        </div>
       </div>
     </section>
 
