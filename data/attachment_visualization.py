@@ -1,11 +1,21 @@
 import re
 from urllib.parse import unquote
 
-from data.gmail_store import list_all_attachments
+from data.gmail_store import list_attachments_for_message_ids, list_messages
 
 
 def build_attachment_dashboard(limit=300):
-    attachments = list_all_attachments(limit=limit)
+    latest_messages = list_messages(limit=1)
+    if not latest_messages:
+        return {"categories": [], "total": 0}
+
+    latest_message_id = latest_messages[0]["gmail_message_id"]
+    attachments = list_attachments_for_message_ids([latest_message_id]).get(latest_message_id, [])[:limit]
+    for item in attachments:
+        item["sender"] = latest_messages[0].get("sender")
+        item["subject"] = latest_messages[0].get("subject")
+        item["received_at"] = latest_messages[0].get("received_at")
+        item["gmail_message_id"] = latest_message_id
     grouped = {}
     for raw in attachments:
         item = _enrich_attachment(raw)
