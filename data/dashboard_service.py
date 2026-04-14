@@ -4,13 +4,17 @@ import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 
 class ShippingDashboardService:
     CACHE_TTL_SECONDS = 1800
+    REQUEST_TIMEOUT = (10, 20)
     HIFLEET_URL = "https://www.hifleet.com/shipping/"
     HIFLEET_BALTIC_HISTORY_API = "https://www.hifleet.com/shipdetail/getBalticexchange"
     HIFLEET_BALTIC_TABLE_API = "https://www.hifleet.com/shipdetail/getBalticexchangeToTable"
@@ -32,7 +36,20 @@ class ShippingDashboardService:
                 )
             }
         )
+        retry = Retry(
+            total=2,
+            connect=2,
+            read=2,
+            backoff_factor=0.6,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=frozenset(["GET", "POST"]),
+            raise_on_status=False,
+        )
+        adapter = HTTPAdapter(max_retries=retry, pool_connections=20, pool_maxsize=20)
+        self.session.mount("https://", adapter)
+        self.session.mount("http://", adapter)
         self.cache = {}
+        self.root = Path(__file__).resolve().parents[1]
 
     def get_dashboard(self):
         return self._cached("dashboard", self._load_dashboard)
@@ -135,56 +152,71 @@ class ShippingDashboardService:
 
     def get_baltic_indices(self):
         payload = {"type": "balticexchange", "identifier": "balticexchange", "i18n": "zh"}
-        history_response = self.session.post(
-            self.HIFLEET_BALTIC_HISTORY_API,
-            data=payload,
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            timeout=30,
-        )
-        table_response = self.session.post(
-            self.HIFLEET_BALTIC_TABLE_API,
-            data=payload,
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-            timeout=30,
-        )
-        history_data = history_response.json().get("data", {})
-        table_rows = table_response.json().get("data", [])
-        table_map = {row.get("indexName"): row for row in table_rows}
-
-        names = {
-            "BDI": "波罗的海干散货指数",
-            "BCI": "海岬型船指数",
-            "BPI": "巴拿马型船指数",
-            "BSI": "超灵便型船指数",
-            "BHSI": "灵便型船指数",
-            "BCTI": "成品油轮指数",
-            "BDTI": "原油轮指数",
-            "BLNG": "LNG指数",
-            "BLPG": "LPG指数",
-        }
-        rows = []
-        for code, name in names.items():
-            history_rows = history_data.get(code, [])
-            latest = history_rows[-1] if history_rows else {}
-            table_row = table_map.get(code, {})
-            current = table_row.get("current") or latest.get("value")
-            rows.append(
-                {
-                    "code": code,
-                    "name": name,
-                    "value": self._to_float(current),
-                    "daily_percent": self._signed_float(table_row.get("daily")),
-                    "change": self._signed_float(table_row.get("rateOfChange")),
-                    "date": (table_row.get("currentTime") or latest.get("indexDate") or "")[:10],
-                }
+        try:
+            history_response = self.session.post(
+                self.HIFLEET_BALTIC_HISTORY_API,
+                data=payload,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=self.REQUEST_TIMEOUT,
             )
+            table_response = self.session.post(
+                self.HIFLEET_BALTIC_TABLE_API,
+                data=payload,
+                headers={"Content-Type": "application/x-www-form-urlencoded"},
+                timeout=self.REQUEST_TIMEOUT,
+            )
+            history_response.raise_for_status()
+            table_response.raise_for_status()
+            history_data = history_response.json().get("data", {})
+            table_rows = table_response.json().get("data", [])
+            table_map = {row.get("indexName"): row for row in table_rows}
 
-        return {
-            "data": rows,
-            "error": None if rows else "未能获取航运相关指数数据。",
-            "source_url": self.HIFLEET_URL,
-            "updated_at": datetime.now().isoformat(),
-        }
+            names = {
+                "BDI": "波罗的海干散货指数",
+                "BCI": "海岬型船指数",
+                "BPI": "巴拿马型船指数",
+                "BSI": "超灵便型船指数",
+                "BHSI": "灵便型船指数",
+                "BCTI": "成品油轮指数",
+                "BDTI": "原油轮指数",
+                "BLNG": "LNG指数",
+                "BLPG": "LPG指数",
+            }
+            rows = []
+            for code, name in names.items():
+                history_rows = history_data.get(code, [])
+                latest = history_rows[-1] if history_rows else {}
+                table_row = table_map.get(code, {})
+                current = table_row.get("current") or latest.get("value")
+                rows.append(
+                    {
+                        "code": code,
+                        "name": name,
+                        "value": self._to_float(current),
+                        "daily_percent": self._signed_float(table_row.get("daily")),
+                        "change": self._signed_float(table_row.get("rateOfChange")),
+                        "date": (table_row.get("currentTime") or latest.get("indexDate") or "")[:10],
+                    }
+                )
+
+            result = {
+                "data": rows,
+                "error": None if rows else "未能获取航运相关指数数据。",
+                "source_url": self.HIFLEET_URL,
+                "updated_at": datetime.now().isoformat(),
+            }
+            if rows:
+                self.cache["shipping_indices_last_good"] = (time.time(), result)
+            return result
+        except Exception as exc:
+            fallback = self._get_cached_shipping_indices()
+            if fallback:
+                payload = dict(fallback)
+                payload["error"] = f"航运相关指数实时抓取超时，已回退到最近一次成功数据: {exc}"
+                payload["fallback"] = True
+                payload["updated_at"] = datetime.now().isoformat()
+                return payload
+            raise
 
     def get_cbfi_index(self):
         response = self.session.get(self.CBFI_URL, timeout=30)
@@ -413,8 +445,23 @@ class ShippingDashboardService:
         self.cache[key] = (now, value)
         return value
 
+    def _get_cached_shipping_indices(self):
+        cached = self.cache.get("shipping_indices_last_good")
+        if cached:
+            return cached[1]
+        dashboard_path = self.root / "docs" / "data" / "dashboard.json"
+        if dashboard_path.exists():
+            try:
+                payload = json.loads(dashboard_path.read_text(encoding="utf-8"))
+                baltic = payload.get("baltic")
+                if baltic and baltic.get("data"):
+                    return baltic
+            except Exception:
+                return None
+        return None
+
     def _get_text(self, url):
-        response = self.session.get(url, timeout=30)
+        response = self.session.get(url, timeout=self.REQUEST_TIMEOUT)
         response.encoding = "utf-8" if "boc.cn" in url else (response.apparent_encoding or "utf-8")
         return response.text
 
