@@ -7,6 +7,7 @@ from data.shipping_message_selector import get_latest_target_message
 
 CATEGORY_ORDER = ["指数类", "航线日报", "FFA", "矿石煤焦", "成交报告", "其他"]
 ROUTE_CODE_PATTERN = re.compile(r"\b([A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?)\b")
+ROUTE_TABLE_COLUMNS = ["航线代码", "航线", "数值", "涨跌"]
 
 
 def build_attachment_dashboard(limit=300):
@@ -35,6 +36,46 @@ def build_attachment_dashboard(limit=300):
         categories.append({"name": name, "count": len(grouped[name]), "items": grouped[name]})
 
     return {"categories": categories, "total": len(attachments)}
+
+
+def build_route_market_snapshot(limit=300):
+    dashboard = build_attachment_dashboard(limit=limit)
+    snapshot = {}
+    for category in dashboard.get("categories", []):
+        for item in category.get("items", []):
+            table = item.get("table") or {}
+            rows = table.get("rows") or []
+            report_type = str(item.get("report_type") or "")
+            filename = str(item.get("display_name") or item.get("filename") or "").lower()
+            priority = 2 if "index" in filename else 1
+            for row in rows:
+                if not isinstance(row, list) or len(row) < 4:
+                    continue
+                code, route_name, value, change = row[:4]
+                normalized = _normalize_route_code(code)
+                if not normalized:
+                    continue
+                if not re.match(r"^[A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?$", normalized):
+                    continue
+                if not re.search(r"\d", str(value)) or not re.search(r"[-+]?\d", str(change)):
+                    continue
+                current = snapshot.get(normalized)
+                current_priority = current.get("_priority", -1) if current else -1
+                if priority < current_priority:
+                    continue
+                snapshot[normalized] = {
+                    "code": normalized,
+                    "raw_code": code,
+                    "route_name": route_name,
+                    "value": value,
+                    "change": change,
+                    "source_report": report_type,
+                    "received_at": item.get("received_at"),
+                    "_priority": priority,
+                }
+    for item in snapshot.values():
+        item.pop("_priority", None)
+    return snapshot
 
 
 def _enrich_attachment(item):
@@ -173,13 +214,12 @@ def _extract_route_table(text):
         return None
     return {
         "title": "航线明细",
-        "columns": ["航线代码", "航线", "数值", "涨跌"],
+        "columns": ROUTE_TABLE_COLUMNS,
         "rows": rows,
     }
 
 
 def _parse_route_segment(code, segment):
-    segment = segment.replace("↑", " ").replace("↓", " ").replace("→", " ")
     segment = re.sub(r"\s+", " ", segment).strip()
     if not segment:
         return None
@@ -205,6 +245,16 @@ def _parse_route_segment(code, segment):
         return None
 
     return [code, route_part, value_match.group(0), change_match.group(0)]
+
+
+def _normalize_route_code(value):
+    code = str(value or "").strip().upper()
+    if not code:
+        return ""
+    code = re.sub(r"\s+", "", code)
+    if code.endswith("_38") or code.endswith("_63"):
+        return code[:-3]
+    return code
 
 
 def _extract_futures_table(text):
@@ -296,10 +346,7 @@ def _extract_market_cards(text, markers):
                 break
         content = text[start:end].strip(" :-")
         if content:
-            cards.append({
-                "title": title,
-                "content": _compress_text(content, limit=560),
-            })
+            cards.append({"title": title, "content": _compress_text(content, limit=560)})
     return cards[:4]
 
 
@@ -353,5 +400,4 @@ def _clean_text(text):
     }
     for old, new in replacements.items():
         text = text.replace(old, new)
-    text = text.replace("↑", " ↑ ").replace("↓", " ↓ ").replace("→", " → ")
     return re.sub(r"\s+", " ", text).strip()
