@@ -1,18 +1,18 @@
 from datetime import datetime
 
 from data.attachment_visualization import build_attachment_dashboard
-from data.gmail_store import get_latest_sync_time, list_attachments_for_message_ids, list_messages
+from data.gmail_store import get_latest_sync_time, list_attachments_for_message_ids
+from data.shipping_message_selector import get_latest_target_message
 
 
 def build_shipping_data_payload(limit=300):
-    messages = list_messages(limit=1)
+    latest_message = get_latest_target_message(limit=100)
     rows = []
-    if messages:
-        attachments = list_attachments_for_message_ids([messages[0]["gmail_message_id"]])
-        for message in messages:
-            row = dict(message)
-            row["attachments"] = attachments.get(message["gmail_message_id"], [])
-            rows.append(row)
+    if latest_message:
+        attachments = list_attachments_for_message_ids([latest_message["gmail_message_id"]])
+        row = dict(latest_message)
+        row["attachments"] = attachments.get(latest_message["gmail_message_id"], [])
+        rows.append(row)
 
     attachment_view = build_attachment_dashboard(limit=limit)
     return {
