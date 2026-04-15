@@ -308,27 +308,36 @@
       return index?.routes?.[activeRouteIndex] || null;
     }
 
-    function buildLatLngSegments(points) {
-      if (!points || !points.length) return [];
-      const segments = [];
-      let current = [];
-      let previousLng = null;
-      for (const point of points) {
-        let lng = Number(point.longitude);
-        const lat = Number(point.latitude);
-        if (previousLng !== null) {
-          while (lng - previousLng > 180) lng -= 360;
-          while (lng - previousLng < -180) lng += 360;
-          if (Math.abs(lng - previousLng) > 180) {
-            if (current.length) segments.push(current);
-            current = [];
-          }
-        }
-        current.push([lat, lng]);
-        previousLng = lng;
+    function normalizeLongitude(lng) {
+      let value = Number(lng);
+      while (value > 180) value -= 360;
+      while (value < -180) value += 360;
+      return value;
+    }
+
+    function getTerminalPoints(route) {
+      const terminals = (route.points || []).filter((point) => !point.additional_point);
+      if (terminals.length >= 2) {
+        return [terminals[0], terminals[terminals.length - 1]];
       }
-      if (current.length) segments.push(current);
-      return segments;
+      const all = route.points || [];
+      return all.length >= 2 ? [all[0], all[all.length - 1]] : [all[0], all[all.length - 1]];
+    }
+
+    function routeLegText(route) {
+      const [start, end] = getTerminalPoints(route);
+      if (start?.label && end?.label) return `${start.label} -> ${end.label}`;
+      return route.tooltip || route.description || route.title || "-";
+    }
+
+    function buildLatLngSegments(route) {
+      const points = route?.path_points || [];
+      if (!points.length) return [];
+      const coordinates = points.map((point) => [
+        Number(point.latitude),
+        route.force_pacific_route ? Number(point.longitude) : normalizeLongitude(point.longitude),
+      ]);
+      return [coordinates];
     }
 
     function renderSegmentPills() {
@@ -381,7 +390,7 @@
       root.innerHTML = index.routes.map((route, idx) => `
         <div class="route-item ${idx === activeRouteIndex ? "active" : ""}" data-route="${idx}">
           <div class="route-code">${esc(route.code)}</div>
-          <div class="route-name">${esc(route.tooltip || route.description || route.title)}</div>
+          <div class="route-name">${esc(routeLegText(route))}</div>
         </div>
       `).join("");
       root.querySelectorAll(".route-item").forEach((item) => {
@@ -404,8 +413,10 @@
         root.innerHTML = `<div class="empty">Select one route from the list.</div>`;
         return;
       }
+      const [start, end] = getTerminalPoints(route);
+      const extraPoints = (route.points || []).filter((point) => point.additional_point);
       document.getElementById("detailTitle").textContent = route.code || route.title;
-      document.getElementById("detailMeta").textContent = route.tooltip || route.description || "-";
+      document.getElementById("detailMeta").textContent = route.tooltip || "-";
       const stats = route.stats?.length
         ? `<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>${
             route.stats.map((item) => `<tr><td>${esc(item.name)}</td><td>${esc(maybe(item.value))}</td></tr>`).join("")
@@ -415,10 +426,48 @@
         <div class="detail-block">
           <div class="route-meta">
             <div class="eyebrow">Route Summary</div>
-            <div class="sub">${route.points?.length || 0} points</div>
+            <div class="sub">${route.path_points?.length || 0} plotted points</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Route</th>
+                  <th>From</th>
+                  <th>To</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${esc(route.code)}</td>
+                  <td>${esc(route.tooltip || "-")}</td>
+                  <td>${esc(start?.label || "-")}</td>
+                  <td>${esc(end?.label || "-")}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="detail-text">${esc(route.description || route.tooltip || route.title)}</div>
         </div>
+        ${extraPoints.length ? `
+        <div class="detail-block">
+          <div class="eyebrow">Additional Route Points</div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Point</th>
+                  <th>Latitude</th>
+                  <th>Longitude</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${extraPoints.map((point) => `<tr><td>${esc(point.label || "-")}</td><td>${esc(point.latitude)}</td><td>${esc(point.longitude)}</td></tr>`).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>` : ""}
         <div class="detail-block">
           <div class="eyebrow">Route Fields</div>
           ${stats}
@@ -439,8 +488,9 @@
       const rows = index.routes.map((item, idx) => `
         <tr data-route-row="${idx}" style="${idx === activeRouteIndex ? "background:#f4fbfd" : ""}">
           <td>${esc(item.code)}</td>
-          <td>${esc(item.tooltip || item.description || item.title)}</td>
-          <td>${esc(item.description || "-")}</td>
+          <td>${esc(item.tooltip || "-")}</td>
+          <td>${esc(getTerminalPoints(item)[0]?.label || "-")}</td>
+          <td>${esc(getTerminalPoints(item)[1]?.label || "-")}</td>
           <td>${esc((item.stats || []).map((entry) => `${entry.name}: ${entry.value}`).join(" | ") || "-")}</td>
         </tr>
       `).join("");
@@ -451,7 +501,8 @@
               <tr>
                 <th>Code</th>
                 <th>Route</th>
-                <th>Description</th>
+                <th>From</th>
+                <th>To</th>
                 <th>Fields</th>
               </tr>
             </thead>
@@ -473,57 +524,35 @@
     function renderMap() {
       routeLayerGroup.clearLayers();
       markerLayerGroup.clearLayers();
-      const index = getActiveIndex();
       const selected = getActiveRoute();
-      if (!index || !index.routes.length) return;
+      if (!selected) return;
 
       const bounds = [];
-      index.routes.forEach((route, idx) => {
-        const segments = buildLatLngSegments(route.points || []);
-        segments.forEach((segment) => {
-          if (segment.length < 2) return;
-          const polyline = L.polyline(segment, {
-            color: idx === activeRouteIndex ? "#0f5c6c" : "#6ab7c8",
-            weight: idx === activeRouteIndex ? 4 : 2,
-            opacity: idx === activeRouteIndex ? 0.95 : 0.38
-          }).addTo(routeLayerGroup);
-          polyline.on("click", () => {
-            activeRouteIndex = idx;
-            renderMap();
-            renderRouteDetail();
-            renderRouteList();
-            renderTable();
-          });
-          segment.forEach((point) => bounds.push(point));
-        });
-        const first = route.points?.[0];
-        const last = route.points?.[route.points.length - 1];
-        [first, last].forEach((point) => {
-          if (!point) return;
-          const marker = L.circleMarker([point.latitude, point.longitude], {
-            radius: idx === activeRouteIndex ? 5 : 3,
-            weight: 1,
-            color: "#ffffff",
-            fillColor: idx === activeRouteIndex ? "#d4872c" : "#0f5c6c",
-            fillOpacity: 0.95
-          }).addTo(markerLayerGroup);
-          marker.on("click", () => {
-            activeRouteIndex = idx;
-            renderMap();
-            renderRouteDetail();
-            renderRouteList();
-            renderTable();
-          });
-        });
+      const segments = buildLatLngSegments(selected);
+      segments.forEach((segment) => {
+        if (segment.length < 2) return;
+        L.polyline(segment, {
+          color: "#0f5c6c",
+          weight: 4,
+          opacity: 0.95
+        }).addTo(routeLayerGroup);
+        segment.forEach((point) => bounds.push(point));
       });
 
-      if (selected) {
-        document.getElementById("mapOverlayTitle").textContent = selected.code || selected.title;
-        document.getElementById("mapOverlayText").textContent = selected.tooltip || selected.description || "-";
-      } else {
-        document.getElementById("mapOverlayTitle").textContent = "Select a route";
-        document.getElementById("mapOverlayText").textContent = "The map will focus on the selected route.";
-      }
+      (selected.points || []).forEach((point) => {
+        const marker = L.circleMarker([point.latitude, normalizeLongitude(point.longitude)], {
+          radius: point.additional_point ? 4 : 6,
+          weight: 1,
+          color: "#ffffff",
+          fillColor: point.additional_point ? "#58a9bb" : "#d4872c",
+          fillOpacity: 0.96
+        }).addTo(markerLayerGroup);
+        const label = point.label || "Route point";
+        marker.bindTooltip(label, { direction: "top", opacity: 0.95 });
+      });
+
+      document.getElementById("mapOverlayTitle").textContent = selected.code || selected.title;
+      document.getElementById("mapOverlayText").textContent = selected.tooltip || selected.description || "-";
 
       if (bounds.length) {
         map.fitBounds(bounds, { padding: [24, 24], maxZoom: 4 });
