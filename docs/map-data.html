@@ -110,6 +110,21 @@
       max-width:320px;
     }
     .map-overlay strong{display:block;font-size:14px}
+    .market-badge-wrap{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .market-badge{
+      display:inline-flex;
+      flex-direction:column;
+      gap:4px;
+      padding:10px 12px;
+      border-radius:14px;
+      background:#fff;
+      border:1px solid rgba(15,92,108,.12);
+      min-width:110px;
+    }
+    .market-badge .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+    .market-badge .value{font-size:24px;font-weight:800;line-height:1}
+    .up{color:#00a651;font-weight:800}
+    .down{color:#ef3d32;font-weight:800}
     .detail-block{
       margin-top:14px;
       border:1px solid var(--line);
@@ -259,6 +274,13 @@
     };
     const maybe = (value) => value === null || value === undefined || value === "" ? "-" : value;
     const timeText = (value) => value ? String(value).replace("T", " ").slice(0, 16) : "-";
+    const signClass = (value) => {
+      const text = String(value || "").trim();
+      if (!text) return "";
+      if (text.startsWith("-")) return "down";
+      if (text.startsWith("+") || text === "0" || /^[0-9]/.test(text)) return "up";
+      return "";
+    };
 
     let payload = null;
     let activeSegmentIndex = 0;
@@ -330,9 +352,35 @@
     }
 
     function routeLegText(route) {
-      const [start, end] = getTerminalPoints(route);
-      if (start?.label && end?.label) return `${start.label} -> ${end.label}`;
       return route.tooltip || route.description || route.title || "-";
+    }
+
+    function routePointLabels(route) {
+      return (route.points || [])
+        .map((point) => point.label)
+        .filter(Boolean);
+    }
+
+    function renderMarketBadges(marketData) {
+      if (!marketData) {
+        return `<div class="detail-block"><div class="sub">No linked latest market value from Shipping Data.</div></div>`;
+      }
+      return `
+        <div class="market-badge-wrap">
+          <div class="market-badge">
+            <div class="label">Latest Value</div>
+            <div class="value">${esc(maybe(marketData.value))}</div>
+          </div>
+          <div class="market-badge">
+            <div class="label">Change</div>
+            <div class="value ${signClass(marketData.change)}">${esc(maybe(marketData.change))}</div>
+          </div>
+          <div class="market-badge">
+            <div class="label">Source</div>
+            <div class="value" style="font-size:14px;line-height:1.25">${esc(maybe(marketData.source_report))}</div>
+          </div>
+        </div>
+      `;
     }
 
     function buildLatLngSegments(route) {
@@ -423,6 +471,7 @@
         <div class="route-item ${idx === activeRouteIndex ? "active" : ""}" data-route="${idx}">
           <div class="route-code">${esc(route.code)}</div>
           <div class="route-name">${esc(routeLegText(route))}</div>
+          ${route.market_data ? `<div class="market-badge-wrap"><div class="market-badge"><div class="label">Latest</div><div class="value">${esc(route.market_data.value)}</div></div><div class="market-badge"><div class="label">Change</div><div class="value ${signClass(route.market_data.change)}">${esc(route.market_data.change)}</div></div></div>` : ""}
         </div>
       `).join("");
       root.querySelectorAll(".route-item").forEach((item) => {
@@ -447,6 +496,7 @@
       }
       const [start, end] = getTerminalPoints(route);
       const extraPoints = (route.points || []).filter((point) => point.additional_point);
+      const keyPorts = routePointLabels(route);
       document.getElementById("detailTitle").textContent = route.code || route.title;
       document.getElementById("detailMeta").textContent = route.tooltip || "-";
       const stats = route.stats?.length
@@ -460,22 +510,23 @@
             <div class="eyebrow">Route Summary</div>
             <div class="sub">${route.path_points?.length || 0} plotted points</div>
           </div>
+          ${renderMarketBadges(route.market_data)}
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Code</th>
                   <th>Route</th>
-                  <th>From</th>
-                  <th>To</th>
+                  <th>Key Ports</th>
+                  <th>Updated</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td>${esc(route.code)}</td>
                   <td>${esc(route.tooltip || "-")}</td>
-                  <td>${esc(start?.label || "-")}</td>
-                  <td>${esc(end?.label || "-")}</td>
+                  <td>${esc(keyPorts.join(" / ") || "-")}</td>
+                  <td>${esc(timeText(route.market_data?.received_at))}</td>
                 </tr>
               </tbody>
             </table>
@@ -521,9 +572,9 @@
         <tr data-route-row="${idx}" style="${idx === activeRouteIndex ? "background:#f4fbfd" : ""}">
           <td>${esc(item.code)}</td>
           <td>${esc(item.tooltip || "-")}</td>
-          <td>${esc(getTerminalPoints(item)[0]?.label || "-")}</td>
-          <td>${esc(getTerminalPoints(item)[1]?.label || "-")}</td>
-          <td>${esc((item.stats || []).map((entry) => `${entry.name}: ${entry.value}`).join(" | ") || "-")}</td>
+          <td>${esc(routePointLabels(item).join(" / ") || "-")}</td>
+          <td>${item.market_data ? `<span class="${signClass(item.market_data.change)}">${esc(item.market_data.value)}</span>` : "-"}</td>
+          <td>${item.market_data ? `<span class="${signClass(item.market_data.change)}">${esc(item.market_data.change)}</span>` : "-"}</td>
         </tr>
       `).join("");
       root.innerHTML = `
@@ -533,9 +584,9 @@
               <tr>
                 <th>Code</th>
                 <th>Route</th>
-                <th>From</th>
-                <th>To</th>
-                <th>Fields</th>
+                <th>Key Ports</th>
+                <th>Latest</th>
+                <th>Change</th>
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -566,7 +617,9 @@
       }));
 
       document.getElementById("mapOverlayTitle").textContent = selected.code || selected.title;
-      document.getElementById("mapOverlayText").textContent = selected.tooltip || selected.description || "-";
+      document.getElementById("mapOverlayText").textContent = selected.market_data
+        ? `${selected.tooltip || "-"} | ${selected.market_data.value} (${selected.market_data.change || "-"})`
+        : (selected.tooltip || selected.description || "-");
     }
 
     function renderAll() {
