@@ -85,7 +85,8 @@ class BalticMapDataService:
                             "description": self._clean_html(route.get("description") or ""),
                             "reverse_route": bool(route.get("reverseRoute")),
                             "force_pacific_route": bool(route.get("forcePacificRoute")),
-                            "points": route_points,
+                            "path_points": route_points,
+                            "points": self._parse_label_points(route.get("points")),
                             "stats": [
                                 {
                                     "name": item.get("name", ""),
@@ -140,7 +141,7 @@ class BalticMapDataService:
         return text.strip()
 
     @staticmethod
-    def _parse_route_points(value: Any) -> list[dict[str, float]]:
+    def _parse_route_points(value: Any) -> list[dict[str, Any]]:
         if not value:
             return []
         raw_points: list[dict[str, Any]]
@@ -154,7 +155,7 @@ class BalticMapDataService:
         else:
             return []
 
-        points: list[dict[str, float]] = []
+        points: list[dict[str, Any]] = []
         for point in raw_points:
             if not isinstance(point, dict):
                 continue
@@ -163,5 +164,35 @@ class BalticMapDataService:
                 longitude = float(point["longitude"])
             except (KeyError, TypeError, ValueError):
                 continue
-            points.append({"latitude": latitude, "longitude": longitude})
+            points.append(
+                {
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "label": str(point.get("label", "")).strip(),
+                    "additional_point": bool(point.get("additionalPoint")),
+                }
+            )
+        return points
+
+    @staticmethod
+    def _parse_label_points(value: Any) -> list[dict[str, Any]]:
+        if not isinstance(value, list):
+            return []
+        points: list[dict[str, Any]] = []
+        for point in value:
+            if not isinstance(point, dict):
+                continue
+            try:
+                latitude = float(point["latitude"])
+                longitude = float(point["longitude"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            points.append(
+                {
+                    "latitude": latitude,
+                    "longitude": longitude,
+                    "label": str(point.get("label", "")).strip(),
+                    "additional_point": bool(point.get("additionalPoint")),
+                }
+            )
         return points
