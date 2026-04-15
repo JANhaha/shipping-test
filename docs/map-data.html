@@ -289,6 +289,7 @@
     let map = null;
     let pointSeries = null;
     let routeSeries = [];
+    let reverseTimer = null;
 
     function initMap() {
       am4core.useTheme(am4themes_animated);
@@ -315,16 +316,30 @@
       circle.stroke = am4core.color("#ffffff");
       circle.strokeWidth = 1.2;
       circle.nonScaling = true;
+      circle.propertyFields.fill = "fill";
+      circle.propertyFields.radius = "radius";
       imageTemplate.propertyFields.latitude = "latitude";
       imageTemplate.propertyFields.longitude = "longitude";
       imageTemplate.tooltipText = "{title}";
     }
 
-    function clearMapRoutes() {
+    function clearReverseTimer() {
+      if (reverseTimer) {
+        clearInterval(reverseTimer);
+        reverseTimer = null;
+      }
+    }
+
+    function clearRouteSeries() {
       while (routeSeries.length) {
         const series = routeSeries.pop();
         map.series.removeIndex(map.series.indexOf(series)).dispose();
       }
+    }
+
+    function clearMapRoutes() {
+      clearReverseTimer();
+      clearRouteSeries();
       pointSeries.data = [];
     }
 
@@ -383,29 +398,44 @@
       `;
     }
 
-    function buildLatLngSegments(route) {
+    function buildLatLngSegments(route, reversed = false) {
       const points = route?.path_points || [];
       if (!points.length) return [];
-      const coordinates = points.map((point) => ({
+      const source = reversed ? [...points].reverse() : points;
+      const coordinates = source.map((point) => ({
         latitude: Number(point.latitude),
         longitude: Number(point.longitude),
       }));
       return [coordinates];
     }
 
-    function addRouteSeries(route) {
-      const coords = buildLatLngSegments(route)[0];
+    function animateLine(line, direction) {
+      const loop = () => {
+        if (!line || line.isDisposed()) return;
+        const animation = line.animate(
+          [{ property: "strokeDashoffset", from: 0, to: direction > 0 ? -46 : 46 }],
+          1800
+        );
+        animation.events.on("animationended", loop);
+      };
+      loop();
+    }
+
+    function createRouteSeries(coords, route, options = {}) {
       if (!coords || coords.length < 2) return;
       const useLineSeries = route.force_pacific_route;
       const series = map.series.push(
         useLineSeries ? new am4maps.MapLineSeries() : new am4maps.MapSplineSeries()
       );
       const template = series.mapLines.template;
-      template.stroke = am4core.color("#0f5c6c");
-      template.strokeWidth = 2.8;
+      template.stroke = am4core.color(options.color || "#0f5c6c");
+      template.strokeWidth = options.width || 2.8;
+      template.strokeOpacity = options.opacity ?? 0.95;
       template.tooltipText = route.tooltip || route.code || route.title;
       template.tooltipPosition = "pointer";
       template.shortestDistance = true;
+      template.strokeDasharray = options.dasharray || "12,8";
+      template.strokeDashoffset = 0;
       if (!useLineSeries) {
         template.line.tensionX = 0.95;
         template.line.tensionY = 0.8;
@@ -413,11 +443,77 @@
       } else {
         template.precision = 0.1;
       }
-      map.deltaLongitude = route.force_pacific_route
-        ? Math.abs((coords[0].longitude + coords[coords.length - 1].longitude) / 2)
-        : 0;
       series.data = [{ multiGeoLine: [coords] }];
+      series.events.on("validated", () => {
+        series.mapLines.each((line) => animateLine(line, options.direction || 1));
+      });
       routeSeries.push(series);
+    }
+
+    function drawRouteSelection(route, reversePhase = false) {
+      clearRouteSeries();
+      const primaryCoords = buildLatLngSegments(route, reversePhase)[0];
+      if (!primaryCoords || primaryCoords.length < 2) return;
+      map.deltaLongitude = route.force_pacific_route
+        ? Math.abs((primaryCoords[0].longitude + primaryCoords[primaryCoords.length - 1].longitude) / 2)
+        : 0;
+      createRouteSeries(primaryCoords, route, {
+        color: "#0f5c6c",
+        width: 3.2,
+        opacity: 0.98,
+        direction: reversePhase ? -1 : 1,
+        dasharray: "14,8",
+      });
+      if (route.reverse_route) {
+        const ghostCoords = buildLatLngSegments(route, !reversePhase)[0];
+        if (ghostCoords && ghostCoords.length >= 2) {
+          createRouteSeries(ghostCoords, route, {
+            color: "#6ab7c8",
+            width: 2,
+            opacity: 0.34,
+            direction: reversePhase ? 1 : -1,
+            dasharray: "8,10",
+          });
+        }
+      }
+    }
+
+    function addRouteSeries(route) {
+      drawRouteSelection(route, false);
+      if (route.reverse_route) {
+        let reversePhase = false;
+        reverseTimer = setInterval(() => {
+          const current = getActiveRoute();
+          if (!current || current.code !== route.code) {
+            clearReverseTimer();
+            return;
+          }
+          reversePhase = !reversePhase;
+          drawRouteSelection(route, reversePhase);
+        }, 6000);
+      }
+    }
+
+    function buildPointSeriesData(route) {
+      const points = route.points || [];
+      return points.map((point, index) => {
+        const isFirst = index === 0;
+        const isLast = index === points.length - 1;
+        const fill = point.additional_point
+          ? am4core.color("#58a9bb")
+          : isFirst
+            ? am4core.color("#00a651")
+            : isLast
+              ? am4core.color("#d4872c")
+              : am4core.color("#0f5c6c");
+        return {
+          latitude: Number(point.latitude),
+          longitude: Number(point.longitude),
+          title: point.label || "Route point",
+          fill,
+          radius: point.additional_point ? 4 : 6,
+        };
+      });
     }
 
     function renderSegmentPills() {
@@ -494,7 +590,6 @@
         root.innerHTML = `<div class="empty">Select one route from the list.</div>`;
         return;
       }
-      const [start, end] = getTerminalPoints(route);
       const extraPoints = (route.points || []).filter((point) => point.additional_point);
       const keyPorts = routePointLabels(route);
       document.getElementById("detailTitle").textContent = route.code || route.title;
@@ -610,11 +705,7 @@
       if (!selected) return;
 
       addRouteSeries(selected);
-      pointSeries.data = (selected.points || []).map((point) => ({
-        latitude: Number(point.latitude),
-        longitude: Number(point.longitude),
-        title: point.label || "Route point",
-      }));
+      pointSeries.data = buildPointSeriesData(selected);
 
       document.getElementById("mapOverlayTitle").textContent = selected.code || selected.title;
       document.getElementById("mapOverlayText").textContent = selected.market_data
