@@ -11,6 +11,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
+from data.attachment_visualization import build_route_market_snapshot
+
 
 class BalticMapDataService:
     DATA_URL = (
@@ -67,6 +69,7 @@ class BalticMapDataService:
         segments: list[dict[str, Any]] = []
         route_count = 0
         index_count = 0
+        route_snapshot = build_route_market_snapshot(limit=300)
 
         for segment in raw.get("segments", []):
             segment_title = segment.get("title") or "Unknown"
@@ -77,16 +80,21 @@ class BalticMapDataService:
                 for route in index.get("routes", []):
                     route_count += 1
                     route_points = self._parse_route_points(route.get("routeJson"))
+                    route_code = (route.get("title") or "").strip()
+                    market_data = route_snapshot.get(route_code) or route_snapshot.get(
+                        route_code.replace(" ", "")
+                    )
                     routes.append(
                         {
-                            "code": route.get("title") or "",
-                            "title": route.get("title") or "",
+                            "code": route_code,
+                            "title": route_code,
                             "tooltip": route.get("tooltip") or route.get("title") or "",
                             "description": self._clean_html(route.get("description") or ""),
                             "reverse_route": bool(route.get("reverseRoute")),
                             "force_pacific_route": bool(route.get("forcePacificRoute")),
                             "path_points": route_points,
                             "points": self._parse_label_points(route.get("points")),
+                            "market_data": market_data,
                             "stats": [
                                 {
                                     "name": item.get("name", ""),
