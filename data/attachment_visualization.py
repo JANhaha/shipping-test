@@ -1,7 +1,8 @@
 import re
 from urllib.parse import unquote
 
-from data.gmail_store import list_attachments_for_message_ids, list_messages
+from data.gmail_store import list_attachments_for_message_ids
+from data.shipping_message_selector import get_latest_target_message
 
 
 CATEGORY_ORDER = ["指数类", "航线日报", "FFA", "矿石煤焦", "成交报告", "其他"]
@@ -9,11 +10,10 @@ ROUTE_CODE_PATTERN = re.compile(r"\b([A-Z]{1,4}\d{1,2}[A-Z]?(?:_[0-9]{2,3})?)\b"
 
 
 def build_attachment_dashboard(limit=300):
-    latest_messages = list_messages(limit=1)
-    if not latest_messages:
+    latest_message = get_latest_target_message(limit=100)
+    if not latest_message:
         return {"categories": [], "total": 0}
 
-    latest_message = latest_messages[0]
     latest_message_id = latest_message["gmail_message_id"]
     attachments = list_attachments_for_message_ids([latest_message_id]).get(latest_message_id, [])[:limit]
 
