@@ -4,12 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MAP DATA</title>
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-    crossorigin=""
-  >
   <style>
     :root{
       --bg:#f3eee6;
@@ -142,8 +136,7 @@
       color:#8b5519;
       border:1px solid rgba(188,108,37,.16);
     }
-    .leaflet-container{background:#dcebf1}
-    .leaflet-control-attribution{font-size:10px}
+    #map canvas{border-radius:24px}
     @media (max-width:1280px){
       .map-layout{grid-template-columns:1fr}
       .panel{min-height:auto}
@@ -252,11 +245,10 @@
     </section>
   </div>
 
-  <script
-    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-    crossorigin=""
-  ></script>
+  <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
   <script>
     const DATA_URL = "./data/map_data.json";
 
@@ -273,25 +265,45 @@
     let activeIndexIndex = 0;
     let activeRouteIndex = 0;
     let map = null;
-    let routeLayerGroup = null;
-    let markerLayerGroup = null;
+    let pointSeries = null;
+    let routeSeries = [];
 
     function initMap() {
-      map = L.map("map", {
-        center: [18, 8],
-        zoom: 2,
-        minZoom: 2,
-        worldCopyJump: true,
-        zoomControl: true
-      });
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png", {
-        subdomains: "abcd",
-        maxZoom: 6,
-        noWrap: false,
-        attribution: "&copy; OpenStreetMap &copy; CARTO"
-      }).addTo(map);
-      routeLayerGroup = L.layerGroup().addTo(map);
-      markerLayerGroup = L.layerGroup().addTo(map);
+      am4core.useTheme(am4themes_animated);
+      map = am4core.create("map", am4maps.MapChart);
+      map.geodata = am4geodata_worldLow;
+      map.projection = new am4maps.projections.Miller();
+      map.maxZoomLevel = 1;
+      map.seriesContainer.draggable = false;
+      map.seriesContainer.resizable = false;
+
+      const polygonSeries = map.series.push(new am4maps.MapPolygonSeries());
+      polygonSeries.useGeodata = true;
+      polygonSeries.exclude = ["AQ"];
+      const polygonTemplate = polygonSeries.mapPolygons.template;
+      polygonTemplate.fill = am4core.color("#dcebf1");
+      polygonTemplate.stroke = am4core.color("#ffffff");
+      polygonTemplate.strokeWidth = 1;
+
+      pointSeries = map.series.push(new am4maps.MapImageSeries());
+      const imageTemplate = pointSeries.mapImages.template;
+      const circle = imageTemplate.createChild(am4core.Circle);
+      circle.radius = 5;
+      circle.fill = am4core.color("#d4872c");
+      circle.stroke = am4core.color("#ffffff");
+      circle.strokeWidth = 1.2;
+      circle.nonScaling = true;
+      imageTemplate.propertyFields.latitude = "latitude";
+      imageTemplate.propertyFields.longitude = "longitude";
+      imageTemplate.tooltipText = "{title}";
+    }
+
+    function clearMapRoutes() {
+      while (routeSeries.length) {
+        const series = routeSeries.pop();
+        map.series.removeIndex(map.series.indexOf(series)).dispose();
+      }
+      pointSeries.data = [];
     }
 
     function getActiveSegment() {
@@ -306,13 +318,6 @@
     function getActiveRoute() {
       const index = getActiveIndex();
       return index?.routes?.[activeRouteIndex] || null;
-    }
-
-    function normalizeLongitude(lng) {
-      let value = Number(lng);
-      while (value > 180) value -= 360;
-      while (value < -180) value += 360;
-      return value;
     }
 
     function getTerminalPoints(route) {
@@ -333,11 +338,38 @@
     function buildLatLngSegments(route) {
       const points = route?.path_points || [];
       if (!points.length) return [];
-      const coordinates = points.map((point) => [
-        Number(point.latitude),
-        route.force_pacific_route ? Number(point.longitude) : normalizeLongitude(point.longitude),
-      ]);
+      const coordinates = points.map((point) => ({
+        latitude: Number(point.latitude),
+        longitude: Number(point.longitude),
+      }));
       return [coordinates];
+    }
+
+    function addRouteSeries(route) {
+      const coords = buildLatLngSegments(route)[0];
+      if (!coords || coords.length < 2) return;
+      const useLineSeries = route.force_pacific_route;
+      const series = map.series.push(
+        useLineSeries ? new am4maps.MapLineSeries() : new am4maps.MapSplineSeries()
+      );
+      const template = series.mapLines.template;
+      template.stroke = am4core.color("#0f5c6c");
+      template.strokeWidth = 2.8;
+      template.tooltipText = route.tooltip || route.code || route.title;
+      template.tooltipPosition = "pointer";
+      template.shortestDistance = true;
+      if (!useLineSeries) {
+        template.line.tensionX = 0.95;
+        template.line.tensionY = 0.8;
+        template.precision = 500;
+      } else {
+        template.precision = 0.1;
+      }
+      map.deltaLongitude = route.force_pacific_route
+        ? Math.abs((coords[0].longitude + coords[coords.length - 1].longitude) / 2)
+        : 0;
+      series.data = [{ multiGeoLine: [coords] }];
+      routeSeries.push(series);
     }
 
     function renderSegmentPills() {
@@ -522,43 +554,19 @@
     }
 
     function renderMap() {
-      routeLayerGroup.clearLayers();
-      markerLayerGroup.clearLayers();
+      clearMapRoutes();
       const selected = getActiveRoute();
       if (!selected) return;
 
-      const bounds = [];
-      const segments = buildLatLngSegments(selected);
-      segments.forEach((segment) => {
-        if (segment.length < 2) return;
-        L.polyline(segment, {
-          color: "#0f5c6c",
-          weight: 4,
-          opacity: 0.95
-        }).addTo(routeLayerGroup);
-        segment.forEach((point) => bounds.push(point));
-      });
-
-      (selected.points || []).forEach((point) => {
-        const marker = L.circleMarker([point.latitude, normalizeLongitude(point.longitude)], {
-          radius: point.additional_point ? 4 : 6,
-          weight: 1,
-          color: "#ffffff",
-          fillColor: point.additional_point ? "#58a9bb" : "#d4872c",
-          fillOpacity: 0.96
-        }).addTo(markerLayerGroup);
-        const label = point.label || "Route point";
-        marker.bindTooltip(label, { direction: "top", opacity: 0.95 });
-      });
+      addRouteSeries(selected);
+      pointSeries.data = (selected.points || []).map((point) => ({
+        latitude: Number(point.latitude),
+        longitude: Number(point.longitude),
+        title: point.label || "Route point",
+      }));
 
       document.getElementById("mapOverlayTitle").textContent = selected.code || selected.title;
       document.getElementById("mapOverlayText").textContent = selected.tooltip || selected.description || "-";
-
-      if (bounds.length) {
-        map.fitBounds(bounds, { padding: [24, 24], maxZoom: 4 });
-      } else {
-        map.setView([18, 8], 2);
-      }
     }
 
     function renderAll() {
