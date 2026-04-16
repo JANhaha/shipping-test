@@ -583,6 +583,7 @@
 
     function renderRouteDetail() {
       const route = getActiveRoute();
+      const segment = getActiveSegment();
       const root = document.getElementById("routeDetail");
       if (!route) {
         document.getElementById("detailTitle").textContent = "No route selected";
@@ -594,6 +595,7 @@
       const keyPorts = routePointLabels(route);
       document.getElementById("detailTitle").textContent = route.code || route.title;
       document.getElementById("detailMeta").textContent = route.tooltip || "-";
+      const showRouteFields = (segment?.title || "").trim().toLowerCase() !== "dry";
       const stats = route.stats?.length
         ? `<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>${
             route.stats.map((item) => `<tr><td>${esc(item.name)}</td><td>${esc(maybe(item.value))}</td></tr>`).join("")
@@ -646,10 +648,10 @@
             </table>
           </div>
         </div>` : ""}
-        <div class="detail-block">
+        ${showRouteFields ? `<div class="detail-block">
           <div class="eyebrow">Route Fields</div>
           ${stats}
-        </div>
+        </div>` : ""}
       `;
     }
 
