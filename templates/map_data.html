@@ -595,12 +595,6 @@
       const keyPorts = routePointLabels(route);
       document.getElementById("detailTitle").textContent = route.code || route.title;
       document.getElementById("detailMeta").textContent = route.tooltip || "-";
-      const showRouteFields = (segment?.title || "").trim().toLowerCase() !== "dry";
-      const stats = route.stats?.length
-        ? `<div class="table-wrap"><table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>${
-            route.stats.map((item) => `<tr><td>${esc(item.name)}</td><td>${esc(maybe(item.value))}</td></tr>`).join("")
-          }</tbody></table></div>`
-        : `<div class="detail-block"><div class="sub">No additional stats on this route.</div></div>`;
       root.innerHTML = `
         <div class="detail-block">
           <div class="route-meta">
@@ -647,10 +641,6 @@
               </tbody>
             </table>
           </div>
-        </div>` : ""}
-        ${showRouteFields ? `<div class="detail-block">
-          <div class="eyebrow">Route Fields</div>
-          ${stats}
         </div>` : ""}
       `;
     }
