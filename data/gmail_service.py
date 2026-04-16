@@ -39,13 +39,26 @@ class GmailShippingDataService:
         session = self._authorized_session()
         label_id = self._find_label_id(session, "shipping-data")
         if not label_id:
-            raise RuntimeError("Gmail label 'shipping-data' 不存在。")
+            raise RuntimeError("Gmail label 'shipping-data' not found.")
 
-        response = self._get_json(
-            session,
-            f"{GMAIL_API_ROOT}/messages?labelIds={quote(label_id)}&q={quote('newer_than:1d')}&maxResults=100",
-        )
-        message_refs = response.get("messages", [])
+        queries = [
+            "newer_than:1d",
+            'subject:"SSY SINGAPORE REPORT" newer_than:7d',
+        ]
+        message_refs = []
+        seen_ids = set()
+        for query in queries:
+            response = self._get_json(
+                session,
+                f"{GMAIL_API_ROOT}/messages?labelIds={quote(label_id)}&q={quote(query)}&maxResults=100",
+            )
+            for ref in response.get("messages", []):
+                message_id = ref.get("id")
+                if not message_id or message_id in seen_ids:
+                    continue
+                seen_ids.add(message_id)
+                message_refs.append(ref)
+
         synced = []
         for ref in message_refs:
             message = self._get_json(
@@ -58,7 +71,7 @@ class GmailShippingDataService:
             "synced_count": len(synced),
             "message_ids": synced,
             "label": "shipping-data",
-            "query": "newer_than:1d",
+            "query": "newer_than:1d + latest SSY SINGAPORE REPORT within 7d",
             "synced_at": datetime.now().isoformat(),
         }
 
