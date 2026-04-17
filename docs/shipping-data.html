@@ -340,7 +340,13 @@
       document.getElementById("status").textContent = "Loading";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
-        const payload = await response.json();
+        const text = await response.text();
+        let payload;
+        try {
+          payload = JSON.parse(text);
+        } catch (error) {
+          throw new Error(`Invalid JSON response: ${error.message}. Response preview: ${text.slice(0, 240)}`);
+        }
         renderAll(payload);
         document.getElementById("status").textContent = "Loaded";
       } catch (error) {
