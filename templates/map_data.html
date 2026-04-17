@@ -287,7 +287,6 @@
     let activeIndexIndex = 0;
     let activeRouteIndex = 0;
     let map = null;
-    let pointSeries = null;
     let routeSeries = [];
     let reverseTimer = null;
 
@@ -308,19 +307,6 @@
       polygonTemplate.stroke = am4core.color("#ffffff");
       polygonTemplate.strokeWidth = 1;
 
-      pointSeries = map.series.push(new am4maps.MapImageSeries());
-      const imageTemplate = pointSeries.mapImages.template;
-      const circle = imageTemplate.createChild(am4core.Circle);
-      circle.radius = 5;
-      circle.fill = am4core.color("#d4872c");
-      circle.stroke = am4core.color("#ffffff");
-      circle.strokeWidth = 1.2;
-      circle.nonScaling = true;
-      circle.propertyFields.fill = "fill";
-      circle.propertyFields.radius = "radius";
-      imageTemplate.propertyFields.latitude = "latitude";
-      imageTemplate.propertyFields.longitude = "longitude";
-      imageTemplate.tooltipText = "{title}";
     }
 
     function clearReverseTimer() {
@@ -340,7 +326,6 @@
     function clearMapRoutes() {
       clearReverseTimer();
       clearRouteSeries();
-      pointSeries.data = [];
     }
 
     function getActiveSegment() {
@@ -492,28 +477,6 @@
           drawRouteSelection(route, reversePhase);
         }, 6000);
       }
-    }
-
-    function buildPointSeriesData(route) {
-      const points = route.points || [];
-      return points.map((point, index) => {
-        const isFirst = index === 0;
-        const isLast = index === points.length - 1;
-        const fill = point.additional_point
-          ? am4core.color("#58a9bb")
-          : isFirst
-            ? am4core.color("#00a651")
-            : isLast
-              ? am4core.color("#d4872c")
-              : am4core.color("#0f5c6c");
-        return {
-          latitude: Number(point.latitude),
-          longitude: Number(point.longitude),
-          title: point.label || "Route point",
-          fill,
-          radius: point.additional_point ? 4 : 6,
-        };
-      });
     }
 
     function renderSegmentPills() {
@@ -697,7 +660,6 @@
       if (!selected) return;
 
       addRouteSeries(selected);
-      pointSeries.data = buildPointSeriesData(selected);
 
       document.getElementById("mapOverlayTitle").textContent = selected.code || selected.title;
       document.getElementById("mapOverlayText").textContent = selected.market_data
