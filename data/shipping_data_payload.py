@@ -2,6 +2,7 @@ from datetime import datetime
 
 from data.attachment_visualization import build_attachment_dashboard
 from data.gmail_store import get_latest_sync_time, list_attachments_for_message_ids
+from data.minimax_service import MiniMaxShippingAnalysisService
 from data.shipping_message_selector import get_latest_target_message
 
 
@@ -15,7 +16,7 @@ def build_shipping_data_payload(limit=300):
         rows.append(row)
 
     attachment_view = build_attachment_dashboard(limit=limit)
-    return {
+    payload = {
         "items": rows,
         "count": len(rows),
         "attachments_total": attachment_view["total"],
@@ -23,3 +24,5 @@ def build_shipping_data_payload(limit=300):
         "latest_sync_at": get_latest_sync_time(),
         "served_at": datetime.now().isoformat(),
     }
+    payload["ai_analysis"] = MiniMaxShippingAnalysisService().analyze_shipping_payload(payload)
+    return payload
