@@ -68,6 +68,9 @@
     .mail-grid{grid-template-columns:1fr 1fr}
     .metrics{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
     .cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .ai-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .watch-list{display:grid;gap:10px;margin-top:14px}
+    .watch-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fbfdfe;line-height:1.7}
     .card{padding:18px}
     .metric-card{padding:16px}
     .text-card{padding:16px}
@@ -123,7 +126,7 @@
       color:#8b5519;
       border:1px solid rgba(188,108,37,.16);
     }
-    @media (max-width:1180px){.mail-grid,.cards-grid{grid-template-columns:1fr}}
+    @media (max-width:1180px){.mail-grid,.cards-grid,.ai-grid{grid-template-columns:1fr}}
     @media (max-width:760px){.shell{padding:14px 10px 36px}.hero,.section{padding:18px}}
   </style>
 </head>
@@ -142,6 +145,17 @@
         <button id="syncBtn" class="button secondary">Sync</button>
         <a class="button secondary" href="/">Back</a>
       </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">AI Analysis</div>
+          <h2>AI Shipping Brief</h2>
+        </div>
+        <div class="sub" id="aiMeta">AI summary</div>
+      </div>
+      <div id="aiRoot" style="margin-top:18px"></div>
     </section>
 
     <section class="section">
@@ -220,6 +234,35 @@
       return `<div class="cards-grid" style="margin-top:14px">${cards.map((card) => `<div class="text-card"><div class="pill">${esc(maybe(card.title))}</div><div class="bullet-list">${splitSummary(card.content).map((line) => `<div class="bullet-item">${esc(line)}</div>`).join("")}</div></div>`).join("")}</div>`;
     }
 
+    function renderAi(payload) {
+      const root = document.getElementById("aiRoot");
+      const meta = document.getElementById("aiMeta");
+      const ai = payload.ai_analysis || {};
+      if (!ai.enabled && !ai.summary && !(ai.sections || []).length) {
+        meta.textContent = ai.error || "AI analysis unavailable";
+        root.innerHTML = `<div class="empty">${esc(ai.error || "No AI analysis available.")}</div>`;
+        return;
+      }
+      meta.textContent = `${esc(ai.provider || "AI")} · ${esc(ai.model || "")}`;
+      const sections = ai.sections || [];
+      const watchList = ai.market_watch || [];
+      const routeFocus = ai.route_focus || [];
+      root.innerHTML = `
+        <div class="ai-grid">
+          <article class="card">
+            <div class="section-head"><h3>Executive View</h3><div class="pill">AI Summary</div></div>
+            <div class="content-block">${esc(ai.summary || "-")}</div>
+            ${sections.length ? renderTextCards(sections) : ""}
+          </article>
+          <article class="card">
+            <div class="section-head"><h3>Market Watch</h3><div class="pill">Signals</div></div>
+            <div class="watch-list">${watchList.map((item) => `<div class="watch-item">${esc(item)}</div>`).join("")}</div>
+            ${routeFocus.length ? `<div class="section-head" style="margin-top:16px"><h3>Route Focus</h3><div class="pill">Routes</div></div><div class="watch-list">${routeFocus.map((item) => `<div class="watch-item"><strong>${esc(item.route || "-")}</strong><div style="margin-top:6px">${esc(item.view || "-")}</div></div>`).join("")}</div>` : ""}
+          </article>
+        </div>
+      `;
+    }
+
     function extractMailMetrics(text) {
       const rows = [];
       const patterns = [
@@ -287,6 +330,7 @@
 
     function renderAll(payload) {
       const latestMail = (payload.items || [])[0];
+      renderAi(payload);
       renderHero(latestMail);
       renderMail(latestMail);
       renderCategories(payload);
@@ -302,6 +346,7 @@
       } catch (error) {
         document.getElementById("status").textContent = "Load failed";
         const html = `<div class="empty">Load failed: ${esc(String(error))}</div>`;
+        document.getElementById("aiRoot").innerHTML = html;
         document.getElementById("mailRoot").innerHTML = html;
         document.getElementById("categoryRoot").innerHTML = html;
       }
