@@ -128,6 +128,7 @@ Requirements:
 
     @staticmethod
     def _parse_json(content):
+        content = re.sub(r"<think>.*?</think>\s*", "", content, flags=re.S | re.I).strip()
         try:
             return json.loads(content)
         except json.JSONDecodeError:
