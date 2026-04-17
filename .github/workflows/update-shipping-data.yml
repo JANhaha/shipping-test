@@ -11,6 +11,8 @@ permissions:
 jobs:
   update-shipping-data:
     runs-on: ubuntu-latest
+    env:
+      MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
 
     steps:
       - name: Checkout
