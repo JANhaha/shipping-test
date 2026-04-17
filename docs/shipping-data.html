@@ -68,7 +68,7 @@
     .mail-grid{grid-template-columns:1fr 1fr}
     .metrics{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
     .cards-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .ai-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .brief-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
     .watch-list{display:grid;gap:10px;margin-top:14px}
     .watch-item{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:#fbfdfe;line-height:1.7}
     .card{padding:18px}
@@ -126,7 +126,7 @@
       color:#8b5519;
       border:1px solid rgba(188,108,37,.16);
     }
-    @media (max-width:1180px){.mail-grid,.cards-grid,.ai-grid{grid-template-columns:1fr}}
+    @media (max-width:1180px){.mail-grid,.cards-grid,.brief-grid{grid-template-columns:1fr}}
     @media (max-width:760px){.shell{padding:14px 10px 36px}.hero,.section{padding:18px}}
   </style>
 </head>
@@ -150,10 +150,10 @@
     <section class="section">
       <div class="section-head">
         <div>
-          <div class="eyebrow">AI Analysis</div>
-          <h2>AI Shipping Brief</h2>
+          <div class="eyebrow">Market Brief</div>
+          <h2>Shipping Brief</h2>
         </div>
-        <div class="sub" id="aiMeta">AI summary</div>
+        <div class="sub" id="aiMeta">Latest market brief</div>
       </div>
       <div id="aiRoot" style="margin-top:18px"></div>
     </section>
@@ -239,18 +239,18 @@
       const meta = document.getElementById("aiMeta");
       const ai = payload.ai_analysis || {};
       if (!ai.enabled && !ai.summary && !(ai.sections || []).length) {
-        meta.textContent = ai.error || "AI analysis unavailable";
-        root.innerHTML = `<div class="empty">${esc(ai.error || "No AI analysis available.")}</div>`;
+        meta.textContent = ai.error || "Brief unavailable";
+        root.innerHTML = `<div class="empty">${esc(ai.error || "No market brief available.")}</div>`;
         return;
       }
-      meta.textContent = `${esc(ai.provider || "AI")} · ${esc(ai.model || "")}`;
+      meta.textContent = "Updated from the latest report";
       const sections = ai.sections || [];
       const watchList = ai.market_watch || [];
       const routeFocus = ai.route_focus || [];
       root.innerHTML = `
-        <div class="ai-grid">
+        <div class="brief-grid">
           <article class="card">
-            <div class="section-head"><h3>Executive View</h3><div class="pill">AI Summary</div></div>
+            <div class="section-head"><h3>Executive View</h3><div class="pill">Market Summary</div></div>
             <div class="content-block">${esc(ai.summary || "-")}</div>
             ${sections.length ? renderTextCards(sections) : ""}
           </article>
