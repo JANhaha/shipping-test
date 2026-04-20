@@ -12,6 +12,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 from data.attachment_visualization import build_route_market_snapshot
+from data.shipping_message_selector import get_latest_target_message
 
 
 class BalticMapDataService:
@@ -70,6 +71,7 @@ class BalticMapDataService:
         route_count = 0
         index_count = 0
         route_snapshot = build_route_market_snapshot(limit=300)
+        latest_message = get_latest_target_message()
 
         for segment in raw.get("segments", []):
             segment_title = segment.get("title") or "Unknown"
@@ -127,6 +129,12 @@ class BalticMapDataService:
             "segments": segments,
             "route_count": route_count,
             "index_count": index_count,
+            "source_message": {
+                "gmail_message_id": latest_message.get("gmail_message_id") if latest_message else None,
+                "subject": latest_message.get("subject") if latest_message else None,
+                "received_at": latest_message.get("received_at") if latest_message else None,
+                "synced_at": latest_message.get("synced_at") if latest_message else None,
+            },
             "updated_at": datetime.now().isoformat(),
         }
 
