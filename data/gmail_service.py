@@ -44,7 +44,7 @@ class GmailShippingDataService:
 
         queries = [
             "newer_than:1d",
-            'subject:"SSY SINGAPORE REPORT" newer_than:7d',
+            'subject:"SSY SINGAPORE" newer_than:7d',
         ]
         message_refs = []
         seen_ids = set()
@@ -72,7 +72,7 @@ class GmailShippingDataService:
             "synced_count": len(synced),
             "message_ids": synced,
             "label": "shipping-data",
-            "query": "newer_than:1d + latest SSY SINGAPORE REPORT within 7d",
+            "query": "newer_than:1d + latest SSY SINGAPORE within 7d",
             "synced_at": datetime.now().isoformat(),
         }
 
