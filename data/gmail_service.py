@@ -6,6 +6,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 from PyPDF2 import PdfReader
+from google.auth.exceptions import RefreshError
 from google.auth.transport.requests import AuthorizedSession, Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -106,7 +107,10 @@ class GmailShippingDataService:
         if self.token_path.exists():
             creds = Credentials.from_authorized_user_file(str(self.token_path), SCOPES)
         if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+            try:
+                creds.refresh(Request())
+            except RefreshError:
+                creds = None
         if creds and creds.valid:
             return creds
         if not interactive:
