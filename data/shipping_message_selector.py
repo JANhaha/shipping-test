@@ -2,6 +2,7 @@ from data.gmail_store import get_connection
 
 
 TARGET_SUBJECT = "SSY SINGAPORE REPORT"
+TARGET_SUBJECT_NORMALIZED = TARGET_SUBJECT.replace(" ", "")
 
 
 def get_latest_target_message(limit=100):
@@ -11,10 +12,11 @@ def get_latest_target_message(limit=100):
             """
             SELECT *
             FROM gmail_messages
-            WHERE UPPER(COALESCE(subject, '')) LIKE ?
-            ORDER BY has_attachments DESC, internal_ts DESC, id DESC
+            WHERE has_attachments = 1
+              AND UPPER(REPLACE(COALESCE(subject, ''), ' ', '')) LIKE ?
+            ORDER BY internal_ts DESC, id DESC
             LIMIT 1
             """,
-            (f"%{TARGET_SUBJECT}%",),
+            (f"%{TARGET_SUBJECT_NORMALIZED}%",),
         ).fetchone()
     return dict(row) if row else None
