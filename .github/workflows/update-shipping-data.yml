@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: "*/30 * * * *"
 
+concurrency:
+  group: shipping-data-refresh
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
@@ -37,14 +41,8 @@ jobs:
           printf '%s' "$GMAIL_CREDENTIALS_JSON" > credentials/gmail_credentials.json
           printf '%s' "$GMAIL_TOKEN_JSON" > credentials/gmail_token.json
 
-      - name: Sync Gmail shipping data
-        run: python scripts/sync_gmail_shipping_data.py
-
-      - name: Export static shipping data
-        run: python scripts/export_shipping_data_static.py
-
-      - name: Regenerate dashboard and map data
-        run: python scripts/generate_static_data.py
+      - name: Run full refresh pipeline
+        run: python scripts/full_refresh.py
 
       - name: Commit updated shipping data
         run: |
