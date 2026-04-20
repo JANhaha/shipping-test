@@ -21,6 +21,12 @@ def build_shipping_data_payload(limit=300):
         "count": len(rows),
         "attachments_total": attachment_view["total"],
         "attachment_categories": attachment_view["categories"],
+        "source_message": {
+            "gmail_message_id": latest_message.get("gmail_message_id") if latest_message else None,
+            "subject": latest_message.get("subject") if latest_message else None,
+            "received_at": latest_message.get("received_at") if latest_message else None,
+            "synced_at": latest_message.get("synced_at") if latest_message else None,
+        },
         "latest_sync_at": get_latest_sync_time(),
         "served_at": datetime.now().isoformat(),
     }
