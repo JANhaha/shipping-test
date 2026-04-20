@@ -1,7 +1,7 @@
 from data.gmail_store import get_connection
 
 
-TARGET_SUBJECT = "SSY SINGAPORE REPORT"
+TARGET_SUBJECT = "SSY SINGAPORE"
 TARGET_SUBJECT_NORMALIZED = TARGET_SUBJECT.replace(" ", "")
 
 
