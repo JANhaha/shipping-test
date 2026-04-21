@@ -1,9 +1,12 @@
 import json
 import sys
 import csv
+import base64
+import subprocess
 from datetime import datetime, timedelta, timezone
 from html import escape
 from pathlib import Path
+from urllib.request import urlopen
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,6 +20,7 @@ from data.map_data_service import BalticMapDataService
 
 
 BEIJING_TZ = timezone(timedelta(hours=8), name="Asia/Shanghai")
+REMOTE_DATA_BASE = "https://raw.githubusercontent.com/JANhaha/shipping-test/main/docs/data"
 
 
 def main() -> None:
@@ -25,6 +29,7 @@ def main() -> None:
     payload = {
         "archived_at": now.isoformat(),
         "timezone": "Asia/Shanghai",
+        "data_sources": {},
         "dashboard": load_or_build("dashboard.json", lambda: ShippingDashboardService().get_dashboard()),
         "shipping_data": load_or_build(
             "shipping_data.json", lambda: build_shipping_data_payload(limit=300)
@@ -42,12 +47,23 @@ def main() -> None:
 
     json_target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     csv_files = write_csv_tables(payload, csv_dir)
-    html_target.write_text(render_html_report(payload, csv_files), encoding="utf-8")
+    html_target.write_text(render_html_report(payload, csv_files, date_key), encoding="utf-8")
     print(f"wrote {json_target}")
     print(f"wrote {html_target}")
 
 
 def load_or_build(filename: str, builder):
+    remote_payload = load_remote_with_github_cli(filename)
+    if remote_payload is not None:
+        return remote_payload
+
+    remote_url = f"{REMOTE_DATA_BASE}/{filename}"
+    try:
+        with urlopen(remote_url, timeout=20) as response:
+            return json.loads(response.read().decode("utf-8"))
+    except Exception:
+        pass
+
     source = ROOT / "docs" / "data" / filename
     if source.exists():
         try:
@@ -55,6 +71,32 @@ def load_or_build(filename: str, builder):
         except Exception:
             pass
     return builder()
+
+
+def load_remote_with_github_cli(filename: str):
+    gh = Path(r"C:\Program Files\GitHub CLI\gh.exe")
+    if not gh.exists():
+        return None
+    path = f"docs/data/{filename}"
+    try:
+        result = subprocess.run(
+            [
+                str(gh),
+                "api",
+                f"repos/JANhaha/shipping-test/contents/{path}?ref=main",
+                "--jq",
+                ".content",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            timeout=30,
+            check=True,
+        )
+        encoded = "".join(result.stdout.split())
+        return json.loads(base64.b64decode(encoded).decode("utf-8"))
+    except Exception:
+        return None
 
 
 def write_csv_tables(payload: dict, csv_dir: Path) -> list[Path]:
@@ -214,7 +256,7 @@ def column_value(values: dict, columns: list, row: list, index: int):
     return ""
 
 
-def render_html_report(payload: dict, csv_files: list[Path]) -> str:
+def render_html_report(payload: dict, csv_files: list[Path], date_key: str) -> str:
     dashboard = payload.get("dashboard", {})
     shipping = payload.get("shipping_data", {})
     map_data = payload.get("map_data", {})
@@ -248,6 +290,7 @@ def render_html_report(payload: dict, csv_files: list[Path]) -> str:
       <div class="meta">源邮件：{escape(str(source.get('subject') or '-'))} / 接收时间：{escape(str(source.get('received_at') or '-'))}</div>
       <div class="links">{''.join(f'<a href="{escape(path.parent.name + "/" + path.name)}">{escape(path.name)}</a>' for path in csv_files)}</div>
     </section>
+    {section('数据抓取状态', table_html(status_rows(payload)))}
     {section('航运相关指数', card_grid(shipping_indices_rows(payload), ['code','value','change','daily_percent','date']))}
     {section('原油信息', card_grid(crude_rows(payload), ['name','latest','open','change_from_open','change_percent_from_open']))}
     {section('相关汇率信息', table_html(forex_rows(payload)))}
@@ -255,9 +298,52 @@ def render_html_report(payload: dict, csv_files: list[Path]) -> str:
     {section('中国沿海散货运价指数', table_html(cbfi_rows(payload)))}
     {section('MAP DATA 航线金额', table_html([row for row in map_route_rows(payload) if row.get('latest_value')]))}
     {section('Shipping Data 附件表格', table_html(shipping_data_rows(payload)))}
+    {section('原始数据索引', raw_data_links(date_key))}
   </div>
 </body>
 </html>"""
+
+
+def status_rows(payload: dict) -> list[dict]:
+    dashboard = payload.get("dashboard", {}) or {}
+    rows = [
+        status_row("航运相关指数", dashboard.get("baltic")),
+        status_row("中国沿海散货运价指数", dashboard.get("cbfi")),
+        status_row("进口矿指数", dashboard.get("iron_ore")),
+        status_row("中行美元折算价", dashboard.get("boc_usd")),
+        status_row("全球主要港口油价", dashboard.get("bunker_index")),
+    ]
+    for code, item in (dashboard.get("crude") or {}).items():
+        rows.append(status_row(f"原油 {code}", item))
+    for code, item in (dashboard.get("forex") or {}).items():
+        rows.append(status_row(f"汇率 {code}", item))
+    rows.append(status_row("Shipping Data", payload.get("shipping_data")))
+    rows.append(status_row("MAP DATA", payload.get("map_data")))
+    return rows
+
+
+def status_row(name: str, item) -> dict:
+    if not isinstance(item, dict):
+        return {"section": name, "status": "missing", "updated_at": "", "message": "无数据"}
+    error = item.get("error")
+    note = item.get("note")
+    return {
+        "section": name,
+        "status": "error" if error else "ok",
+        "updated_at": item.get("updated_at") or item.get("served_at") or "",
+        "message": error or note or "",
+    }
+
+
+def raw_data_links(date_key: str) -> str:
+    return (
+        '<div class="links">'
+        f'<a href="{escape(date_key)}.json">完整 JSON 快照</a>'
+        f'<a href="{escape(date_key)}/shipping_indices.csv">航运指数 CSV</a>'
+        f'<a href="{escape(date_key)}/map_routes.csv">MAP 航线 CSV</a>'
+        f'<a href="{escape(date_key)}/shipping_data_tables.csv">Shipping Data CSV</a>'
+        "</div>"
+    )
 
 
 def section(title: str, body: str) -> str:
