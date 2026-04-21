@@ -12,7 +12,7 @@ if (-not (Test-Path $pythonExe)) {
 Write-Host "[1/2] Full refresh pipeline"
 & $pythonExe "$projectRoot\scripts\full_refresh.py"
 if ($LASTEXITCODE -ne 0) {
-  exit $LASTEXITCODE
+  Write-Warning "Full refresh failed. Archiving the latest available local static data instead."
 }
 
 Write-Host "[2/2] Archive Beijing daily snapshot"
