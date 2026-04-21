@@ -412,6 +412,16 @@
 
   <script>
     const DATA_URL = "./data/dashboard.json";
+    const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
+      timeZone: "Asia/Shanghai",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    });
     const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
     const fmtForex = (v) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(4);
     const maybe = (v) => v === null || v === undefined || v === "" ? "-" : v;
@@ -579,8 +589,8 @@
         renderForex(payload.forex);
         renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || []);
-        document.getElementById("lastUpdated").textContent = new Date(payload.timestamp).toLocaleString("zh-CN");
-        document.getElementById("refreshMeta").textContent = "数据已刷新，当前页面会持续按 30 分钟周期自动更新";
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(payload.timestamp))} 北京时间`;
+        document.getElementById("refreshMeta").textContent = "数据已刷新，当前页面会持续按 30 分钟周期自动更新；每日 22:00 保存本地快照";
       } catch (error) {
         document.getElementById("lastUpdated").textContent = "刷新失败";
         document.getElementById("refreshMeta").textContent = `加载失败：${error}`;
