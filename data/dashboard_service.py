@@ -3,13 +3,15 @@ import json
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
+from data.shipping_message_selector import get_latest_target_message
 
 
 class ShippingDashboardService:
@@ -24,6 +26,7 @@ class ShippingDashboardService:
     CBFI_URL = "https://www.sse.net.cn/index/singleIndex?indexType=cbfi"
     MYSTEEL_APP_KEY = "47EE3F12CF0C443F8FD51EFDA73AC815"
     MYSTEEL_APP_SECRET = "3BA6477330684B19AA6AF4485497B5F2"
+    BEIJING_TZ = timezone(timedelta(hours=8), name="Asia/Shanghai")
 
     def __init__(self):
         self.session = requests.Session()
@@ -128,9 +131,21 @@ class ShippingDashboardService:
                 ),
             }
 
+        latest_message = get_latest_target_message()
+
+        now = datetime.now()
+        now_beijing = datetime.now(self.BEIJING_TZ)
         return {
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": now.isoformat(),
+            "timestamp_beijing": now_beijing.isoformat(),
+            "date_beijing": now_beijing.strftime("%Y-%m-%d"),
             "refresh_interval_minutes": 30,
+            "source_message": {
+                "gmail_message_id": latest_message.get("gmail_message_id") if latest_message else None,
+                "subject": latest_message.get("subject") if latest_message else None,
+                "received_at": latest_message.get("received_at") if latest_message else None,
+                "synced_at": latest_message.get("synced_at") if latest_message else None,
+            },
             "baltic": futures["shipping_indices"].result(),
             "cbfi": futures["cbfi"].result(),
             "crude": {
