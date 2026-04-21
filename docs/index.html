@@ -589,7 +589,8 @@
         renderForex(payload.forex);
         renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || []);
-        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(payload.timestamp))} 北京时间`;
+        const statusTime = payload.timestamp_beijing || payload.timestamp;
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(statusTime))} 北京时间`;
         document.getElementById("refreshMeta").textContent = "数据已刷新，当前页面会持续按 30 分钟周期自动更新；每日 22:00 保存本地快照";
       } catch (error) {
         document.getElementById("lastUpdated").textContent = "刷新失败";
