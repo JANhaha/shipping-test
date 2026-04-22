@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from data.attachment_visualization import build_attachment_dashboard
 from data.gmail_store import get_latest_sync_time, list_attachments_for_message_ids
@@ -7,6 +7,9 @@ from data.shipping_message_selector import get_latest_target_message
 
 
 def build_shipping_data_payload(limit=300):
+    beijing_tz = timezone(timedelta(hours=8), name="Asia/Shanghai")
+    now = datetime.now()
+    now_beijing = datetime.now(beijing_tz)
     latest_message = get_latest_target_message(limit=100)
     rows = []
     if latest_message:
@@ -28,7 +31,8 @@ def build_shipping_data_payload(limit=300):
             "synced_at": latest_message.get("synced_at") if latest_message else None,
         },
         "latest_sync_at": get_latest_sync_time(),
-        "served_at": datetime.now().isoformat(),
+        "served_at": now.isoformat(),
+        "served_at_beijing": now_beijing.isoformat(),
     }
     payload["ai_analysis"] = MiniMaxShippingAnalysisService().analyze_shipping_payload(payload)
     return payload
