@@ -198,7 +198,26 @@
       if (text.startsWith("+")) return "up";
       return "";
     };
-    const timeText = (value) => value ? String(value).replace("T", " ").slice(0, 16) : "-";
+    const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
+      timeZone: "Asia/Shanghai",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+    const parseTime = (value) => {
+      if (!value) return null;
+      const text = String(value).trim().replace(" ", "T");
+      const hasTimezone = /([zZ]|[+-]\d{2}:?\d{2})$/.test(text);
+      const date = new Date(hasTimezone ? text : `${text}Z`);
+      return Number.isNaN(date.getTime()) ? null : date;
+    };
+    const timeText = (value) => {
+      const date = parseTime(value);
+      return date ? `${BEIJING_TIME_FORMATTER.format(date)} 北京时间` : "-";
+    };
     const formatLongText = (value) => {
       if (value === null || value === undefined) return "-";
       return String(value)
