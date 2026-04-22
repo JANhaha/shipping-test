@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from html import unescape
 from pathlib import Path
 import re
@@ -21,6 +21,7 @@ class BalticMapDataService:
         "en/data-services/routes/jcr:content.data"
     )
     REQUEST_TIMEOUT = (10, 25)
+    BEIJING_TZ = timezone(timedelta(hours=8), name="Asia/Shanghai")
 
     def __init__(self) -> None:
         self.session = requests.Session()
@@ -55,6 +56,8 @@ class BalticMapDataService:
                     f"{exc}"
                 )
                 return cached
+            now = datetime.now()
+            now_beijing = datetime.now(self.BEIJING_TZ)
             return {
                 "title": "MAP DATA",
                 "description": "",
@@ -63,7 +66,8 @@ class BalticMapDataService:
                 "index_count": 0,
                 "fallback": False,
                 "error": f"Route map fetch failed: {exc}",
-                "updated_at": datetime.now().isoformat(),
+                "updated_at": now.isoformat(),
+                "updated_at_beijing": now_beijing.isoformat(),
             }
 
     def _normalize_payload(self, raw: dict[str, Any]) -> dict[str, Any]:
@@ -122,6 +126,8 @@ class BalticMapDataService:
                 }
             )
 
+        now = datetime.now()
+        now_beijing = datetime.now(self.BEIJING_TZ)
         return {
             "title": "MAP DATA",
             "source_title": raw.get("title") or "",
@@ -135,7 +141,8 @@ class BalticMapDataService:
                 "received_at": latest_message.get("received_at") if latest_message else None,
                 "synced_at": latest_message.get("synced_at") if latest_message else None,
             },
-            "updated_at": datetime.now().isoformat(),
+            "updated_at": now.isoformat(),
+            "updated_at_beijing": now_beijing.isoformat(),
         }
 
     def _load_cached_payload(self) -> dict[str, Any] | None:
