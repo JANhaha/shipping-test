@@ -29,7 +29,7 @@
         linear-gradient(180deg,#f7f3ec,#ece4da);
     }
     .shell{max-width:1560px;margin:0 auto;padding:24px 16px 56px}
-    .hero,.section,.card,.metric-card,.text-card{
+    .hero,.section,.card,.metric-card,.text-card,.status-card{
       background:var(--panel);
       border:1px solid rgba(255,255,255,.75);
       border-radius:24px;
@@ -49,6 +49,52 @@
     h3{font-size:18px}
     .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-size:12px;font-weight:700}
     .sub{color:var(--muted);font-size:13px;line-height:1.7}
+    .hero-copy{
+      margin-top:12px;
+      max-width:860px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.85;
+    }
+    .hero-top{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);
+      gap:18px;
+      align-items:start;
+    }
+    .hero-badges{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .status-card{
+      padding:18px;
+      background:linear-gradient(180deg,rgba(15,92,108,.05),rgba(15,92,108,.015));
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+    .status-meta{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.8;
+      text-align:right;
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+    .status-label{
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:700;
+    }
+    .status-value{
+      margin-top:8px;
+      font-size:24px;
+      line-height:1.2;
+      font-weight:800;
+    }
     .toolbar{margin-top:14px}
     .button{
       border:0;
@@ -84,6 +130,12 @@
       color:var(--accent);
       font-size:12px;
       font-weight:700;
+    }
+    .section-strap{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.7;
     }
     .up{color:var(--up);font-weight:700}
     .down{color:var(--down);font-weight:700}
@@ -126,19 +178,38 @@
       color:#8b5519;
       border:1px solid rgba(188,108,37,.16);
     }
-    @media (max-width:1180px){.mail-grid,.cards-grid,.brief-grid{grid-template-columns:1fr}}
+    @media (max-width:1180px){.mail-grid,.cards-grid,.brief-grid,.hero-top{grid-template-columns:1fr}}
     @media (max-width:760px){.shell{padding:14px 10px 36px}.hero,.section{padding:18px}}
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="hero">
-      <div class="hero-head">
+      <div class="hero-top">
         <div>
-          <div class="eyebrow">SHIPPING DATA</div>
-          <h1>SHIPPING DATA</h1>
+          <div class="hero-head">
+            <div>
+              <div class="eyebrow">SHIPPING DATA</div>
+              <h1>SHIPPING DATA</h1>
+            </div>
+            <div class="sub" id="status">Loading latest report</div>
+          </div>
+          <div class="hero-copy">
+            Latest SSY Singapore report content is reorganized into a cleaner operating view with
+            structured tables, focused market highlights, and mail body extracts that are easier to compare.
+          </div>
+          <div class="hero-badges">
+            <span class="pill">Latest SSY Mail</span>
+            <span class="pill">Structured Tables</span>
+            <span class="pill">30-Min Refresh</span>
+          </div>
         </div>
-        <div class="sub" id="status">Loading latest report</div>
+        <div class="status-card">
+          <div class="status-meta">Version: V2<br>Web Operations: ANDY</div>
+          <div class="status-label" style="margin-top:14px">Current Sync Status</div>
+          <div class="status-value" id="heroStatus">Loading latest report</div>
+          <div class="sub" style="margin-top:8px">Public page keeps the latest available mailbox snapshot in view.</div>
+        </div>
       </div>
       <div class="toolbar">
         <button id="refreshBtn" class="button">Refresh Now</button>
@@ -152,6 +223,7 @@
         <div>
           <div class="eyebrow">Market Brief</div>
           <h2>Shipping Brief</h2>
+          <div class="section-strap">Key market conclusions and route-level watch points from the latest report.</div>
         </div>
         <div class="sub" id="aiMeta">Latest report summary</div>
       </div>
@@ -163,6 +235,7 @@
         <div>
           <div class="eyebrow">Mail Body</div>
           <h2>Mail Body</h2>
+          <div class="section-strap">Core text is rearranged into readable blocks for faster review and comparison.</div>
         </div>
         <div class="sub" id="mailMeta">Awaiting latest mail</div>
       </div>
@@ -174,6 +247,7 @@
         <div>
           <div class="eyebrow">Structured Data</div>
           <h2>Data View</h2>
+          <div class="section-strap">Tables below consolidate route codes, routes, values and daily moves into one view.</div>
         </div>
       </div>
       <div id="categoryRoot" style="margin-top:18px"></div>
@@ -256,13 +330,16 @@
     function renderAi(payload) {
       const root = document.getElementById("aiRoot");
       const meta = document.getElementById("aiMeta");
+      const heroStatus = document.getElementById("heroStatus");
       const ai = payload.ai_analysis || {};
       if (!ai.enabled && !ai.summary && !(ai.sections || []).length) {
         meta.textContent = ai.error || "Brief unavailable";
+        heroStatus.textContent = ai.error || "Brief unavailable";
         root.innerHTML = `<div class="empty">${esc(ai.error || "No market brief available.")}</div>`;
         return;
       }
       meta.textContent = "Structured from the latest available report";
+      heroStatus.textContent = "Latest report loaded";
       const sections = ai.sections || [];
       const watchList = ai.market_watch || [];
       const routeFocus = ai.route_focus || [];
@@ -357,6 +434,7 @@
 
     async function loadData() {
       document.getElementById("status").textContent = "Loading latest report";
+      document.getElementById("heroStatus").textContent = "Loading latest report";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         const text = await response.text();
@@ -368,8 +446,10 @@
         }
         renderAll(payload);
         document.getElementById("status").textContent = "Latest report loaded";
+        document.getElementById("heroStatus").textContent = "Latest report loaded";
       } catch (error) {
         document.getElementById("status").textContent = "Load failed";
+        document.getElementById("heroStatus").textContent = "Load failed";
         const html = `<div class="empty">Load failed: ${esc(String(error))}</div>`;
         document.getElementById("aiRoot").innerHTML = html;
         document.getElementById("mailRoot").innerHTML = html;
@@ -382,6 +462,7 @@
       const btn = document.getElementById("syncBtn");
       btn.disabled = true;
       document.getElementById("status").textContent = "Syncing mailbox";
+      document.getElementById("heroStatus").textContent = "Syncing mailbox";
       try {
         const response = await fetch(SYNC_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
         const payload = await response.json();
@@ -389,6 +470,7 @@
         await loadData();
       } catch (error) {
         document.getElementById("status").textContent = `Sync failed: ${error}`;
+        document.getElementById("heroStatus").textContent = `Sync failed: ${error}`;
       } finally {
         btn.disabled = false;
       }
