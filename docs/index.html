@@ -464,7 +464,7 @@
               <div class="code">${item.code}</div>
               <div class="primary">${fmt(item.value)}</div>
               <div class="secondary">${maybe(item.name)}</div>
-              <div class="secondary" style="margin-top:10px">${maybe(item.date)} 路 Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
+              <div class="secondary" style="margin-top:10px">${maybe(item.date)} | Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
             </div>
           `).join("")}
         </div>
@@ -494,12 +494,12 @@
 
     function renderIronOre(data) {
       document.getElementById("oreToday").textContent = fmt(data?.today?.value);
-      document.getElementById("oreMeta").innerHTML = `Previous ${fmt(data?.yesterday?.value)} 路 Change ${coloredChange(data?.change_percent, "%", 2)} 路 ${maybe(data?.today?.date)}`;
+      document.getElementById("oreMeta").innerHTML = `Previous ${fmt(data?.yesterday?.value)} | Change ${coloredChange(data?.change_percent, "%", 2)} |${maybe(data?.today?.date)}`;
     }
 
     function renderBoc(data) {
       document.getElementById("bocPrice").textContent = fmt(data?.conversion_price);
-      document.getElementById("bocMeta").textContent = `Spot Buy ${fmt(data?.spot_buy)} 路 Spot Sell ${fmt(data?.spot_sell)} 路 ${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
+      document.getElementById("bocMeta").textContent = `Spot Buy ${fmt(data?.spot_buy)} | Spot Sell ${fmt(data?.spot_sell)} |${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
     }
 
     function renderForex(data) {
