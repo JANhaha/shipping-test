@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Shipping Data</title>
+  <title>SHIPPING DATA</title>
   <style>
     :root{
       --bg:#f3eee6;
@@ -135,15 +135,15 @@
     <section class="hero">
       <div class="hero-head">
         <div>
-          <div class="eyebrow">Shipping Data</div>
-          <h1>Shipping Data</h1>
+          <div class="eyebrow">SHIPPING DATA</div>
+          <h1>SHIPPING DATA</h1>
         </div>
-        <div class="sub" id="status">Loading</div>
+        <div class="sub" id="status">Loading latest report</div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">Refresh</button>
-        <button id="syncBtn" class="button secondary">Sync</button>
-        <a class="button secondary" href="./">Back</a>
+        <button id="refreshBtn" class="button">Refresh Now</button>
+        <button id="syncBtn" class="button secondary">Sync Mailbox</button>
+        <a class="button secondary" href="./">Back Home</a>
       </div>
     </section>
 
@@ -153,7 +153,7 @@
           <div class="eyebrow">Market Brief</div>
           <h2>Shipping Brief</h2>
         </div>
-        <div class="sub" id="aiMeta">Latest market brief</div>
+        <div class="sub" id="aiMeta">Latest report summary</div>
       </div>
       <div id="aiRoot" style="margin-top:18px"></div>
     </section>
@@ -164,7 +164,7 @@
           <div class="eyebrow">Mail Body</div>
           <h2>Mail Body</h2>
         </div>
-        <div class="sub" id="mailMeta">No mail</div>
+        <div class="sub" id="mailMeta">Awaiting latest mail</div>
       </div>
       <div id="mailRoot" class="mail-grid" style="margin-top:18px"></div>
     </section>
@@ -216,7 +216,7 @@
     };
     const timeText = (value) => {
       const date = parseTime(value);
-      return date ? `${BEIJING_TIME_FORMATTER.format(date)} 北京时间` : "-";
+      return date ? `${BEIJING_TIME_FORMATTER.format(date)} Beijing Time` : "-";
     };
     const formatLongText = (value) => {
       if (value === null || value === undefined) return "-";
@@ -262,7 +262,7 @@
         root.innerHTML = `<div class="empty">${esc(ai.error || "No market brief available.")}</div>`;
         return;
       }
-      meta.textContent = "Updated from the latest report";
+      meta.textContent = "Structured from the latest available report";
       const sections = ai.sections || [];
       const watchList = ai.market_watch || [];
       const routeFocus = ai.route_focus || [];
@@ -356,7 +356,7 @@
     }
 
     async function loadData() {
-      document.getElementById("status").textContent = "Loading";
+      document.getElementById("status").textContent = "Loading latest report";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         const text = await response.text();
@@ -367,7 +367,7 @@
           throw new Error(`Invalid JSON response: ${error.message}. Response preview: ${text.slice(0, 240)}`);
         }
         renderAll(payload);
-        document.getElementById("status").textContent = "Loaded";
+        document.getElementById("status").textContent = "Latest report loaded";
       } catch (error) {
         document.getElementById("status").textContent = "Load failed";
         const html = `<div class="empty">Load failed: ${esc(String(error))}</div>`;
@@ -381,7 +381,7 @@
       if (!ENABLE_SYNC) return;
       const btn = document.getElementById("syncBtn");
       btn.disabled = true;
-      document.getElementById("status").textContent = "Syncing";
+      document.getElementById("status").textContent = "Syncing mailbox";
       try {
         const response = await fetch(SYNC_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
         const payload = await response.json();
