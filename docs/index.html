@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#f4ede5;
-      --panel:rgba(255,255,255,.92);
+      --panel:rgba(255,255,255,.94);
       --panel-strong:#fffdfa;
       --ink:#17262d;
       --muted:#667983;
@@ -39,7 +39,7 @@
     }
     .hero,.panel{padding:24px}
     .panel{margin-top:16px}
-    .hero-top,.hero-actions,.panel-head,.card-top,.section-intro{
+    .hero-top,.panel-head,.card-top{
       display:flex;
       justify-content:space-between;
       gap:14px;
@@ -151,19 +151,16 @@
       gap:16px;
     }
     .span-12{grid-column:span 12}
-    .span-8{grid-column:span 8}
     .span-6{grid-column:span 6}
-    .span-4{grid-column:span 4}
-    .stats-grid,.cards-2,.cards-4,.cards-6,.quick-grid,.forex-grid{
+    .stats-grid,.cards-2,.cards-3,.cards-4,.quick-grid{
       display:grid;
       gap:16px;
     }
     .stats-grid{grid-template-columns:repeat(auto-fit,minmax(144px,1fr));margin-top:18px}
     .cards-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cards-3{grid-template-columns:repeat(3,minmax(0,1fr))}
     .cards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .cards-6{grid-template-columns:repeat(6,minmax(0,1fr))}
     .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .forex-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
     .tile{
       padding:18px;
       background:var(--panel-strong);
@@ -263,16 +260,15 @@
       line-height:1.7;
     }
     @media (max-width:1280px){
-      .span-8,.span-6,.span-4{grid-column:span 12}
+      .span-6{grid-column:span 12}
       .hero-grid{grid-template-columns:1fr}
-      .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
       .cards-4{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .forex-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .cards-3{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media (max-width:760px){
       .shell{padding:14px 10px 34px}
       .hero,.panel{padding:18px;border-radius:20px}
-      .entry-grid,.cards-2,.cards-4,.cards-6,.metric-grid,.quick-grid,.forex-grid{grid-template-columns:1fr}
+      .entry-grid,.cards-2,.cards-3,.cards-4,.metric-grid,.quick-grid{grid-template-columns:1fr}
       .primary,.metric-value{font-size:26px}
       th,td{padding:10px 8px}
     }
@@ -284,13 +280,15 @@
       <div class="hero-top">
         <div>
           <div class="eyebrow">MANDARINE OCEAN DASHBOARD</div>
-          <h1>濠曘垺纾遍懜顏囩箥娣団剝浼呴惇瀣緲</h1>
+          <h1>MANDARINE OCEAN DASHBOARD</h1>
           <div class="subtitle">
-            缂佺喍绔寸仦鏇犮仛閼割亣绻嶉惄绋垮彠閹稿洦鏆熼妴浣稿斧濞岄€涗繆閹垬鈧胶娴夐崗铏湽閻滃洣淇婇幁顖樷偓浣疯厬閸ヨ姤閮ㄥù閿嬫殠鐠愌嗙箥娴犻攱瀵氶弫鑸偓浣界箻閸欙絿鐔嗛幐鍥ㄦ殶閵嗕椒鑵戠悰宀€绶ㄩ崗鍐╁缁犳ぞ鐜稉搴″弿閻炲啩瀵岀憰浣硅厫閸欙絾琛ユ禒鏋偓?            妞ょ敻娼板В?30 閸掑棝鎸撻懛顏勫З閸掗攱鏌婃稉鈧▎鈽呯礉娴兼ê鍘涙穱婵囧瘮閺佺増宓佹稉搴㈡付閺傜増濮勯崣鏍波閺嬫粌鎮撳銉ｂ偓?          </div>
+            Unified market board for shipping indices, crude, FX, iron ore, BOC USD conversion,
+            China coastal freight snapshot, and major port bunker prices. Data refreshes every 30 minutes.
+          </div>
         </div>
         <div>
           <div class="release-meta">Version: V2<br>Web Operations: ANDY</div>
-          <div class="section-tag" style="margin-top:8px">30 閸掑棝鎸撻懛顏勫З閺囧瓨鏌?/div>
+          <div class="section-tag" style="margin-top:8px">30-Min Auto Refresh</div>
         </div>
       </div>
 
@@ -298,27 +296,27 @@
         <div class="entry-grid">
           <a href="./shipping-data.html" class="entry-card">
             <div class="entry-title">SHIPPING DATA</div>
-            <div class="entry-meta">閺屻儳婀呴張鈧弬?SSY SINGAPORE REPORT 闁喕娆㈡稉搴ㄦ娴犺埖鏆ｉ悶鍡楁倵閻ㄥ嫮绮ㄩ弸鍕閺佺増宓侀妴浣哥閸﹁櫣鐣濋幎銉ｂ偓浣藉焻缁捐儻銆冮弽闂寸瑢闁插秶鍋ｉ崘鍛啇閵?/div>
+            <div class="entry-meta">Latest SSY Singapore report, structured attachment tables, market brief and route-focused content.</div>
             <div class="entry-mark">DATA</div>
           </a>
           <a href="./map-data.html" class="entry-card">
             <div class="entry-title">MAP DATA</div>
-            <div class="entry-meta">閺屻儳婀?Baltic 閼割亞鍤庨崷鏉挎禈閵嗕礁鍨庣紒鍕偍瀵洏鈧浇鐭剧痪澶稿敩閻椒绗屾禒搴㈡付閺?SHIPPING DATA 閼辨柨濮╂潻鍥ㄦ降閻ㄥ嫯鍩呯痪澶哥幆閺嶉棿淇婇幁顖樷偓?/div>
+            <div class="entry-meta">Interactive route map with linked route values from the latest shipping-mail snapshot.</div>
             <div class="entry-mark">MAP</div>
           </a>
         </div>
 
         <div class="hero-side">
           <div class="metric-card">
-            <div class="metric-label">閻婢橀悩鑸碘偓?/div>
-            <div id="lastUpdated" class="metric-value">閸旂姾娴囨稉?/div>
-            <div class="meta" id="refreshMeta" style="margin-top:8px">濮濓絽婀潻鐐村复閺堚偓閺傜増鏆熼幑顔界爱</div>
+            <div class="metric-label">Board Status</div>
+            <div id="lastUpdated" class="metric-value">Loading</div>
+            <div class="meta" id="refreshMeta" style="margin-top:8px">Connecting to latest published data</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">閹垮秳缍?/div>
+            <div class="metric-label">Actions</div>
             <div class="toolbar">
-              <button id="refreshBtn" class="button">缁斿宓嗛崚閿嬫煀</button>
-              <span class="toolbar-note">閼奉亜濮╅崚閿嬫煀閸涖劍婀￠敍?0 閸掑棝鎸?/span>
+              <button id="refreshBtn" class="button">Refresh Now</button>
+              <span class="toolbar-note">Snapshot cadence: 30 minutes</span>
             </div>
           </div>
         </div>
@@ -330,7 +328,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Shipping Indices</div>
-            <h2>閼割亣绻嶉惄绋垮彠閹稿洦鏆?/h2>
+            <h2>Shipping Market Indices</h2>
           </div>
           <div class="dense-note">BDI / BCI / BPI / BSI / BHSI / BCTI / BDTI / BLNG / BLPG</div>
         </div>
@@ -341,9 +339,9 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Crude</div>
-            <h2>閸樼喐琛ユ穱鈩冧紖</h2>
+            <h2>Crude Market</h2>
           </div>
-          <div class="dense-note">WTI 閸樼喐琛?/ 鐢啩楦￠悧鐟板斧濞?CFD</div>
+          <div class="dense-note">WTI Crude / Brent Crude CFD</div>
         </div>
         <div class="cards-2" id="crudeCards"></div>
       </section>
@@ -352,18 +350,18 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Spot Focus</div>
-            <h2>闁插秶鍋ｉ悳鎷屾彛娣団剝浼?/h2>
+            <h2>Spot Market Focus</h2>
           </div>
-          <div class="dense-note">鏉╂稑褰涢惌鎸庡瘹閺?/ 娑擃叀顢戠紘搴″帗閹舵鐣绘禒?/div>
+          <div class="dense-note">Imported iron ore index / BOC USD conversion</div>
         </div>
         <div class="quick-grid">
           <div class="tile soft">
-            <div class="mini-label">鏉╂稑褰涢惌鎸庡瘹閺?/div>
+            <div class="mini-label">Imported Iron Ore</div>
             <div id="oreToday" class="primary">-</div>
             <div id="oreMeta" class="secondary"></div>
           </div>
           <div class="tile soft">
-            <div class="mini-label">娑擃叀顢戠紘搴″帗閹舵鐣绘禒?/div>
+            <div class="mini-label">BOC USD Conversion</div>
             <div id="bocPrice" class="primary">-</div>
             <div id="bocMeta" class="secondary"></div>
           </div>
@@ -373,21 +371,21 @@
       <section class="panel span-12">
         <div class="panel-head">
           <div>
-            <div class="eyebrow">Forex</div>
-            <h2>閻╃鍙уЧ鍥╁芳娣団剝浼?/h2>
+            <div class="eyebrow">FX</div>
+            <h2>Related FX Rates</h2>
           </div>
-          <div class="dense-note">閹碘偓閺堝鐪归悳鍥ㄦ殶鐎涙绮烘稉鈧穱婵堟殌閸ユ稐缍呯亸蹇旀殶</div>
+          <div class="dense-note">All FX values shown with 4 decimal places</div>
         </div>
-        <div id="forexCards" class="forex-grid"></div>
+        <div id="forexCards" class="cards-3"></div>
       </section>
 
       <section class="panel span-12">
         <div class="panel-head">
           <div>
             <div class="eyebrow">CBFI</div>
-            <h2>娑擃厼娴楀▽鎸庢崳閺侊綀鎻ｆ潻鎰幆閹稿洦鏆?/h2>
+            <h2>China Coastal Bulk Freight Snapshot</h2>
           </div>
-          <div id="cbfiDate" class="dense-note">閸旂姾娴囨稉?/div>
+          <div id="cbfiDate" class="dense-note">Loading</div>
         </div>
         <div id="cbfiRoot"></div>
       </section>
@@ -396,20 +394,20 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Bunker</div>
-            <h2>閸忋劎鎮嗘稉鏄忣洣濞擃垰褰涘▽閫涚幆</h2>
+            <h2>Global Major Ports Bunker Prices</h2>
           </div>
-          <div class="dense-note">瀹稿弶鏆ｉ崥鍫ｅ灧鐏炶精鍤滈崝銊﹀閸欐牗鏆熼幑顕嗙礉娴犲懎鐫嶇粈鍝勭摠閸︺劎婀＄€圭偞濮ゆ禒椋庢畱濞擃垰褰?/div>
+          <div class="dense-note">Including Zhoushan and all visible major ports with live published prices</div>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>濞擃垰褰?/th>
-                <th>閸ヨ棄顔?/ 閸︽澘灏?/th>
+                <th>Port</th>
+                <th>Country</th>
                 <th>IFO380</th>
                 <th>VLSFO</th>
                 <th>MGO / LSMGO</th>
-                <th>閺冦儲婀?/th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody id="bunkerTable"></tbody>
@@ -456,7 +454,7 @@
     function renderShippingIndices(data) {
       const root = document.getElementById("shippingIndices");
       if (!data || data.error) {
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "閼割亣绻嶉惄绋垮彠閹稿洦鏆熼崝鐘烘祰婢惰精瑙?}</div>`;
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "Shipping indices unavailable."}</div>`;
         return;
       }
       root.innerHTML = `
@@ -466,7 +464,7 @@
               <div class="code">${item.code}</div>
               <div class="primary">${fmt(item.value)}</div>
               <div class="secondary">${maybe(item.name)}</div>
-              <div class="secondary" style="margin-top:10px">${maybe(item.date)} 璺?閺冦儱褰夐崝?${coloredChange(item.daily_percent, "%", 2)}</div>
+              <div class="secondary" style="margin-top:10px">${maybe(item.date)} · Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
             </div>
           `).join("")}
         </div>
@@ -482,13 +480,13 @@
               <div class="mini-label">${maybe(item.name)}</div>
               <div class="primary">${fmt(item.latest)}</div>
             </div>
-            <div class="section-tag">閺堚偓閺傞鐜弽?/div>
+            <div class="section-tag">Live</div>
           </div>
           <div class="metric-grid">
-            ${miniMetric("瀵偓閻╂ü鐜?, item.open)}
-            ${miniMetric("閺勩劍鏁?, item.previous_close)}
-            ${miniMetric("鏉堝啫绱戦惄妯诲畾鐠?, item.change_from_open, fmt, true, "", 2)}
-            ${miniMetric("濞戙劏绌奸獮?, item.change_percent_from_open, fmt, true, "%", 2)}
+            ${miniMetric("Open", item.open)}
+            ${miniMetric("Prev Close", item.previous_close)}
+            ${miniMetric("Vs Open", item.change_from_open, fmt, true, "", 2)}
+            ${miniMetric("Change %", item.change_percent_from_open, fmt, true, "%", 2)}
           </div>
         </div>
       `).join("");
@@ -496,12 +494,12 @@
 
     function renderIronOre(data) {
       document.getElementById("oreToday").textContent = fmt(data?.today?.value);
-      document.getElementById("oreMeta").innerHTML = `閺勩劍妫?${fmt(data?.yesterday?.value)} 璺?閸欐ê瀵?${coloredChange(data?.change_percent, "%", 2)} 璺?${maybe(data?.today?.date)}`;
+      document.getElementById("oreMeta").innerHTML = `Previous ${fmt(data?.yesterday?.value)} · Change ${coloredChange(data?.change_percent, "%", 2)} · ${maybe(data?.today?.date)}`;
     }
 
     function renderBoc(data) {
       document.getElementById("bocPrice").textContent = fmt(data?.conversion_price);
-      document.getElementById("bocMeta").textContent = `閻滅増鐪规稊鏉垮弳 ${fmt(data?.spot_buy)} 璺?閻滅増鐪归崡鏍у毉 ${fmt(data?.spot_sell)} 璺?${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
+      document.getElementById("bocMeta").textContent = `Spot Buy ${fmt(data?.spot_buy)} · Spot Sell ${fmt(data?.spot_sell)} · ${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
     }
 
     function renderForex(data) {
@@ -512,16 +510,16 @@
           <div class="tile">
             <div class="card-top">
               <div>
-                <div class="mini-label">${maybe(item.title)}</div>
+                <div class="mini-label">${maybe(item.title || key)}</div>
                 <div class="primary">${fmtForex(item.latest)}</div>
               </div>
-              <div class="section-tag">閸ユ稐缍呯亸蹇旀殶</div>
+              <div class="section-tag">4 Decimals</div>
             </div>
             <div class="metric-grid">
-              ${miniMetric("瀵偓閻╂ü鐜?, item.open, fmtForex)}
-              ${miniMetric("閺勩劍鏁?, item.previous_close, fmtForex)}
-              ${miniMetric("鏉堝啫绱戦惄妯诲畾鐠?, item.change_from_open, fmtForex, true, "", 4)}
-              ${miniMetric("濞戙劏绌奸獮?, item.change_percent_from_open, fmt, true, "%", 4)}
+              ${miniMetric("Open", item.open, fmtForex)}
+              ${miniMetric("Prev Close", item.previous_close, fmtForex)}
+              ${miniMetric("Vs Open", item.change_from_open, fmtForex, true, "", 4)}
+              ${miniMetric("Change %", item.change_percent_from_open, fmt, true, "%", 4)}
             </div>
           </div>
         `;
@@ -532,41 +530,53 @@
       const root = document.getElementById("cbfiRoot");
       const dateNode = document.getElementById("cbfiDate");
       if (!data || data.error) {
-        dateNode.textContent = "閸旂姾娴囨径杈Е";
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "娑擃厼娴楀▽鎸庢崳閺侊綀鎻ｆ潻鎰幆閹稿洦鏆熼崝鐘烘祰婢惰精瑙?}</div>`;
+        dateNode.textContent = "Unavailable";
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI snapshot unavailable."}</div>`;
         return;
       }
+
+      const overview = data.overview || {};
       dateNode.textContent = `${maybe(data.previous_date)} -> ${maybe(data.current_date)}`;
-      const highlights = (data.highlights || []).map((item) => `
-        <div class="tile soft">
-          <div class="mini-label">${maybe(item.route)}</div>
-          <div class="primary">${fmt(item.current)}</div>
-          <div class="secondary">娑撳﹥婀?${fmt(item.previous)} 璺?濞戙劏绌?${coloredChange(item.change_percent, "%", 2)}</div>
-        </div>
-      `).join("");
-      const routes = (data.routes || []).map((item) => `
-        <tr>
-          <td>${maybe(item.route)}</td>
-          <td>${maybe(item.ship_type)}</td>
-          <td>${fmt(item.previous)}</td>
-          <td>${fmt(item.current)}</td>
-          <td>${coloredChange(item.change_percent, "%", 2)}</td>
-        </tr>
-      `).join("");
+      const highlights = (data.highlights || []).slice(0, 6);
+      const routes = (data.routes || []).slice(0, 12);
+
       root.innerHTML = `
-        <div class="cards-4" style="margin-top:16px">${highlights}</div>
+        <div class="cards-4">
+          <div class="tile soft">
+            <div class="mini-label">Current Composite</div>
+            <div class="primary">${fmt(overview.current)}</div>
+            <div class="secondary">Previous ${fmt(overview.previous)} · ${coloredChange(overview.change_percent, "%", 2)}</div>
+          </div>
+          ${highlights.map((item, idx) => `
+            <div class="tile soft">
+              <div class="mini-label">Highlight ${idx + 1}</div>
+              <div class="primary">${fmt(item.current)}</div>
+              <div class="secondary">Previous ${fmt(item.previous)} · ${coloredChange(item.change_percent, "%", 2)}</div>
+            </div>
+          `).join("")}
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>閼割亞鍤?/th>
-                <th>閸欏倽鈧啳鍩為崹?/th>
-                <th>娑撳﹥婀?/th>
-                <th>閺堫剚婀?/th>
-                <th>濞戙劏绌奸獮?/th>
+                <th>Lane</th>
+                <th>Vessel Size</th>
+                <th>Previous</th>
+                <th>Current</th>
+                <th>Change %</th>
               </tr>
             </thead>
-            <tbody>${routes}</tbody>
+            <tbody>
+              ${routes.map((item, idx) => `
+                <tr>
+                  <td>Route ${idx + 1}</td>
+                  <td>Band ${idx + 1}</td>
+                  <td>${fmt(item.previous)}</td>
+                  <td>${fmt(item.current)}</td>
+                  <td>${coloredChange(item.change_percent, "%", 2)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
           </table>
         </div>
       `;
@@ -599,11 +609,11 @@
         renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || []);
         const statusTime = payload.timestamp_beijing || payload.timestamp;
-        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(statusTime))} 閸栨ぞ鍚弮鍫曟？`;
-        document.getElementById("refreshMeta").textContent = "閺佺増宓佸鎻掑煕閺傚府绱濊ぐ鎾冲妞ょ敻娼版导姘瘮缂侇厽瀵?30 閸掑棝鎸撻崨銊︽埂閼奉亜濮╅弴瀛樻煀閿涙稒鐦￠弮?22:00 娣囨繂鐡ㄩ張顒€婀磋箛顐ゅ弾";
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(statusTime))} Beijing Time`;
+        document.getElementById("refreshMeta").textContent = "Live board connected to the latest published stable snapshot.";
       } catch (error) {
-        document.getElementById("lastUpdated").textContent = "閸掗攱鏌婃径杈Е";
-        document.getElementById("refreshMeta").textContent = `閸旂姾娴囨径杈Е閿?{error}`;
+        document.getElementById("lastUpdated").textContent = "Load Failed";
+        document.getElementById("refreshMeta").textContent = `Error: ${error}`;
       } finally {
         btn.disabled = false;
       }
