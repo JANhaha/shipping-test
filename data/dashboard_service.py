@@ -60,73 +60,73 @@ class ShippingDashboardService:
     def _load_dashboard(self):
         with ThreadPoolExecutor(max_workers=10) as executor:
             futures = {
-                "shipping_indices": executor.submit(self._call_safe, self.get_baltic_indices, "航运相关指数"),
-                "cbfi": executor.submit(self._call_safe, self.get_cbfi_index, "中国沿海散货运价指数"),
-                "iron_ore": executor.submit(self._call_safe, self.get_iron_ore_index, "进口矿指数"),
-                "boc_usd": executor.submit(self._call_safe, self.get_boc_usd_rate, "中行美元折算价"),
-                "bunker_index": executor.submit(self._call_safe, self.get_bunker_prices, "全球主要港口油价"),
+                "shipping_indices": executor.submit(self._call_safe, self.get_baltic_indices, "Shipping indices"),
+                "cbfi": executor.submit(self._call_safe, self.get_cbfi_index, "CBFI"),
+                "iron_ore": executor.submit(self._call_safe, self.get_iron_ore_index, "Imported iron ore index"),
+                "boc_usd": executor.submit(self._call_safe, self.get_boc_usd_rate, "BOC USD conversion price"),
+                "bunker_index": executor.submit(self._call_safe, self.get_bunker_prices, "Global bunker prices"),
                 "wti": executor.submit(
                     self._call_safe,
                     self.get_crude_quote,
-                    "WTI原油",
+                    "WTI Crude",
                     "CL",
-                    "WTI原油",
+                    "WTI Crude",
                     "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
                 ),
                 "brent": executor.submit(
                     self._call_safe,
                     self.get_crude_quote,
-                    "布伦特原油CFD",
+                    "Brent Crude CFD",
                     "OIL",
-                    "布伦特原油CFD",
+                    "Brent Crude CFD",
                     "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
                 ),
                 "DINIW": executor.submit(
                     self._call_safe,
                     self.get_forex_quote,
-                    "美元指数",
+                    "US Dollar Index",
                     "DINIW",
-                    "美元指数",
+                    "US Dollar Index",
                     "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
                 ),
                 "EURUSD": executor.submit(
                     self._call_safe,
                     self.get_forex_quote,
-                    "欧元兑美元",
+                    "EUR/USD",
                     "EURUSD",
-                    "欧元兑美元",
+                    "EUR/USD",
                     "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
                 ),
                 "GBPUSD": executor.submit(
                     self._call_safe,
                     self.get_forex_quote,
-                    "英镑兑美元",
+                    "GBP/USD",
                     "GBPUSD",
-                    "英镑兑美元",
+                    "GBP/USD",
                     "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
                 ),
                 "USDCNY": executor.submit(
                     self._call_safe,
                     self.get_forex_quote,
-                    "美元兑人民币",
+                    "USD/CNY",
                     "USDCNY",
-                    "美元兑人民币",
+                    "USD/CNY",
                     "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
                 ),
                 "USDHKD": executor.submit(
                     self._call_safe,
                     self.get_forex_quote,
-                    "美元兑港元",
+                    "USD/HKD",
                     "USDHKD",
-                    "美元兑港元",
+                    "USD/HKD",
                     "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
                 ),
                 "USDJPY": executor.submit(
                     self._call_safe,
                     self.get_forex_quote,
-                    "美元兑日元",
+                    "USD/JPY",
                     "USDJPY",
-                    "美元兑日元",
+                    "USD/JPY",
                     "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
                 ),
             }
@@ -262,12 +262,12 @@ class ShippingDashboardService:
 
     def get_cbfi_index(self):
         response = self.session.get(self.CBFI_URL, timeout=30)
-        response.encoding = response.apparent_encoding or "utf-8"
+        response.encoding = "utf-8"
         soup = BeautifulSoup(response.text, "html.parser")
         table = soup.select_one("table.lb1")
         if not table:
             return {
-                "error": "未能解析中国沿海散货运价指数页面。",
+                "error": "Unable to parse CBFI page.",
                 "source_url": self.CBFI_URL,
                 "updated_at": datetime.now().isoformat(),
             }
@@ -291,16 +291,12 @@ class ShippingDashboardService:
                 }
             )
 
-        overview = next((row for row in rows if row["route"] == "综合指数"), rows[0] if rows else None)
-        highlights = [
-            row
-            for row in rows
-            if row["route"] in {"综合指数", "沿海干散货指数", "煤炭货种指数", "粮食货种指数", "金属矿石货种指数", "沿海油品指数"}
-        ]
+        overview = rows[0] if rows else None
+        highlights = rows[:6]
         detail_rows = [row for row in rows if row["ship_type"]]
 
         return {
-            "name": "中国沿海散货运价指数",
+            "name": "China Coastal Bulk Freight Index",
             "overview": overview,
             "highlights": highlights,
             "routes": detail_rows,
@@ -369,7 +365,7 @@ class ShippingDashboardService:
         today = rows[0] if rows else {}
         yesterday = rows[1] if len(rows) > 1 else {}
         return {
-            "name": "进口矿指数",
+            "name": "Imported Iron Ore Index",
             "today": {"date": today.get("date"), "value": self._to_float(today.get("value"))},
             "yesterday": {"date": yesterday.get("date"), "value": self._to_float(yesterday.get("value"))},
             "change_percent": self._signed_float(today.get("lastDayScale")),
@@ -390,7 +386,7 @@ class ShippingDashboardService:
 
         if not usd_row:
             return {
-                "error": "未能解析中行美元折算价。",
+                "error": "Unable to parse BOC USD conversion price.",
                 "source_url": self.BOC_URL,
                 "updated_at": datetime.now().isoformat(),
             }
@@ -576,7 +572,7 @@ class ShippingDashboardService:
             return func(*args)
         except Exception as exc:
             return {
-                "error": f"{label}抓取失败: {exc}",
+                "error": f"{label}闁硅埖鎸歌ぐ鍥ㄥ緞鏉堫偉袝: {exc}",
                 "updated_at": datetime.now().isoformat(),
             }
 
