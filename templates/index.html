@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#f4ede5;
-      --panel:rgba(255,255,255,.92);
+      --panel:rgba(255,255,255,.94);
       --panel-strong:#fffdfa;
       --ink:#17262d;
       --muted:#667983;
@@ -39,7 +39,7 @@
     }
     .hero,.panel{padding:24px}
     .panel{margin-top:16px}
-    .hero-top,.hero-actions,.panel-head,.card-top,.section-intro{
+    .hero-top,.panel-head,.card-top{
       display:flex;
       justify-content:space-between;
       gap:14px;
@@ -151,19 +151,16 @@
       gap:16px;
     }
     .span-12{grid-column:span 12}
-    .span-8{grid-column:span 8}
     .span-6{grid-column:span 6}
-    .span-4{grid-column:span 4}
-    .stats-grid,.cards-2,.cards-4,.cards-6,.quick-grid,.forex-grid{
+    .stats-grid,.cards-2,.cards-3,.cards-4,.quick-grid{
       display:grid;
       gap:16px;
     }
     .stats-grid{grid-template-columns:repeat(auto-fit,minmax(144px,1fr));margin-top:18px}
     .cards-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cards-3{grid-template-columns:repeat(3,minmax(0,1fr))}
     .cards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .cards-6{grid-template-columns:repeat(6,minmax(0,1fr))}
     .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .forex-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
     .tile{
       padding:18px;
       background:var(--panel-strong);
@@ -263,16 +260,15 @@
       line-height:1.7;
     }
     @media (max-width:1280px){
-      .span-8,.span-6,.span-4{grid-column:span 12}
+      .span-6{grid-column:span 12}
       .hero-grid{grid-template-columns:1fr}
-      .cards-6{grid-template-columns:repeat(3,minmax(0,1fr))}
       .cards-4{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .forex-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .cards-3{grid-template-columns:repeat(2,minmax(0,1fr))}
     }
     @media (max-width:760px){
       .shell{padding:14px 10px 34px}
       .hero,.panel{padding:18px;border-radius:20px}
-      .entry-grid,.cards-2,.cards-4,.cards-6,.metric-grid,.quick-grid,.forex-grid{grid-template-columns:1fr}
+      .entry-grid,.cards-2,.cards-3,.cards-4,.metric-grid,.quick-grid{grid-template-columns:1fr}
       .primary,.metric-value{font-size:26px}
       th,td{padding:10px 8px}
     }
@@ -284,15 +280,15 @@
       <div class="hero-top">
         <div>
           <div class="eyebrow">MANDARINE OCEAN DASHBOARD</div>
-          <h1>漢洋航运信息看板</h1>
+          <h1>MANDARINE OCEAN DASHBOARD</h1>
           <div class="subtitle">
-            统一展示航运相关指数、原油信息、相关汇率信息、中国沿海散货运价指数、进口矿指数、中行美元折算价与全球主要港口油价。
-            页面每 30 分钟自动刷新一次，优先保持数据与最新抓取结果同步。
+            Unified market board for shipping indices, crude, FX, iron ore, BOC USD conversion,
+            China coastal freight snapshot, and major port bunker prices. Data refreshes every 30 minutes.
           </div>
         </div>
         <div>
-          <div class="release-meta">版本：v1<br>网页运营：ANDY</div>
-          <div class="section-tag" style="margin-top:8px">30 分钟自动更新</div>
+          <div class="release-meta">Version: V2<br>Web Operations: ANDY</div>
+          <div class="section-tag" style="margin-top:8px">30-Min Auto Refresh</div>
         </div>
       </div>
 
@@ -300,27 +296,27 @@
         <div class="entry-grid">
           <a href="/shipping-data" class="entry-card">
             <div class="entry-title">SHIPPING DATA</div>
-            <div class="entry-meta">查看最新 SSY SINGAPORE REPORT 邮件与附件整理后的结构化数据、市场简报、航线表格与重点内容。</div>
+            <div class="entry-meta">Latest SSY Singapore report, structured attachment tables, market brief and route-focused content.</div>
             <div class="entry-mark">DATA</div>
           </a>
           <a href="/map-data" class="entry-card">
             <div class="entry-title">MAP DATA</div>
-            <div class="entry-meta">查看 Baltic 航线地图、分组索引、路线代码与从最新 SHIPPING DATA 联动过来的航线价格信息。</div>
+            <div class="entry-meta">Interactive route map with linked route values from the latest shipping-mail snapshot.</div>
             <div class="entry-mark">MAP</div>
           </a>
         </div>
 
         <div class="hero-side">
           <div class="metric-card">
-            <div class="metric-label">看板状态</div>
-            <div id="lastUpdated" class="metric-value">加载中</div>
-            <div class="meta" id="refreshMeta" style="margin-top:8px">正在连接最新数据源</div>
+            <div class="metric-label">Board Status</div>
+            <div id="lastUpdated" class="metric-value">Loading</div>
+            <div class="meta" id="refreshMeta" style="margin-top:8px">Connecting to latest published data</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">操作</div>
+            <div class="metric-label">Actions</div>
             <div class="toolbar">
-              <button id="refreshBtn" class="button">立即刷新</button>
-              <span class="toolbar-note">自动刷新周期：30 分钟</span>
+              <button id="refreshBtn" class="button">Refresh Now</button>
+              <span class="toolbar-note">Snapshot cadence: 30 minutes</span>
             </div>
           </div>
         </div>
@@ -332,7 +328,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Shipping Indices</div>
-            <h2>航运相关指数</h2>
+            <h2>Shipping Market Indices</h2>
           </div>
           <div class="dense-note">BDI / BCI / BPI / BSI / BHSI / BCTI / BDTI / BLNG / BLPG</div>
         </div>
@@ -343,9 +339,9 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Crude</div>
-            <h2>原油信息</h2>
+            <h2>Crude Market</h2>
           </div>
-          <div class="dense-note">WTI 原油 / 布伦特原油 CFD</div>
+          <div class="dense-note">WTI Crude / Brent Crude CFD</div>
         </div>
         <div class="cards-2" id="crudeCards"></div>
       </section>
@@ -354,18 +350,18 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Spot Focus</div>
-            <h2>重点现货信息</h2>
+            <h2>Spot Market Focus</h2>
           </div>
-          <div class="dense-note">进口矿指数 / 中行美元折算价</div>
+          <div class="dense-note">Imported iron ore index / BOC USD conversion</div>
         </div>
         <div class="quick-grid">
           <div class="tile soft">
-            <div class="mini-label">进口矿指数</div>
+            <div class="mini-label">Imported Iron Ore</div>
             <div id="oreToday" class="primary">-</div>
             <div id="oreMeta" class="secondary"></div>
           </div>
           <div class="tile soft">
-            <div class="mini-label">中行美元折算价</div>
+            <div class="mini-label">BOC USD Conversion</div>
             <div id="bocPrice" class="primary">-</div>
             <div id="bocMeta" class="secondary"></div>
           </div>
@@ -375,21 +371,21 @@
       <section class="panel span-12">
         <div class="panel-head">
           <div>
-            <div class="eyebrow">Forex</div>
-            <h2>相关汇率信息</h2>
+            <div class="eyebrow">FX</div>
+            <h2>Related FX Rates</h2>
           </div>
-          <div class="dense-note">所有汇率数字统一保留四位小数</div>
+          <div class="dense-note">All FX values shown with 4 decimal places</div>
         </div>
-        <div id="forexCards" class="forex-grid"></div>
+        <div id="forexCards" class="cards-3"></div>
       </section>
 
       <section class="panel span-12">
         <div class="panel-head">
           <div>
             <div class="eyebrow">CBFI</div>
-            <h2>中国沿海散货运价指数</h2>
+            <h2>China Coastal Bulk Freight Snapshot</h2>
           </div>
-          <div id="cbfiDate" class="dense-note">加载中</div>
+          <div id="cbfiDate" class="dense-note">Loading</div>
         </div>
         <div id="cbfiRoot"></div>
       </section>
@@ -398,20 +394,20 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Bunker</div>
-            <h2>全球主要港口油价</h2>
+            <h2>Global Major Ports Bunker Prices</h2>
           </div>
-          <div class="dense-note">已整合舟山自动抓取数据，仅展示存在真实报价的港口</div>
+          <div class="dense-note">Including Zhoushan and all visible major ports with live published prices</div>
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>港口</th>
-                <th>国家 / 地区</th>
+                <th>Port</th>
+                <th>Country</th>
                 <th>IFO380</th>
                 <th>VLSFO</th>
                 <th>MGO / LSMGO</th>
-                <th>日期</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody id="bunkerTable"></tbody>
@@ -458,7 +454,7 @@
     function renderShippingIndices(data) {
       const root = document.getElementById("shippingIndices");
       if (!data || data.error) {
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "航运相关指数加载失败"}</div>`;
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "Shipping indices unavailable."}</div>`;
         return;
       }
       root.innerHTML = `
@@ -468,7 +464,7 @@
               <div class="code">${item.code}</div>
               <div class="primary">${fmt(item.value)}</div>
               <div class="secondary">${maybe(item.name)}</div>
-              <div class="secondary" style="margin-top:10px">${maybe(item.date)} · 日变动 ${coloredChange(item.daily_percent, "%", 2)}</div>
+              <div class="secondary" style="margin-top:10px">${maybe(item.date)} · Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
             </div>
           `).join("")}
         </div>
@@ -484,13 +480,13 @@
               <div class="mini-label">${maybe(item.name)}</div>
               <div class="primary">${fmt(item.latest)}</div>
             </div>
-            <div class="section-tag">最新价格</div>
+            <div class="section-tag">Live</div>
           </div>
           <div class="metric-grid">
-            ${miniMetric("开盘价", item.open)}
-            ${miniMetric("昨收", item.previous_close)}
-            ${miniMetric("较开盘涨跌", item.change_from_open, fmt, true, "", 2)}
-            ${miniMetric("涨跌幅", item.change_percent_from_open, fmt, true, "%", 2)}
+            ${miniMetric("Open", item.open)}
+            ${miniMetric("Prev Close", item.previous_close)}
+            ${miniMetric("Vs Open", item.change_from_open, fmt, true, "", 2)}
+            ${miniMetric("Change %", item.change_percent_from_open, fmt, true, "%", 2)}
           </div>
         </div>
       `).join("");
@@ -498,12 +494,12 @@
 
     function renderIronOre(data) {
       document.getElementById("oreToday").textContent = fmt(data?.today?.value);
-      document.getElementById("oreMeta").innerHTML = `昨日 ${fmt(data?.yesterday?.value)} · 变化 ${coloredChange(data?.change_percent, "%", 2)} · ${maybe(data?.today?.date)}`;
+      document.getElementById("oreMeta").innerHTML = `Previous ${fmt(data?.yesterday?.value)} · Change ${coloredChange(data?.change_percent, "%", 2)} · ${maybe(data?.today?.date)}`;
     }
 
     function renderBoc(data) {
       document.getElementById("bocPrice").textContent = fmt(data?.conversion_price);
-      document.getElementById("bocMeta").textContent = `现汇买入 ${fmt(data?.spot_buy)} · 现汇卖出 ${fmt(data?.spot_sell)} · ${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
+      document.getElementById("bocMeta").textContent = `Spot Buy ${fmt(data?.spot_buy)} · Spot Sell ${fmt(data?.spot_sell)} · ${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
     }
 
     function renderForex(data) {
@@ -514,16 +510,16 @@
           <div class="tile">
             <div class="card-top">
               <div>
-                <div class="mini-label">${maybe(item.title)}</div>
+                <div class="mini-label">${maybe(item.title || key)}</div>
                 <div class="primary">${fmtForex(item.latest)}</div>
               </div>
-              <div class="section-tag">四位小数</div>
+              <div class="section-tag">4 Decimals</div>
             </div>
             <div class="metric-grid">
-              ${miniMetric("开盘价", item.open, fmtForex)}
-              ${miniMetric("昨收", item.previous_close, fmtForex)}
-              ${miniMetric("较开盘涨跌", item.change_from_open, fmtForex, true, "", 4)}
-              ${miniMetric("涨跌幅", item.change_percent_from_open, fmt, true, "%", 4)}
+              ${miniMetric("Open", item.open, fmtForex)}
+              ${miniMetric("Prev Close", item.previous_close, fmtForex)}
+              ${miniMetric("Vs Open", item.change_from_open, fmtForex, true, "", 4)}
+              ${miniMetric("Change %", item.change_percent_from_open, fmt, true, "%", 4)}
             </div>
           </div>
         `;
@@ -534,41 +530,53 @@
       const root = document.getElementById("cbfiRoot");
       const dateNode = document.getElementById("cbfiDate");
       if (!data || data.error) {
-        dateNode.textContent = "加载失败";
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "中国沿海散货运价指数加载失败"}</div>`;
+        dateNode.textContent = "Unavailable";
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI snapshot unavailable."}</div>`;
         return;
       }
+
+      const overview = data.overview || {};
       dateNode.textContent = `${maybe(data.previous_date)} -> ${maybe(data.current_date)}`;
-      const highlights = (data.highlights || []).map((item) => `
-        <div class="tile soft">
-          <div class="mini-label">${maybe(item.route)}</div>
-          <div class="primary">${fmt(item.current)}</div>
-          <div class="secondary">上期 ${fmt(item.previous)} · 涨跌 ${coloredChange(item.change_percent, "%", 2)}</div>
-        </div>
-      `).join("");
-      const routes = (data.routes || []).map((item) => `
-        <tr>
-          <td>${maybe(item.route)}</td>
-          <td>${maybe(item.ship_type)}</td>
-          <td>${fmt(item.previous)}</td>
-          <td>${fmt(item.current)}</td>
-          <td>${coloredChange(item.change_percent, "%", 2)}</td>
-        </tr>
-      `).join("");
+      const highlights = (data.highlights || []).slice(0, 6);
+      const routes = (data.routes || []).slice(0, 12);
+
       root.innerHTML = `
-        <div class="cards-4" style="margin-top:16px">${highlights}</div>
+        <div class="cards-4">
+          <div class="tile soft">
+            <div class="mini-label">Current Composite</div>
+            <div class="primary">${fmt(overview.current)}</div>
+            <div class="secondary">Previous ${fmt(overview.previous)} · ${coloredChange(overview.change_percent, "%", 2)}</div>
+          </div>
+          ${highlights.map((item, idx) => `
+            <div class="tile soft">
+              <div class="mini-label">Highlight ${idx + 1}</div>
+              <div class="primary">${fmt(item.current)}</div>
+              <div class="secondary">Previous ${fmt(item.previous)} · ${coloredChange(item.change_percent, "%", 2)}</div>
+            </div>
+          `).join("")}
+        </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>航线</th>
-                <th>参考船型</th>
-                <th>上期</th>
-                <th>本期</th>
-                <th>涨跌幅</th>
+                <th>Lane</th>
+                <th>Vessel Size</th>
+                <th>Previous</th>
+                <th>Current</th>
+                <th>Change %</th>
               </tr>
             </thead>
-            <tbody>${routes}</tbody>
+            <tbody>
+              ${routes.map((item, idx) => `
+                <tr>
+                  <td>Route ${idx + 1}</td>
+                  <td>Band ${idx + 1}</td>
+                  <td>${fmt(item.previous)}</td>
+                  <td>${fmt(item.current)}</td>
+                  <td>${coloredChange(item.change_percent, "%", 2)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
           </table>
         </div>
       `;
@@ -601,11 +609,11 @@
         renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || []);
         const statusTime = payload.timestamp_beijing || payload.timestamp;
-        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(statusTime))} 北京时间`;
-        document.getElementById("refreshMeta").textContent = "数据已刷新，当前页面会持续按 30 分钟周期自动更新；每日 22:00 保存本地快照";
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(statusTime))} Beijing Time`;
+        document.getElementById("refreshMeta").textContent = "Live board connected to the latest published data.";
       } catch (error) {
-        document.getElementById("lastUpdated").textContent = "刷新失败";
-        document.getElementById("refreshMeta").textContent = `加载失败：${error}`;
+        document.getElementById("lastUpdated").textContent = "Load Failed";
+        document.getElementById("refreshMeta").textContent = `Error: ${error}`;
       } finally {
         btn.disabled = false;
       }
