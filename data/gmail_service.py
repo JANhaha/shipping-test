@@ -25,9 +25,13 @@ GMAIL_API_ROOT = "https://gmail.googleapis.com/gmail/v1/users/me"
 
 class GmailShippingDataService:
     def __init__(self):
-        self.credentials_path = Path(os.getenv("GMAIL_OAUTH_CREDENTIALS", DEFAULT_CREDENTIALS_PATH))
+        self.credentials_path = Path(
+            os.getenv("GMAIL_OAUTH_CREDENTIALS", DEFAULT_CREDENTIALS_PATH)
+        )
         self.token_path = Path(os.getenv("GMAIL_OAUTH_TOKEN", DEFAULT_TOKEN_PATH))
-        self.attachment_dir = Path(os.getenv("GMAIL_ATTACHMENT_DIR", DEFAULT_ATTACHMENT_DIR))
+        self.attachment_dir = Path(
+            os.getenv("GMAIL_ATTACHMENT_DIR", DEFAULT_ATTACHMENT_DIR)
+        )
 
     def ensure_oauth_token(self):
         creds = self._load_credentials(interactive=True)
@@ -80,7 +84,9 @@ class GmailShippingDataService:
         payload = message.get("payload", {})
         headers = self._headers_to_map(payload.get("headers", []))
         body_text = self._extract_plain_text(payload)
-        body_summary = self._summarize_text(body_text or message.get("snippet") or "", limit=220)
+        body_summary = self._summarize_text(
+            body_text or message.get("snippet") or "", limit=220
+        )
         attachments = self._collect_attachments(session, payload, message["id"])
 
         record = {
@@ -113,13 +119,17 @@ class GmailShippingDataService:
                 creds = None
         if creds and creds.valid:
             return creds
-        if not interactive:
-            if not self.credentials_path.exists():
-                raise RuntimeError(f"未找到 Gmail OAuth 客户端文件: {self.credentials_path}")
-            raise RuntimeError("Gmail OAuth 尚未完成。请先运行 `py scripts\\gmail_oauth_setup.py` 完成授权。")
         if not self.credentials_path.exists():
-            raise RuntimeError(f"未找到 Gmail OAuth 客户端文件: {self.credentials_path}")
-        flow = InstalledAppFlow.from_client_secrets_file(str(self.credentials_path), SCOPES)
+            raise RuntimeError(
+                f"未找到 Gmail OAuth 客户端文件: {self.credentials_path}"
+            )
+        if not interactive:
+            raise RuntimeError(
+                "Gmail OAuth 尚未完成。请先运行 `py scripts\\gmail_oauth_setup.py` 完成授权。"
+            )
+        flow = InstalledAppFlow.from_client_secrets_file(
+            str(self.credentials_path), SCOPES
+        )
         return flow.run_local_server(port=0)
 
     def _authorized_session(self):
@@ -202,13 +212,21 @@ class GmailShippingDataService:
                 for page in reader.pages[:20]:
                     texts.append(page.extract_text() or "")
                 return self._normalize_text_blocks("\n\n".join(texts))
-            if suffix in {".xlsx", ".xls"} or "sheet" in (mime_type or "").lower() or "excel" in (mime_type or "").lower():
-                workbook = load_workbook(filename=str(path), read_only=True, data_only=True)
+            if (
+                suffix in {".xlsx", ".xls"}
+                or "sheet" in (mime_type or "").lower()
+                or "excel" in (mime_type or "").lower()
+            ):
+                workbook = load_workbook(
+                    filename=str(path), read_only=True, data_only=True
+                )
                 chunks = []
                 for sheet in workbook.worksheets[:5]:
                     chunks.append(f"[{sheet.title}]")
                     rows = []
-                    for row in sheet.iter_rows(min_row=1, max_row=20, values_only=True):
+                    for row in sheet.iter_rows(
+                        min_row=1, max_row=20, values_only=True
+                    ):
                         values = ["" if cell is None else str(cell) for cell in row]
                         if any(values):
                             rows.append(" | ".join(values))
@@ -231,7 +249,9 @@ class GmailShippingDataService:
 
     @staticmethod
     def _decode_base64(value):
-        return GmailShippingDataService._decode_base64_bytes(value).decode("utf-8", errors="ignore")
+        return GmailShippingDataService._decode_base64_bytes(value).decode(
+            "utf-8", errors="ignore"
+        )
 
     @staticmethod
     def _decode_base64_bytes(value):
@@ -241,7 +261,9 @@ class GmailShippingDataService:
     @staticmethod
     def _html_to_text(html):
         html = re.sub(r"<\s*br\s*/?\s*>", "\n", html, flags=re.IGNORECASE)
-        html = re.sub(r"</\s*(p|div|li|tr|h[1-6])\s*>", "\n", html, flags=re.IGNORECASE)
+        html = re.sub(
+            r"</\s*(p|div|li|tr|h[1-6])\s*>", "\n", html, flags=re.IGNORECASE
+        )
         text = re.sub(r"<[^>]+>", " ", html)
         return GmailShippingDataService._normalize_text_blocks(text)
 
@@ -295,5 +317,7 @@ class GmailShippingDataService:
     def _get_json(session, url):
         response = session.get(url, timeout=30)
         if response.status_code >= 400:
-            raise RuntimeError(f"Gmail API 请求失败: {response.status_code} {response.text[:300]}")
+            raise RuntimeError(
+                f"Gmail API 请求失败: {response.status_code} {response.text[:300]}"
+            )
         return response.json()
