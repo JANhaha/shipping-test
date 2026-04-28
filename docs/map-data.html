@@ -174,15 +174,15 @@
           <div class="eyebrow">MAP DATA</div>
           <h1>MAP DATA</h1>
         </div>
-        <div class="sub" id="status">Loading</div>
+        <div class="sub" id="status">Loading live route board</div>
       </div>
       <div class="sub" style="margin-top:10px">
         Interactive route board built from the Baltic Exchange routes dataset.
         It keeps route families, index groups, route codes and geographic paths in one page.
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">Refresh</button>
-        <a class="button secondary" href="./">Back</a>
+        <button id="refreshBtn" class="button">Refresh Now</button>
+        <a class="button secondary" href="./">Back Home</a>
       </div>
       <div class="metrics">
         <div class="metric">
@@ -208,9 +208,9 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Route Families</div>
-          <h2 id="pageTitle">Map Overview</h2>
+          <h2 id="pageTitle">Global Route Overview</h2>
         </div>
-        <div class="sub" id="pageDescription">No data</div>
+        <div class="sub" id="pageDescription">Latest route dataset will appear here.</div>
       </div>
       <div id="segmentPills" class="pills"></div>
       <div id="indexPills" class="pills"></div>
@@ -230,7 +230,7 @@
         <div class="panel map-stage">
           <div class="map-overlay">
             <strong id="mapOverlayTitle">Select a route</strong>
-            <span class="sub" id="mapOverlayText">The map will focus on the selected route.</span>
+            <span class="sub" id="mapOverlayText">Select any route to focus the map and view its latest linked market value.</span>
           </div>
           <div id="map"></div>
         </div>
@@ -291,7 +291,7 @@
     };
     const timeText = (value) => {
       const date = parseTime(value);
-      return date ? `${BEIJING_TIME_FORMATTER.format(date)} 北京时间` : "-";
+      return date ? `${BEIJING_TIME_FORMATTER.format(date)} Beijing Time` : "-";
     };
     const signClass = (value) => {
       const text = String(value || "").trim();
@@ -709,7 +709,7 @@
 
     async function loadData() {
       const status = document.getElementById("status");
-      status.textContent = "Loading";
+      status.textContent = "Loading live route board";
       try {
         const response = await fetch(DATA_URL, { cache: "no-store" });
         if (!response.ok) {
