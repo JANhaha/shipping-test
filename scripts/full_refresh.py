@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import subprocess
 import sys
 
@@ -30,6 +31,8 @@ def main() -> None:
     if gmail_ready:
         run_step("export_shipping_data_static.py")
     else:
+        if os.getenv("GITHUB_ACTIONS") == "true":
+            raise SystemExit("Gmail sync failed in GitHub Actions; refusing to publish stale Gmail data.")
         print("warning: Gmail sync failed, keeping existing shipping_data.json snapshot")
     run_step("generate_static_data.py")
     if not gmail_ready:

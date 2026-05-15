@@ -22,6 +22,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          ref: stable
           fetch-depth: 0
 
       - name: Set up Python
@@ -51,5 +52,5 @@ jobs:
           git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json
           git diff --cached --quiet && exit 0
           git commit -m "chore: update shipping data"
-          git pull --rebase origin main
-          git push
+          git pull --rebase origin stable
+          git push origin HEAD:stable
