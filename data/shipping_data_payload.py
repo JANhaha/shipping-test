@@ -1,9 +1,12 @@
 from datetime import datetime, timedelta, timezone
 
 from data.attachment_visualization import build_attachment_dashboard
-from data.gmail_store import get_latest_sync_time, list_attachments_for_message_ids
+from data.gmail_store import get_latest_sync_time
 from data.minimax_service import MiniMaxShippingAnalysisService
 from data.shipping_message_selector import get_latest_target_message
+
+
+PUBLIC_BODY_TEXT_LIMIT = 9000
 
 
 def build_shipping_data_payload(limit=300):
@@ -13,10 +16,7 @@ def build_shipping_data_payload(limit=300):
     latest_message = get_latest_target_message(limit=100)
     rows = []
     if latest_message:
-        attachments = list_attachments_for_message_ids([latest_message["gmail_message_id"]])
-        row = dict(latest_message)
-        row["attachments"] = attachments.get(latest_message["gmail_message_id"], [])
-        rows.append(row)
+        rows.append(_public_message(latest_message))
 
     attachment_view = build_attachment_dashboard(limit=limit)
     payload = {
@@ -36,3 +36,23 @@ def build_shipping_data_payload(limit=300):
     }
     payload["ai_analysis"] = MiniMaxShippingAnalysisService().analyze_shipping_payload(payload)
     return payload
+
+
+def _public_message(message):
+    return {
+        "gmail_message_id": message.get("gmail_message_id"),
+        "subject": message.get("subject"),
+        "received_at": message.get("received_at"),
+        "snippet": message.get("snippet"),
+        "body_text": _trim_text(message.get("body_text"), PUBLIC_BODY_TEXT_LIMIT),
+        "body_summary": message.get("body_summary"),
+        "has_attachments": bool(message.get("has_attachments")),
+        "synced_at": message.get("synced_at"),
+    }
+
+
+def _trim_text(value, limit):
+    text = str(value or "")
+    if len(text) <= limit:
+        return text
+    return f"{text[:limit].rstrip()}\n\n[Content trimmed for public dashboard performance.]"

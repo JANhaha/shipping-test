@@ -213,7 +213,6 @@
       </div>
       <div class="toolbar">
         <button id="refreshBtn" class="button">Refresh Now</button>
-        <button id="syncBtn" class="button secondary">Sync Mailbox</button>
         <a class="button secondary" href="./">Back Home</a>
       </div>
     </section>
@@ -256,8 +255,6 @@
 
   <script>
     const DATA_URL = "./data/shipping_data.json";
-    const SYNC_URL = "";
-    const ENABLE_SYNC = false;
 
     const esc = (value) => {
       const div = document.createElement("div");
@@ -457,28 +454,7 @@
       }
     }
 
-    async function syncData() {
-      if (!ENABLE_SYNC) return;
-      const btn = document.getElementById("syncBtn");
-      btn.disabled = true;
-      document.getElementById("status").textContent = "Syncing mailbox";
-      document.getElementById("heroStatus").textContent = "Syncing mailbox";
-      try {
-        const response = await fetch(SYNC_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
-        const payload = await response.json();
-        if (!response.ok || payload.status !== "ok") throw new Error(payload.message || "Sync failed");
-        await loadData();
-      } catch (error) {
-        document.getElementById("status").textContent = `Sync failed: ${error}`;
-        document.getElementById("heroStatus").textContent = `Sync failed: ${error}`;
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
     document.getElementById("refreshBtn").addEventListener("click", loadData);
-    const syncBtn = document.getElementById("syncBtn");
-    if (syncBtn) syncBtn.addEventListener("click", syncData);
     loadData();
   </script>
 </body>

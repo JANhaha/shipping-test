@@ -82,9 +82,12 @@ def _enrich_attachment(item):
     text = _clean_text(item.get("parsed_text") or "")
     filename = unquote(item.get("filename") or "")
     return {
-        **item,
-        "parsed_text": text,
         "display_name": filename,
+        "filename": filename,
+        "mime_type": item.get("mime_type"),
+        "size_bytes": item.get("size_bytes"),
+        "subject": item.get("subject"),
+        "received_at": item.get("received_at"),
         "business_category": _business_category(filename, text),
         "report_type": _report_type(filename, text),
         "headline_metrics": _headline_metrics(filename, text),

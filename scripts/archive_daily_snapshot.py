@@ -20,7 +20,7 @@ from data.map_data_service import BalticMapDataService
 
 
 BEIJING_TZ = timezone(timedelta(hours=8), name="Asia/Shanghai")
-REMOTE_DATA_BASE = "https://raw.githubusercontent.com/JANhaha/shipping-test/main/docs/data"
+REMOTE_DATA_BASE = "https://raw.githubusercontent.com/JANhaha/shipping-test/stable/docs/data"
 
 
 def main() -> None:
@@ -83,7 +83,7 @@ def load_remote_with_github_cli(filename: str):
             [
                 str(gh),
                 "api",
-                f"repos/JANhaha/shipping-test/contents/{path}?ref=main",
+                f"repos/JANhaha/shipping-test/contents/{path}?ref=stable",
                 "--jq",
                 ".content",
             ],

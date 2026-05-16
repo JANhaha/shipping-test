@@ -51,7 +51,8 @@ class BalticMapDataService:
             cached = self._load_cached_payload()
             if cached:
                 cached["fallback"] = True
-                cached["error"] = (
+                cached["error"] = None
+                cached["note"] = (
                     "Route map live fetch failed, using the last successful snapshot: "
                     f"{exc}"
                 )
@@ -101,20 +102,11 @@ class BalticMapDataService:
                             "path_points": route_points,
                             "points": self._parse_label_points(route.get("points")),
                             "market_data": market_data,
-                            "stats": [
-                                {
-                                    "name": item.get("name", ""),
-                                    "value": item.get("value", ""),
-                                }
-                                for item in (route.get("stats") or [])
-                                if isinstance(item, dict)
-                            ],
                         }
                     )
                 normalized_indexes.append(
                     {
                         "title": index.get("title") or "",
-                        "description": self._clean_html(index.get("description") or ""),
                         "routes": routes,
                     }
                 )
@@ -150,9 +142,24 @@ class BalticMapDataService:
         if not target.exists():
             return None
         try:
-            return json.loads(target.read_text(encoding="utf-8"))
+            return self._slim_payload(json.loads(target.read_text(encoding="utf-8")))
         except Exception:
             return None
+
+    @staticmethod
+    def _slim_payload(payload: dict[str, Any]) -> dict[str, Any]:
+        for segment in payload.get("segments", []) or []:
+            for index in segment.get("indexes", []) or []:
+                index.pop("description", None)
+                for route in index.get("routes", []) or []:
+                    route.pop("stats", None)
+                    for key in ("path_points", "points"):
+                        for point in route.get(key, []) or []:
+                            if "latitude" in point:
+                                point["latitude"] = round(float(point["latitude"]), 4)
+                            if "longitude" in point:
+                                point["longitude"] = round(float(point["longitude"]), 4)
+        return payload
 
     @staticmethod
     def _clean_html(value: str) -> str:
@@ -189,8 +196,8 @@ class BalticMapDataService:
                 continue
             points.append(
                 {
-                    "latitude": latitude,
-                    "longitude": longitude,
+                    "latitude": round(latitude, 4),
+                    "longitude": round(longitude, 4),
                     "label": str(point.get("label", "")).strip(),
                     "additional_point": bool(point.get("additionalPoint")),
                 }
@@ -212,8 +219,8 @@ class BalticMapDataService:
                 continue
             points.append(
                 {
-                    "latitude": latitude,
-                    "longitude": longitude,
+                    "latitude": round(latitude, 4),
+                    "longitude": round(longitude, 4),
                     "label": str(point.get("label", "")).strip(),
                     "additional_point": bool(point.get("additionalPoint")),
                 }

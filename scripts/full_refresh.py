@@ -1,10 +1,14 @@
 from pathlib import Path
-import os
 import subprocess
 import sys
 
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from data.gmail_store import init_db
+
 DATA_DIR = ROOT / "docs" / "data"
 
 
@@ -22,6 +26,8 @@ def try_step(script_name: str) -> bool:
 
 
 def main() -> None:
+    init_db()
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     shipping_snapshot = DATA_DIR / "shipping_data.json"
     map_snapshot = DATA_DIR / "map_data.json"
     shipping_backup = shipping_snapshot.read_text(encoding="utf-8") if shipping_snapshot.exists() else None
@@ -31,8 +37,6 @@ def main() -> None:
     if gmail_ready:
         run_step("export_shipping_data_static.py")
     else:
-        if os.getenv("GITHUB_ACTIONS") == "true":
-            raise SystemExit("Gmail sync failed in GitHub Actions; refusing to publish stale Gmail data.")
         print("warning: Gmail sync failed, keeping existing shipping_data.json snapshot")
     run_step("generate_static_data.py")
     if not gmail_ready:

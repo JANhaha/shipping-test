@@ -783,7 +783,7 @@
       status.textContent = "Loading live route board";
       heroUpdatedAt.textContent = "Loading";
       try {
-        const response = await fetch(DATA_URL, { cache: "no-store" });
+        const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
