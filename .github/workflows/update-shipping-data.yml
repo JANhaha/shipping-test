@@ -2,6 +2,11 @@ name: Update Shipping Data
 
 on:
   workflow_dispatch:
+    inputs:
+      gmail_lookback_days:
+        description: "Gmail lookback days for manual force refresh"
+        required: false
+        default: "30"
   schedule:
     - cron: "*/30 * * * *"
 
@@ -15,6 +20,7 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   PYTHONUTF8: "1"
+  REQUIRE_GMAIL_SYNC: "true"
 
 jobs:
   update-shipping-data:
@@ -22,6 +28,7 @@ jobs:
     timeout-minutes: 20
     env:
       MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+      GMAIL_LOOKBACK_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.gmail_lookback_days || '7' }}
 
     steps:
       - name: Checkout

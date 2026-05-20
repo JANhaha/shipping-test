@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 import subprocess
 import sys
 
@@ -34,6 +35,8 @@ def main() -> None:
     map_backup = map_snapshot.read_text(encoding="utf-8") if map_snapshot.exists() else None
 
     gmail_ready = try_step("sync_gmail_shipping_data.py")
+    if not gmail_ready and os.getenv("REQUIRE_GMAIL_SYNC", "").lower() in {"1", "true", "yes"}:
+        raise SystemExit("Gmail sync failed; refusing to publish partial data.")
     if gmail_ready:
         run_step("export_shipping_data_static.py")
     else:
