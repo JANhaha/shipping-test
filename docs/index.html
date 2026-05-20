@@ -132,7 +132,12 @@
       padding:11px 18px;
       font-weight:700;
       cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
     }
+    .button.secondary{background:#eef4f6;color:var(--accent)}
     .button:disabled{opacity:.65;cursor:default}
     .toolbar{
       display:flex;
@@ -316,6 +321,7 @@
             <div class="metric-label">Actions</div>
             <div class="toolbar">
               <button id="refreshBtn" class="button">Refresh Now</button>
+              <a class="button secondary" href="https://github.com/JANhaha/shipping-test/actions/workflows/update-shipping-data.yml" target="_blank" rel="noopener">Force Data Update</a>
               <span class="toolbar-note">Snapshot cadence: 30 minutes</span>
             </div>
           </div>
