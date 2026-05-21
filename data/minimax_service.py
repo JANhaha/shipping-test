@@ -17,7 +17,12 @@ class MiniMaxShippingAnalysisService:
         self.api_key = os.getenv("MINIMAX_API_KEY") or self._read_key_file()
         self.enabled = bool(self.api_key)
         self.client = (
-            OpenAI(api_key=self.api_key, base_url=MINIMAX_BASE_URL)
+            OpenAI(
+                api_key=self.api_key,
+                base_url=MINIMAX_BASE_URL,
+                timeout=60,
+                max_retries=1,
+            )
             if self.enabled
             else None
         )

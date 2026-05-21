@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MAP DATA</title>
+  <title>航线地图</title>
   <style>
     :root{
       --bg:#f3eee6;
@@ -227,47 +227,45 @@
           <div class="hero-head">
             <div>
               <div class="eyebrow">MAP DATA</div>
-              <h1>MAP DATA</h1>
+              <h1>航线地图</h1>
             </div>
-            <div class="sub" id="status">Loading live route board</div>
+            <div class="sub" id="status">正在加载航线看板</div>
           </div>
           <div class="hero-copy">
-            Interactive route board combining route families, route codes, geographic paths and the
-            latest linked pricing from Shipping Data in one cleaner market-facing layout.
+            按航线族、指数和路线代码查看 Baltic 航线地图，并联动 Shipping Data 中的最新航线价格和变化。
           </div>
           <div class="hero-badges">
-            <span class="pill active" style="cursor:default">Live Route Map</span>
-            <span class="pill" style="cursor:default">Linked Route Values</span>
-            <span class="pill" style="cursor:default">Beijing Time</span>
+            <span class="pill active" style="cursor:default">实时航线图</span>
+            <span class="pill" style="cursor:default">航线价格联动</span>
+            <span class="pill" style="cursor:default">北京时间</span>
           </div>
         </div>
         <div class="status-card">
-          <div class="status-meta">Version: V2<br>Web Operations: ANDY</div>
-          <div class="status-label" style="margin-top:14px">Latest Board Timestamp</div>
+          <div class="status-meta">版本：V2<br>运营：ANDY</div>
+          <div class="status-label" style="margin-top:14px">最新看板时间</div>
           <div class="status-value" id="heroUpdatedAt">-</div>
-          <div class="sub" style="margin-top:8px">The route board follows the latest published mailbox-linked snapshot.</div>
+          <div class="sub" style="margin-top:8px">航线看板跟随最新发布的邮箱数据快照。</div>
         </div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">Refresh Now</button>
-        <a class="button secondary" href="https://github.com/JANhaha/shipping-test/actions/workflows/update-shipping-data.yml?query=event%3Aworkflow_dispatch+branch%3Astable" target="_blank" rel="noopener" title="Open GitHub Actions, then click Run workflow on stable.">Open Force Run</a>
-        <a class="button secondary" href="./">Back Home</a>
+        <button id="refreshBtn" class="button">刷新数据</button>
+        <a class="button secondary" href="./">返回首页</a>
       </div>
       <div class="metrics">
         <div class="metric">
-          <div class="sub">Family Count</div>
+          <div class="sub">航线族数量</div>
           <div id="segmentCount" class="metric-value">-</div>
         </div>
         <div class="metric">
-          <div class="sub">Index Count</div>
+          <div class="sub">指数数量</div>
           <div id="indexCount" class="metric-value">-</div>
         </div>
         <div class="metric">
-          <div class="sub">Route Count</div>
+          <div class="sub">航线数量</div>
           <div id="routeCount" class="metric-value">-</div>
         </div>
         <div class="metric">
-          <div class="sub">Updated</div>
+          <div class="sub">更新时间</div>
           <div id="updatedAt" class="metric-value" style="font-size:20px">-</div>
         </div>
       </div>
@@ -277,10 +275,10 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Route Families</div>
-          <h2 id="pageTitle">Global Route Overview</h2>
-          <div class="section-strap">Select a family and route group to focus the map, table and linked market route values.</div>
+          <h2 id="pageTitle">全球航线概览</h2>
+          <div class="section-strap">选择航线族和指数分组，地图、表格和联动价格会同步聚焦。</div>
         </div>
-        <div class="sub" id="pageDescription">Latest route dataset will appear here.</div>
+        <div class="sub" id="pageDescription">最新航线数据将在这里显示。</div>
       </div>
       <div id="segmentPills" class="pills"></div>
       <div id="indexPills" class="pills"></div>
@@ -290,7 +288,7 @@
           <div class="section-head">
             <div>
               <div class="eyebrow">Routes</div>
-              <h3 id="routeListTitle">Routes</h3>
+              <h3 id="routeListTitle">航线列表</h3>
             </div>
             <div class="sub" id="routeListMeta">-</div>
           </div>
@@ -299,8 +297,8 @@
 
         <div class="panel map-stage">
           <div class="map-overlay">
-            <strong id="mapOverlayTitle">Select a route</strong>
-            <span class="sub" id="mapOverlayText">Select any route to focus the map and view its latest linked market value.</span>
+            <strong id="mapOverlayTitle">选择一条航线</strong>
+            <span class="sub" id="mapOverlayText">选择任意航线后，地图和右侧详情会显示最新联动市场值。</span>
           </div>
           <div id="map"></div>
         </div>
@@ -309,7 +307,7 @@
           <div class="section-head">
             <div>
               <div class="eyebrow">Selected Route</div>
-              <h3 id="detailTitle">No route selected</h3>
+              <h3 id="detailTitle">尚未选择航线</h3>
             </div>
             <div class="sub" id="detailMeta">-</div>
           </div>
@@ -322,8 +320,8 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Current Index</div>
-          <h2 id="tableTitle">Route Table</h2>
-          <div class="section-strap">Unified table of route codes, route names and current linked values.</div>
+          <h2 id="tableTitle">航线表格</h2>
+          <div class="section-strap">集中查看航线代码、路线名称、最新联动值和变化。</div>
         </div>
         <div class="sub" id="tableMeta">-</div>
       </div>
@@ -337,6 +335,7 @@
   <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
   <script>
     const DATA_URL = "./data/map_data.json";
+    const AUTO_REFRESH_MS = 30 * 60 * 1000;
 
     const esc = (value) => {
       const div = document.createElement("div");
@@ -362,7 +361,7 @@
     };
     const timeText = (value) => {
       const date = parseTime(value);
-      return date ? `${BEIJING_TIME_FORMATTER.format(date)} Beijing Time` : "-";
+      return date ? `${BEIJING_TIME_FORMATTER.format(date)} 北京时间` : "-";
     };
     const signClass = (value) => {
       const text = String(value || "").trim();
@@ -379,6 +378,7 @@
     let map = null;
     let routeSeries = [];
     let reverseTimer = null;
+    let dataLoading = false;
 
     function initMap() {
       am4core.useTheme(am4themes_animated);
@@ -453,7 +453,7 @@
 
     function renderMarketBadges(marketData) {
       if (!marketData) {
-        return `<div class="detail-block"><div class="sub">No linked latest market value from Shipping Data.</div></div>`;
+        return `<div class="detail-block"><div class="sub">暂无来自 Shipping Data 的最新联动市场值。</div></div>`;
       }
       return `
         <div class="market-badge-wrap">
@@ -610,10 +610,10 @@
     function renderRouteList() {
       const index = getActiveIndex();
       const root = document.getElementById("routeList");
-      document.getElementById("routeListTitle").textContent = index ? index.title : "Routes";
+      document.getElementById("routeListTitle").textContent = index ? index.title : "航线列表";
       document.getElementById("routeListMeta").textContent = index ? `${index.routes.length} routes` : "-";
       if (!index || !index.routes.length) {
-        root.innerHTML = `<div class="empty">No routes found.</div>`;
+        root.innerHTML = `<div class="empty">暂无航线数据。</div>`;
         return;
       }
       root.innerHTML = index.routes.map((route, idx) => `
@@ -639,9 +639,9 @@
       const segment = getActiveSegment();
       const root = document.getElementById("routeDetail");
       if (!route) {
-        document.getElementById("detailTitle").textContent = "No route selected";
+        document.getElementById("detailTitle").textContent = "尚未选择航线";
         document.getElementById("detailMeta").textContent = "-";
-        root.innerHTML = `<div class="empty">Select one route from the list.</div>`;
+        root.innerHTML = `<div class="empty">请从左侧列表选择一条航线。</div>`;
         return;
       }
       const extraPoints = (route.points || []).filter((point) => point.additional_point);
@@ -701,11 +701,11 @@
     function renderTable() {
       const index = getActiveIndex();
       const route = getActiveRoute();
-      document.getElementById("tableTitle").textContent = index ? `${index.title} Route Table` : "Route Table";
-      document.getElementById("tableMeta").textContent = route ? `Focused on ${route.code}` : "-";
+      document.getElementById("tableTitle").textContent = index ? `${index.title} 航线表格` : "航线表格";
+      document.getElementById("tableMeta").textContent = route ? `当前聚焦 ${route.code}` : "-";
       const root = document.getElementById("tableRoot");
       if (!index || !index.routes.length) {
-        root.innerHTML = `<div class="empty">No routes found.</div>`;
+        root.innerHTML = `<div class="empty">暂无航线数据。</div>`;
         return;
       }
       const rows = index.routes.map((item, idx) => `
@@ -760,9 +760,9 @@
     function renderAll() {
       const segment = getActiveSegment();
       const index = getActiveIndex();
-      document.getElementById("pageTitle").textContent = segment ? `${segment.title} Routes` : "MAP DATA";
+      document.getElementById("pageTitle").textContent = segment ? `${segment.title} 航线` : "航线地图";
       document.getElementById("pageDescription").textContent =
-        segment?.description || payload.description || "No description";
+        segment?.description || payload.description || "暂无说明";
       renderSegmentPills();
       renderIndexPills();
       renderRouteList();
@@ -779,39 +779,45 @@
     }
 
     async function loadData() {
+      if (dataLoading) return;
+      dataLoading = true;
       const status = document.getElementById("status");
       const heroUpdatedAt = document.getElementById("heroUpdatedAt");
-      status.textContent = "Loading live route board";
-      heroUpdatedAt.textContent = "Loading";
+      status.textContent = "正在加载航线看板";
+      heroUpdatedAt.textContent = "加载中";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
         payload = await response.json();
-        document.getElementById("status").textContent = payload.error
-          ? payload.error
-          : "Route board ready";
         document.getElementById("segmentCount").textContent = payload.segments?.length ?? 0;
         document.getElementById("indexCount").textContent = payload.index_count ?? 0;
         document.getElementById("routeCount").textContent = payload.route_count ?? 0;
         const boardTime = timeText(payload.updated_at_beijing || payload.updated_at);
         document.getElementById("updatedAt").textContent = boardTime;
         heroUpdatedAt.textContent = boardTime;
+        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
+        status.textContent = payload.error
+          ? payload.error
+          : `航线看板已就绪 | 下次检查 ${nextCheck} 北京时间`;
         activeSegmentIndex = 0;
         activeIndexIndex = 0;
         activeRouteIndex = 0;
         renderAll();
       } catch (error) {
-        status.textContent = `Load failed: ${error.message}`;
-        heroUpdatedAt.textContent = "Load failed";
-        document.getElementById("tableRoot").innerHTML = `<div class="empty">Load failed: ${esc(error.message)}</div>`;
+        status.textContent = `加载失败：${error.message}`;
+        heroUpdatedAt.textContent = "加载失败";
+        document.getElementById("tableRoot").innerHTML = `<div class="empty">加载失败：${esc(error.message)}</div>`;
+      } finally {
+        dataLoading = false;
       }
     }
 
     document.getElementById("refreshBtn").addEventListener("click", loadData);
     initMap();
     loadData();
+    setInterval(loadData, AUTO_REFRESH_MS);
   </script>
 </body>
 </html>

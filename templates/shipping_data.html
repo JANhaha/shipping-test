@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>SHIPPING DATA</title>
+  <title>航运数据</title>
   <style>
     :root{
       --bg:#f3eee6;
@@ -29,7 +29,7 @@
         linear-gradient(180deg,#f7f3ec,#ece4da);
     }
     .shell{max-width:1560px;margin:0 auto;padding:24px 16px 56px}
-    .hero,.section,.card,.metric-card,.text-card{
+    .hero,.section,.card,.metric-card,.text-card,.status-card{
       background:var(--panel);
       border:1px solid rgba(255,255,255,.75);
       border-radius:24px;
@@ -49,6 +49,52 @@
     h3{font-size:18px}
     .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-size:12px;font-weight:700}
     .sub{color:var(--muted);font-size:13px;line-height:1.7}
+    .hero-copy{
+      margin-top:12px;
+      max-width:860px;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.85;
+    }
+    .hero-top{
+      display:grid;
+      grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);
+      gap:18px;
+      align-items:start;
+    }
+    .hero-badges{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .status-card{
+      padding:18px;
+      background:linear-gradient(180deg,rgba(15,92,108,.05),rgba(15,92,108,.015));
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+    .status-meta{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.8;
+      text-align:right;
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+    .status-label{
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:700;
+    }
+    .status-value{
+      margin-top:8px;
+      font-size:24px;
+      line-height:1.2;
+      font-weight:800;
+    }
     .toolbar{margin-top:14px}
     .button{
       border:0;
@@ -84,6 +130,12 @@
       color:var(--accent);
       font-size:12px;
       font-weight:700;
+    }
+    .section-strap{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.7;
     }
     .up{color:var(--up);font-weight:700}
     .down{color:var(--down);font-weight:700}
@@ -126,25 +178,43 @@
       color:#8b5519;
       border:1px solid rgba(188,108,37,.16);
     }
-    @media (max-width:1180px){.mail-grid,.cards-grid,.brief-grid{grid-template-columns:1fr}}
+    @media (max-width:1180px){.mail-grid,.cards-grid,.brief-grid,.hero-top{grid-template-columns:1fr}}
     @media (max-width:760px){.shell{padding:14px 10px 36px}.hero,.section{padding:18px}}
   </style>
 </head>
 <body>
   <div class="shell">
     <section class="hero">
-      <div class="hero-head">
+      <div class="hero-top">
         <div>
-          <div class="eyebrow">SHIPPING DATA</div>
-          <h1>SHIPPING DATA</h1>
+          <div class="hero-head">
+            <div>
+              <div class="eyebrow">SHIPPING DATA</div>
+              <h1>航运数据</h1>
+            </div>
+            <div class="sub" id="status">正在加载最新报告</div>
+          </div>
+          <div class="hero-copy">
+            把最新 SSY 新加坡报告、邮件正文和附件表格整理成可快速浏览的市场工作台，
+            用于跟踪干散货、航线价格、成交信号和后续观察点。
+          </div>
+          <div class="hero-badges">
+            <span class="pill">最新 SSY 邮件</span>
+            <span class="pill">结构化表格</span>
+            <span class="pill">30 分钟刷新</span>
+          </div>
         </div>
-        <div class="sub" id="status">Loading latest report</div>
+        <div class="status-card">
+          <div class="status-meta">版本：V2<br>运营：ANDY</div>
+          <div class="status-label" style="margin-top:14px">当前同步状态</div>
+          <div class="status-value" id="heroStatus">正在加载最新报告</div>
+          <div class="sub" style="margin-top:8px">页面展示最新可用的邮箱快照和附件解析结果。</div>
+        </div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">Refresh Now</button>
-        <button id="syncBtn" class="button secondary">Sync Mailbox</button>
-        <a class="button secondary" href="https://github.com/JANhaha/shipping-test/actions/workflows/update-shipping-data.yml?query=event%3Aworkflow_dispatch+branch%3Astable" target="_blank" rel="noopener" title="Open GitHub Actions, then click Run workflow on stable.">Open Force Run</a>
-        <a class="button secondary" href="/">Back Home</a>
+        <button id="refreshBtn" class="button">刷新数据</button>
+        <button id="syncBtn" class="button secondary">同步邮箱</button>
+        <a class="button secondary" href="/">返回首页</a>
       </div>
     </section>
 
@@ -152,9 +222,10 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Market Brief</div>
-          <h2>Shipping Brief</h2>
+          <h2>航运简报</h2>
+          <div class="section-strap">从最新报告提炼市场判断、路线变化和重点观察信号。</div>
         </div>
-        <div class="sub" id="aiMeta">Latest report summary</div>
+        <div class="sub" id="aiMeta">最新报告摘要</div>
       </div>
       <div id="aiRoot" style="margin-top:18px"></div>
     </section>
@@ -163,9 +234,10 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Mail Body</div>
-          <h2>Mail Body</h2>
+          <h2>邮件正文</h2>
+          <div class="section-strap">把核心正文拆分为更易阅读和复盘的内容块。</div>
         </div>
-        <div class="sub" id="mailMeta">Awaiting latest mail</div>
+        <div class="sub" id="mailMeta">等待最新邮件</div>
       </div>
       <div id="mailRoot" class="mail-grid" style="margin-top:18px"></div>
     </section>
@@ -174,7 +246,8 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Structured Data</div>
-          <h2>Data View</h2>
+          <h2>结构化数据</h2>
+          <div class="section-strap">汇总航线代码、路线、价格和日度变化，便于对比查看。</div>
         </div>
       </div>
       <div id="categoryRoot" style="margin-top:18px"></div>
@@ -185,6 +258,7 @@
     const DATA_URL = "/api/shipping-data";
     const SYNC_URL = "/api/shipping-data/sync";
     const ENABLE_SYNC = true;
+    const AUTO_REFRESH_MS = 30 * 60 * 1000;
 
     const esc = (value) => {
       const div = document.createElement("div");
@@ -217,7 +291,7 @@
     };
     const timeText = (value) => {
       const date = parseTime(value);
-      return date ? `${BEIJING_TIME_FORMATTER.format(date)} Beijing Time` : "-";
+      return date ? `${BEIJING_TIME_FORMATTER.format(date)} 北京时间` : "-";
     };
     const formatLongText = (value) => {
       if (value === null || value === undefined) return "-";
@@ -257,13 +331,16 @@
     function renderAi(payload) {
       const root = document.getElementById("aiRoot");
       const meta = document.getElementById("aiMeta");
+      const heroStatus = document.getElementById("heroStatus");
       const ai = payload.ai_analysis || {};
       if (!ai.enabled && !ai.summary && !(ai.sections || []).length) {
-        meta.textContent = ai.error || "Brief unavailable";
-        root.innerHTML = `<div class="empty">${esc(ai.error || "No market brief available.")}</div>`;
+        meta.textContent = ai.error || "简报暂不可用";
+        heroStatus.textContent = ai.error || "简报暂不可用";
+        root.innerHTML = `<div class="empty">${esc(ai.error || "暂无市场简报。")}</div>`;
         return;
       }
-      meta.textContent = "Structured from the latest available report";
+      meta.textContent = "已基于最新可用报告整理";
+      heroStatus.textContent = "最新报告已加载";
       const sections = ai.sections || [];
       const watchList = ai.market_watch || [];
       const routeFocus = ai.route_focus || [];
@@ -324,13 +401,13 @@
     }
 
     function renderHero(latestMail) {
-      document.getElementById("mailMeta").textContent = latestMail ? `Received ${timeText(latestMail.received_at)}` : "No mail";
+      document.getElementById("mailMeta").textContent = latestMail ? `接收时间 ${timeText(latestMail.received_at)}` : "暂无邮件";
     }
 
     function renderMail(latestMail) {
       const root = document.getElementById("mailRoot");
       if (!latestMail) {
-        root.innerHTML = `<div class="empty">No mail content available.</div>`;
+        root.innerHTML = `<div class="empty">暂无邮件正文。</div>`;
         return;
       }
       const metricTable = extractMailMetrics(latestMail.body_text || "");
@@ -342,7 +419,7 @@
       const root = document.getElementById("categoryRoot");
       const categories = payload.attachment_categories || [];
       if (!categories.length) {
-        root.innerHTML = `<div class="empty">No structured attachment data.</div>`;
+        root.innerHTML = `<div class="empty">暂无结构化附件数据。</div>`;
         return;
       }
       root.innerHTML = categories.map((category) => `<section class="section" style="margin-top:0"><div class="section-head"><div><div class="eyebrow">Category</div><h2>${esc(category.name)}</h2></div></div><div style="margin-top:18px">${category.items.map((item) => `<article class="card" style="margin-top:16px"><div class="section-head"><div class="pill">${esc(maybe(item.report_type))}</div><div class="sub">Received ${esc(timeText(item.received_at))}</div></div>${item.summary ? `<div class="content-block">${esc(item.summary)}</div>` : ""}${renderMetrics(item.headline_metrics)}${renderTextCards(item.selected_cards)}${renderTable(item.table)}</article>`).join("")}</div></section>`).join("");
@@ -356,8 +433,13 @@
       renderCategories(payload);
     }
 
+    let dataLoading = false;
+
     async function loadData() {
-      document.getElementById("status").textContent = "Loading latest report";
+      if (dataLoading) return;
+      dataLoading = true;
+      document.getElementById("status").textContent = "正在加载最新报告";
+      document.getElementById("heroStatus").textContent = "正在加载最新报告";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         const text = await response.text();
@@ -368,13 +450,21 @@
           throw new Error(`Invalid JSON response: ${error.message}. Response preview: ${text.slice(0, 240)}`);
         }
         renderAll(payload);
-        document.getElementById("status").textContent = "Latest report loaded";
+        const snapshotTime = payload.latest_sync_at || payload.source_message?.synced_at || payload.served_at_beijing || payload.served_at;
+        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
+        document.getElementById("status").textContent = snapshotTime
+          ? `最新报告已加载 | 快照 ${timeText(snapshotTime)} | 下次检查 ${nextCheck} 北京时间`
+          : `最新报告已加载 | 下次检查 ${nextCheck} 北京时间`;
+        document.getElementById("heroStatus").textContent = "最新报告已加载";
       } catch (error) {
-        document.getElementById("status").textContent = "Load failed";
-        const html = `<div class="empty">Load failed: ${esc(String(error))}</div>`;
+        document.getElementById("status").textContent = "加载失败";
+        document.getElementById("heroStatus").textContent = "加载失败";
+        const html = `<div class="empty">加载失败：${esc(String(error))}</div>`;
         document.getElementById("aiRoot").innerHTML = html;
         document.getElementById("mailRoot").innerHTML = html;
         document.getElementById("categoryRoot").innerHTML = html;
+      } finally {
+        dataLoading = false;
       }
     }
 
@@ -382,14 +472,16 @@
       if (!ENABLE_SYNC) return;
       const btn = document.getElementById("syncBtn");
       btn.disabled = true;
-      document.getElementById("status").textContent = "Syncing mailbox";
+      document.getElementById("status").textContent = "正在同步邮箱";
+      document.getElementById("heroStatus").textContent = "正在同步邮箱";
       try {
         const response = await fetch(SYNC_URL, { method: "POST", headers: { "Content-Type": "application/json" } });
         const payload = await response.json();
-        if (!response.ok || payload.status !== "ok") throw new Error(payload.message || "Sync failed");
+        if (!response.ok || payload.status !== "ok") throw new Error(payload.message || "同步失败");
         await loadData();
       } catch (error) {
-        document.getElementById("status").textContent = `Sync failed: ${error}`;
+        document.getElementById("status").textContent = `同步失败：${error}`;
+        document.getElementById("heroStatus").textContent = `同步失败：${error}`;
       } finally {
         btn.disabled = false;
       }
@@ -397,8 +489,15 @@
 
     document.getElementById("refreshBtn").addEventListener("click", loadData);
     const syncBtn = document.getElementById("syncBtn");
-    if (syncBtn) syncBtn.addEventListener("click", syncData);
+    if (syncBtn) {
+      if (ENABLE_SYNC) {
+        syncBtn.addEventListener("click", syncData);
+      } else {
+        syncBtn.hidden = true;
+      }
+    }
     loadData();
+    setInterval(loadData, AUTO_REFRESH_MS);
   </script>
 </body>
 </html>

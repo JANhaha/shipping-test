@@ -572,7 +572,7 @@ class ShippingDashboardService:
             return func(*args)
         except Exception as exc:
             return {
-                "error": f"{label}闁硅埖鎸歌ぐ鍥ㄥ緞鏉堫偉袝: {exc}",
+                "error": f"{label} load failed: {exc}",
                 "updated_at": datetime.now().isoformat(),
             }
 

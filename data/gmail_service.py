@@ -46,11 +46,9 @@ class GmailShippingDataService:
         if not label_id:
             raise RuntimeError("Gmail label 'shipping-data' not found.")
 
-        lookback_days = self._lookback_days()
         queries = [
             "newer_than:1d",
-            f"newer_than:{lookback_days}d",
-            f'subject:"SSY SINGAPORE" newer_than:{lookback_days}d',
+            'subject:"SSY SINGAPORE" newer_than:7d',
         ]
         message_refs = []
         seen_ids = set()
@@ -78,18 +76,9 @@ class GmailShippingDataService:
             "synced_count": len(synced),
             "message_ids": synced,
             "label": "shipping-data",
-            "query": f"newer_than:1d + newer_than:{lookback_days}d + SSY SINGAPORE within {lookback_days}d",
+            "query": "newer_than:1d + latest SSY SINGAPORE within 7d",
             "synced_at": datetime.now().isoformat(),
         }
-
-    @staticmethod
-    def _lookback_days():
-        value = os.getenv("GMAIL_LOOKBACK_DAYS", "7").strip()
-        try:
-            days = int(value)
-        except ValueError:
-            days = 7
-        return max(1, min(days, 90))
 
     def _save_message(self, session, message):
         payload = message.get("payload", {})

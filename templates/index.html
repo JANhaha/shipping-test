@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>MANDARINE OCEAN DASHBOARD</title>
+  <title>漢洋海运数据中心</title>
   <style>
     :root{
       --bg:#f4ede5;
@@ -132,12 +132,7 @@
       padding:11px 18px;
       font-weight:700;
       cursor:pointer;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
     }
-    .button.secondary{background:#eef4f6;color:var(--accent)}
     .button:disabled{opacity:.65;cursor:default}
     .toolbar{
       display:flex;
@@ -284,45 +279,44 @@
     <section class="hero">
       <div class="hero-top">
         <div>
-          <div class="eyebrow">MANDARINE OCEAN DASHBOARD</div>
-          <h1>MANDARINE OCEAN DASHBOARD</h1>
+          <div class="eyebrow">HANYANG SHIPPING DATA CENTER</div>
+          <h1>漢洋海运数据中心</h1>
           <div class="subtitle">
-            Unified market board for shipping indices, crude, FX, iron ore, BOC USD conversion,
-            China coastal freight snapshot, and major port bunker prices. Data refreshes every 30 minutes.
+            集中查看航运指数、原油、汇率、铁矿、中行美元折算价、沿海散货指数、
+            全球主要港口燃油价格，以及 SSY 报告和航线地图联动数据。
           </div>
         </div>
         <div>
-          <div class="release-meta">Version: V2<br>Web Operations: ANDY</div>
-          <div class="section-tag" style="margin-top:8px">30-Min Auto Refresh</div>
+          <div class="release-meta">版本：V2<br>运营：ANDY</div>
+          <div class="section-tag" style="margin-top:8px">30 分钟自动刷新</div>
         </div>
       </div>
 
       <div class="hero-grid">
         <div class="entry-grid">
           <a href="/shipping-data" class="entry-card">
-            <div class="entry-title">SHIPPING DATA</div>
-            <div class="entry-meta">Latest SSY Singapore report, structured attachment tables, market brief and route-focused content.</div>
+            <div class="entry-title">航运数据</div>
+            <div class="entry-meta">查看最新 SSY 新加坡报告、附件表格、市场简报和航线相关数据。</div>
             <div class="entry-mark">DATA</div>
           </a>
           <a href="/map-data" class="entry-card">
-            <div class="entry-title">MAP DATA</div>
-            <div class="entry-meta">Interactive route map with linked route values from the latest shipping-mail snapshot.</div>
+            <div class="entry-title">航线地图</div>
+            <div class="entry-meta">按航线族查看 Baltic 路线、地理路径和最新邮件数据中的航线价格。</div>
             <div class="entry-mark">MAP</div>
           </a>
         </div>
 
         <div class="hero-side">
           <div class="metric-card">
-            <div class="metric-label">Board Status</div>
-            <div id="lastUpdated" class="metric-value">Loading</div>
-            <div class="meta" id="refreshMeta" style="margin-top:8px">Connecting to latest published data</div>
+            <div class="metric-label">看板状态</div>
+            <div id="lastUpdated" class="metric-value">加载中</div>
+            <div class="meta" id="refreshMeta" style="margin-top:8px">正在读取最新发布数据</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">Actions</div>
+            <div class="metric-label">操作</div>
             <div class="toolbar">
-              <button id="refreshBtn" class="button">Refresh Now</button>
-              <a class="button secondary" href="https://github.com/JANhaha/shipping-test/actions/workflows/update-shipping-data.yml?query=event%3Aworkflow_dispatch+branch%3Astable" target="_blank" rel="noopener" title="Open GitHub Actions, then click Run workflow on stable.">Open Force Run</a>
-              <span class="toolbar-note">Snapshot cadence: 30 minutes</span>
+              <button id="refreshBtn" class="button">刷新数据</button>
+              <span class="toolbar-note">快照频率：30 分钟</span>
             </div>
           </div>
         </div>
@@ -334,7 +328,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Shipping Indices</div>
-            <h2>Shipping Market Indices</h2>
+            <h2>航运市场指数</h2>
           </div>
           <div class="dense-note">BDI / BCI / BPI / BSI / BHSI / BCTI / BDTI / BLNG / BLPG</div>
         </div>
@@ -345,7 +339,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Crude</div>
-            <h2>Crude Market</h2>
+            <h2>原油市场</h2>
           </div>
           <div class="dense-note">WTI Crude / Brent Crude CFD</div>
         </div>
@@ -356,7 +350,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Spot Focus</div>
-            <h2>Spot Market Focus</h2>
+            <h2>现货关注</h2>
           </div>
           <div class="dense-note">Imported iron ore index / BOC USD conversion</div>
         </div>
@@ -378,7 +372,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">FX</div>
-            <h2>Related FX Rates</h2>
+            <h2>相关汇率</h2>
           </div>
           <div class="dense-note">All FX values shown with 4 decimal places</div>
         </div>
@@ -389,9 +383,9 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">CBFI</div>
-            <h2>China Coastal Bulk Freight Snapshot</h2>
+            <h2>中国沿海散货运价</h2>
           </div>
-          <div id="cbfiDate" class="dense-note">Loading</div>
+          <div id="cbfiDate" class="dense-note">加载中</div>
         </div>
         <div id="cbfiRoot"></div>
       </section>
@@ -400,7 +394,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Bunker</div>
-            <h2>Global Major Ports Bunker Prices</h2>
+            <h2>全球主要港口燃油价格</h2>
           </div>
           <div class="dense-note">Including Zhoushan and all visible major ports with live published prices</div>
         </div>
@@ -425,6 +419,8 @@
 
   <script>
     const DATA_URL = "/api/dashboard";
+    const AUTO_REFRESH_MS = 30 * 60 * 1000;
+    const STALE_AFTER_MS = 75 * 60 * 1000;
     const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
       timeZone: "Asia/Shanghai",
       year: "numeric",
@@ -460,7 +456,7 @@
     function renderShippingIndices(data) {
       const root = document.getElementById("shippingIndices");
       if (!data || data.error) {
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "Shipping indices unavailable."}</div>`;
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "航运指数暂不可用。"}</div>`;
         return;
       }
       root.innerHTML = `
@@ -470,7 +466,7 @@
               <div class="code">${item.code}</div>
               <div class="primary">${fmt(item.value)}</div>
               <div class="secondary">${maybe(item.name)}</div>
-              <div class="secondary" style="margin-top:10px">${maybe(item.date)} · Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
+              <div class="secondary" style="margin-top:10px">${maybe(item.date)} | Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
             </div>
           `).join("")}
         </div>
@@ -500,12 +496,12 @@
 
     function renderIronOre(data) {
       document.getElementById("oreToday").textContent = fmt(data?.today?.value);
-      document.getElementById("oreMeta").innerHTML = `Previous ${fmt(data?.yesterday?.value)} · Change ${coloredChange(data?.change_percent, "%", 2)} · ${maybe(data?.today?.date)}`;
+      document.getElementById("oreMeta").innerHTML = `Previous ${fmt(data?.yesterday?.value)} | Change ${coloredChange(data?.change_percent, "%", 2)} | ${maybe(data?.today?.date)}`;
     }
 
     function renderBoc(data) {
       document.getElementById("bocPrice").textContent = fmt(data?.conversion_price);
-      document.getElementById("bocMeta").textContent = `Spot Buy ${fmt(data?.spot_buy)} · Spot Sell ${fmt(data?.spot_sell)} · ${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
+      document.getElementById("bocMeta").textContent = `Spot Buy ${fmt(data?.spot_buy)} | Spot Sell ${fmt(data?.spot_sell)} | ${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
     }
 
     function renderForex(data) {
@@ -536,28 +532,28 @@
       const root = document.getElementById("cbfiRoot");
       const dateNode = document.getElementById("cbfiDate");
       if (!data || data.error) {
-        dateNode.textContent = "Unavailable";
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI snapshot unavailable."}</div>`;
+        dateNode.textContent = "暂无数据";
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI 快照暂不可用。"}</div>`;
         return;
       }
 
       const overview = data.overview || {};
       dateNode.textContent = `${maybe(data.previous_date)} -> ${maybe(data.current_date)}`;
       const highlights = (data.highlights || []).slice(0, 6);
-      const routes = (data.routes || []).slice(0, 12);
+      const routes = data.routes || [];
 
       root.innerHTML = `
         <div class="cards-4">
           <div class="tile soft">
             <div class="mini-label">Current Composite</div>
             <div class="primary">${fmt(overview.current)}</div>
-            <div class="secondary">Previous ${fmt(overview.previous)} · ${coloredChange(overview.change_percent, "%", 2)}</div>
+            <div class="secondary">${maybe(overview.route)} | Previous ${fmt(overview.previous)} | ${coloredChange(overview.change_percent, "%", 2)}</div>
           </div>
           ${highlights.map((item, idx) => `
             <div class="tile soft">
-              <div class="mini-label">Highlight ${idx + 1}</div>
+              <div class="mini-label">${maybe(item.route)}</div>
               <div class="primary">${fmt(item.current)}</div>
-              <div class="secondary">Previous ${fmt(item.previous)} · ${coloredChange(item.change_percent, "%", 2)}</div>
+              <div class="secondary">${maybe(item.ship_type)} | Previous ${fmt(item.previous)} | ${coloredChange(item.change_percent, "%", 2)}</div>
             </div>
           `).join("")}
         </div>
@@ -575,8 +571,8 @@
             <tbody>
               ${routes.map((item, idx) => `
                 <tr>
-                  <td>Route ${idx + 1}</td>
-                  <td>Band ${idx + 1}</td>
+                  <td>${maybe(item.route)}</td>
+                  <td>${maybe(item.ship_type)}</td>
                   <td>${fmt(item.previous)}</td>
                   <td>${fmt(item.current)}</td>
                   <td>${coloredChange(item.change_percent, "%", 2)}</td>
@@ -601,7 +597,11 @@
       `).join("");
     }
 
+    let dashboardLoading = false;
+
     async function loadDashboard() {
+      if (dashboardLoading) return;
+      dashboardLoading = true;
       const btn = document.getElementById("refreshBtn");
       btn.disabled = true;
       try {
@@ -615,19 +615,26 @@
         renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || []);
         const statusTime = payload.timestamp_beijing || payload.timestamp;
-        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(new Date(statusTime))} Beijing Time`;
-        document.getElementById("refreshMeta").textContent = "Live board connected to the latest published data.";
+        const statusDate = new Date(statusTime);
+        const ageMinutes = (Date.now() - statusDate.getTime()) / 60000;
+        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(statusDate)} 北京时间`;
+        document.getElementById("refreshMeta").textContent =
+          Number.isFinite(ageMinutes) && ageMinutes > STALE_AFTER_MS / 60000
+            ? `当前快照已发布 ${Math.round(ageMinutes)} 分钟。下次浏览器检查：${nextCheck} 北京时间。`
+            : `已加载最新发布快照。下次浏览器检查：${nextCheck} 北京时间。`;
       } catch (error) {
-        document.getElementById("lastUpdated").textContent = "Load Failed";
+        document.getElementById("lastUpdated").textContent = "加载失败";
         document.getElementById("refreshMeta").textContent = `Error: ${error}`;
       } finally {
         btn.disabled = false;
+        dashboardLoading = false;
       }
     }
 
     document.getElementById("refreshBtn").addEventListener("click", loadDashboard);
     loadDashboard();
-    setInterval(loadDashboard, 30 * 60 * 1000);
+    setInterval(loadDashboard, AUTO_REFRESH_MS);
   </script>
 </body>
 </html>

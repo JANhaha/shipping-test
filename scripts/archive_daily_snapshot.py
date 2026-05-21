@@ -2,6 +2,8 @@ import json
 import sys
 import csv
 import base64
+import os
+import shutil
 import subprocess
 from datetime import datetime, timedelta, timezone
 from html import escape
@@ -20,7 +22,9 @@ from data.map_data_service import BalticMapDataService
 
 
 BEIJING_TZ = timezone(timedelta(hours=8), name="Asia/Shanghai")
-REMOTE_DATA_BASE = "https://raw.githubusercontent.com/JANhaha/shipping-test/stable/docs/data"
+REMOTE_DATA_REF = "stable"
+REMOTE_DATA_BASE = f"https://raw.githubusercontent.com/JANhaha/shipping-test/{REMOTE_DATA_REF}/docs/data"
+SNAPSHOT_RETENTION_DAYS = int(os.getenv("SNAPSHOT_RETENTION_DAYS", "14"))
 
 
 def main() -> None:
@@ -40,16 +44,43 @@ def main() -> None:
     target_dir = ROOT / "data" / "daily_snapshots"
     target_dir.mkdir(parents=True, exist_ok=True)
     date_key = f"{now:%Y-%m-%d}"
-    json_target = target_dir / f"{date_key}.json"
-    html_target = target_dir / f"{date_key}.html"
-    csv_dir = target_dir / date_key
+    snapshot_key = date_key
+    json_target = target_dir / f"{snapshot_key}.json"
+    html_target = target_dir / f"{snapshot_key}.html"
+    if json_target.exists() or html_target.exists():
+        snapshot_key = f"{date_key}-{now:%H%M%S}"
+        json_target = target_dir / f"{snapshot_key}.json"
+        html_target = target_dir / f"{snapshot_key}.html"
+    csv_dir = target_dir / snapshot_key
     csv_dir.mkdir(parents=True, exist_ok=True)
 
     json_target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     csv_files = write_csv_tables(payload, csv_dir)
-    html_target.write_text(render_html_report(payload, csv_files, date_key), encoding="utf-8")
+    html_target.write_text(render_html_report(payload, csv_files, snapshot_key), encoding="utf-8")
+    prune_old_snapshots(target_dir, now, SNAPSHOT_RETENTION_DAYS)
     print(f"wrote {json_target}")
     print(f"wrote {html_target}")
+
+
+def prune_old_snapshots(target_dir: Path, now: datetime, retention_days: int) -> None:
+    if retention_days <= 0:
+        return
+    cutoff = now.date() - timedelta(days=retention_days)
+    for path in target_dir.iterdir():
+        snapshot_date = parse_snapshot_date(path.name)
+        if snapshot_date is None or snapshot_date >= cutoff:
+            continue
+        if path.is_dir():
+            shutil.rmtree(path)
+        else:
+            path.unlink()
+
+
+def parse_snapshot_date(name: str):
+    try:
+        return datetime.strptime(name[:10], "%Y-%m-%d").date()
+    except ValueError:
+        return None
 
 
 def load_or_build(filename: str, builder):
@@ -83,7 +114,7 @@ def load_remote_with_github_cli(filename: str):
             [
                 str(gh),
                 "api",
-                f"repos/JANhaha/shipping-test/contents/{path}?ref=stable",
+                f"repos/JANhaha/shipping-test/contents/{path}?ref={REMOTE_DATA_REF}",
                 "--jq",
                 ".content",
             ],

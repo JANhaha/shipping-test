@@ -8,11 +8,13 @@ on:
         required: false
         default: "30"
   schedule:
-    - cron: "*/30 * * * *"
+    # GitHub scheduled jobs are best-effort. Running away from :00/:30 avoids
+    # the busiest queue minutes while still keeping a 30-minute cadence.
+    - cron: "7,37 * * * *"
 
 concurrency:
   group: shipping-data-refresh
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -72,5 +74,11 @@ jobs:
           git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json
           git diff --cached --quiet && exit 0
           git commit -m "chore: update shipping data"
-          git pull --rebase origin stable
-          git push origin HEAD:stable
+          for attempt in 1 2 3; do
+            git pull --rebase origin stable
+            if git push origin HEAD:stable; then
+              exit 0
+            fi
+            sleep $((attempt * 10))
+          done
+          exit 1

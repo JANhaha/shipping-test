@@ -1,3 +1,4 @@
+import os
 import sys
 from pathlib import Path
 import traceback
@@ -24,7 +25,8 @@ def main():
                 "used_cached_data": True,
             }
         )
-        traceback.print_exc()
+        if os.getenv("DEBUG_REFRESH") == "1":
+            traceback.print_exc()
         return 1
 
 

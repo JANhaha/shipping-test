@@ -10,8 +10,12 @@ ENV/
 build/
 dist/
 *.log
+.env
+.pytest_cache/
+.codex_publish_*/
+.codex_publish_*.bundle
+outputs/
 data/shipping_data.db
 data/gmail_attachments/
 data/daily_snapshots/
-outputs/
 credentials/
