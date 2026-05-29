@@ -8,13 +8,13 @@ on:
         required: false
         default: "30"
   schedule:
-    # GitHub scheduled jobs are best-effort. Running away from :00/:30 avoids
-    # the busiest queue minutes while still keeping a 30-minute cadence.
-    - cron: "7,37 * * * *"
+    # GitHub scheduled jobs are best-effort and can be delayed or skipped.
+    # Run every 10 minutes, away from the busiest :00/:30 queue minutes.
+    - cron: "3,13,23,33,43,53 * * * *"
 
 concurrency:
   group: shipping-data-refresh
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -30,6 +30,7 @@ jobs:
     timeout-minutes: 20
     env:
       MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
+      DATA_REFRESH_INTERVAL_MINUTES: "10"
       GMAIL_LOOKBACK_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.gmail_lookback_days || '7' }}
 
     steps:

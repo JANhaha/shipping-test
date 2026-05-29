@@ -1,5 +1,6 @@
 import hashlib
 import json
+import os
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -15,7 +16,8 @@ from data.shipping_message_selector import get_latest_target_message
 
 
 class ShippingDashboardService:
-    CACHE_TTL_SECONDS = 1800
+    CACHE_TTL_SECONDS = int(os.getenv("DASHBOARD_CACHE_TTL_SECONDS", "120"))
+    REFRESH_INTERVAL_MINUTES = int(os.getenv("DATA_REFRESH_INTERVAL_MINUTES", "10"))
     REQUEST_TIMEOUT = (15, 35)
     HIFLEET_URL = "https://www.hifleet.com/shipping/"
     HIFLEET_BALTIC_HISTORY_API = "https://www.hifleet.com/shipdetail/getBalticexchange"
@@ -139,7 +141,7 @@ class ShippingDashboardService:
             "timestamp": now.isoformat(),
             "timestamp_beijing": now_beijing.isoformat(),
             "date_beijing": now_beijing.strftime("%Y-%m-%d"),
-            "refresh_interval_minutes": 30,
+            "refresh_interval_minutes": self.REFRESH_INTERVAL_MINUTES,
             "source_message": {
                 "gmail_message_id": latest_message.get("gmail_message_id") if latest_message else None,
                 "subject": latest_message.get("subject") if latest_message else None,

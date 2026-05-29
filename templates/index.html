@@ -419,7 +419,7 @@
 
   <script>
     const DATA_URL = "/api/dashboard";
-    const AUTO_REFRESH_MS = 30 * 60 * 1000;
+    const AUTO_REFRESH_MS = 2 * 60 * 1000;
     const STALE_AFTER_MS = 75 * 60 * 1000;
     const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
       timeZone: "Asia/Shanghai",
@@ -633,6 +633,10 @@
     }
 
     document.getElementById("refreshBtn").addEventListener("click", loadDashboard);
+    window.addEventListener("focus", loadDashboard);
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) loadDashboard();
+    });
     loadDashboard();
     setInterval(loadDashboard, AUTO_REFRESH_MS);
   </script>

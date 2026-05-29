@@ -19,6 +19,12 @@ class AppSmokeTest(unittest.TestCase):
                 self.assertEqual(response.status_code, 200, path)
                 self.assertIn(b"html", response.data[:64].lower())
 
+    def test_api_responses_disable_cache(self):
+        with app.test_client() as client:
+            response = client.get("/api/health")
+
+        self.assertIn("no-store", response.headers.get("Cache-Control", ""))
+
     def test_gmail_attachment_filename_is_path_safe(self):
         original = (
             "15-20 MAY 26-ANY 3 DAYS SPREAD TO BE SPECIFIED by Owners "
