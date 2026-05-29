@@ -9,8 +9,8 @@ on:
         default: "30"
   schedule:
     # GitHub scheduled jobs are best-effort and can be delayed or skipped.
-    # Run every 10 minutes, away from the busiest :00/:30 queue minutes.
-    - cron: "3,13,23,33,43,53 * * * *"
+    # Run every 5 minutes so missed slots recover quickly.
+    - cron: "*/5 * * * *"
 
 concurrency:
   group: shipping-data-refresh
@@ -22,7 +22,7 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
   PYTHONUTF8: "1"
-  REQUIRE_GMAIL_SYNC: "true"
+  REQUIRE_GMAIL_SYNC: "false"
 
 jobs:
   update-shipping-data:
@@ -30,7 +30,7 @@ jobs:
     timeout-minutes: 20
     env:
       MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
-      DATA_REFRESH_INTERVAL_MINUTES: "10"
+      DATA_REFRESH_INTERVAL_MINUTES: "5"
       GMAIL_LOOKBACK_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.gmail_lookback_days || '7' }}
 
     steps:
@@ -75,7 +75,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json
+          git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json docs/data/refresh_status.json
           if git diff --cached --quiet; then
             echo "No shipping data changes to publish."
             exit 0

@@ -201,7 +201,7 @@
           <div class="hero-badges">
             <span class="pill">最新 SSY 邮件</span>
             <span class="pill">结构化表格</span>
-            <span class="pill">30 分钟刷新</span>
+            <span class="pill">5 分钟云端目标</span>
           </div>
         </div>
         <div class="status-card">
@@ -258,7 +258,7 @@
     const DATA_URL = "/api/shipping-data";
     const SYNC_URL = "/api/shipping-data/sync";
     const ENABLE_SYNC = true;
-    const AUTO_REFRESH_MS = 2 * 60 * 1000;
+    const AUTO_REFRESH_MS = 60 * 1000;
 
     const esc = (value) => {
       const div = document.createElement("div");
@@ -450,12 +450,13 @@
           throw new Error(`Invalid JSON response: ${error.message}. Response preview: ${text.slice(0, 240)}`);
         }
         renderAll(payload);
+        const checkedAt = new Date();
         const snapshotTime = payload.latest_sync_at || payload.source_message?.synced_at || payload.served_at_beijing || payload.served_at;
         const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
         document.getElementById("status").textContent = snapshotTime
-          ? `最新报告已加载 | 快照 ${timeText(snapshotTime)} | 下次检查 ${nextCheck} 北京时间`
-          : `最新报告已加载 | 下次检查 ${nextCheck} 北京时间`;
-        document.getElementById("heroStatus").textContent = "最新报告已加载";
+          ? `页面已检查 ${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间 | 邮箱快照 ${timeText(snapshotTime)} | 下次检查 ${nextCheck} 北京时间`
+          : `页面已检查 ${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间 | 下次检查 ${nextCheck} 北京时间`;
+        document.getElementById("heroStatus").textContent = `已检查 ${BEIJING_TIME_FORMATTER.format(checkedAt)}`;
       } catch (error) {
         document.getElementById("status").textContent = "加载失败";
         document.getElementById("heroStatus").textContent = "加载失败";

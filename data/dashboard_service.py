@@ -17,7 +17,7 @@ from data.shipping_message_selector import get_latest_target_message
 
 class ShippingDashboardService:
     CACHE_TTL_SECONDS = int(os.getenv("DASHBOARD_CACHE_TTL_SECONDS", "120"))
-    REFRESH_INTERVAL_MINUTES = int(os.getenv("DATA_REFRESH_INTERVAL_MINUTES", "10"))
+    REFRESH_INTERVAL_MINUTES = int(os.getenv("DATA_REFRESH_INTERVAL_MINUTES", "5"))
     REQUEST_TIMEOUT = (15, 35)
     HIFLEET_URL = "https://www.hifleet.com/shipping/"
     HIFLEET_BALTIC_HISTORY_API = "https://www.hifleet.com/shipdetail/getBalticexchange"

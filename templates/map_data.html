@@ -242,7 +242,7 @@
         </div>
         <div class="status-card">
           <div class="status-meta">版本：V2<br>运营：ANDY</div>
-          <div class="status-label" style="margin-top:14px">最新看板时间</div>
+          <div class="status-label" style="margin-top:14px">页面检查时间</div>
           <div class="status-value" id="heroUpdatedAt">-</div>
           <div class="sub" style="margin-top:8px">航线看板跟随最新发布的邮箱数据快照。</div>
         </div>
@@ -335,7 +335,7 @@
   <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
   <script>
     const DATA_URL = "/api/map-data";
-    const AUTO_REFRESH_MS = 2 * 60 * 1000;
+    const AUTO_REFRESH_MS = 60 * 1000;
 
     const esc = (value) => {
       const div = document.createElement("div");
@@ -794,13 +794,14 @@
         document.getElementById("segmentCount").textContent = payload.segments?.length ?? 0;
         document.getElementById("indexCount").textContent = payload.index_count ?? 0;
         document.getElementById("routeCount").textContent = payload.route_count ?? 0;
+        const checkedAt = new Date();
         const boardTime = timeText(payload.updated_at_beijing || payload.updated_at);
         document.getElementById("updatedAt").textContent = boardTime;
-        heroUpdatedAt.textContent = boardTime;
+        heroUpdatedAt.textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
         const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
         status.textContent = payload.error
           ? payload.error
-          : `航线看板已就绪 | 下次检查 ${nextCheck} 北京时间`;
+          : `航线看板已就绪 | 数据快照 ${boardTime} | 下次检查 ${nextCheck} 北京时间`;
         activeSegmentIndex = 0;
         activeIndexIndex = 0;
         activeRouteIndex = 0;
