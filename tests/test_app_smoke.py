@@ -1,6 +1,8 @@
 import unittest
+from unittest.mock import patch
 
 from app import app
+from data import attachment_visualization
 from data.gmail_service import GmailShippingDataService
 
 
@@ -36,6 +38,52 @@ class AppSmokeTest(unittest.TestCase):
         self.assertLessEqual(len(safe_name), 120)
         self.assertTrue(safe_name.endswith(".pdf"))
         self.assertNotIn(" ", safe_name)
+
+    def test_route_market_snapshot_prefers_newer_static_shipping_data(self):
+        old_categories = [
+            {
+                "items": [
+                    {
+                        "display_name": "Baltic Capesize Index.pdf",
+                        "table": {"rows": [["C5", "Old route", "1.000", "0.100"]]},
+                    }
+                ]
+            }
+        ]
+        static_payload = {
+            "source_message": {
+                "subject": "SSY SINGAPORE REPORT- 296 MAY 2026",
+                "received_at": "2026-05-29T02:38:48",
+            },
+            "attachment_categories": [
+                {
+                    "items": [
+                        {
+                            "display_name": "Baltic Capesize Index.pdf",
+                            "table": {"rows": [["C5", "West Australia to Qingdao", "16.870", "0.555"]]},
+                        }
+                    ]
+                }
+            ],
+        }
+
+        with patch.object(
+            attachment_visualization,
+            "build_attachment_dashboard",
+            return_value={"categories": old_categories},
+        ), patch.object(
+            attachment_visualization,
+            "_load_static_shipping_data",
+            return_value=static_payload,
+        ), patch.object(
+            attachment_visualization,
+            "get_latest_target_message",
+            return_value={"received_at": "2026-05-25T10:19:07"},
+        ):
+            snapshot = attachment_visualization.build_route_market_snapshot()
+
+        self.assertEqual(snapshot["C5"]["value"], "16.870")
+        self.assertEqual(snapshot["C5"]["received_at"], "2026-05-29T02:38:48")
 
 
 if __name__ == "__main__":

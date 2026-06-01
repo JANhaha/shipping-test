@@ -1,4 +1,8 @@
+import json
+from pathlib import Path
 import re
+from copy import deepcopy
+from datetime import datetime
 from urllib.parse import unquote
 
 from data.gmail_store import list_attachments_for_message_ids
@@ -40,8 +44,54 @@ def build_attachment_dashboard(limit=300):
 
 def build_route_market_snapshot(limit=300):
     dashboard = build_attachment_dashboard(limit=limit)
+    gmail_snapshot = build_route_market_snapshot_from_categories(dashboard.get("categories", []))
+    static_snapshot = build_route_market_snapshot_from_static_data()
+    if static_snapshot and _static_shipping_is_newer_than_gmail():
+        return static_snapshot
+    return gmail_snapshot or static_snapshot
+
+
+def build_route_market_snapshot_from_static_data():
+    shipping_data = _load_static_shipping_data()
+    if not shipping_data:
+        return {}
+    categories = shipping_data.get("attachment_categories") or []
+    source = get_static_shipping_source_message() or {}
+    return build_route_market_snapshot_from_categories(
+        _categories_with_source_defaults(categories, source)
+    )
+
+
+def get_static_shipping_source_message():
+    shipping_data = _load_static_shipping_data()
+    if not shipping_data:
+        return None
+    source = shipping_data.get("source_message") or {}
+    if any(source.get(key) for key in ("gmail_message_id", "subject", "received_at", "synced_at")):
+        return source
+    items = shipping_data.get("items") or []
+    if items and isinstance(items[0], dict):
+        item = items[0]
+        return {
+            "gmail_message_id": item.get("gmail_message_id"),
+            "subject": item.get("subject"),
+            "received_at": item.get("received_at"),
+            "synced_at": item.get("synced_at"),
+        }
+    return None
+
+
+def get_latest_available_shipping_source_message():
+    gmail_message = get_latest_target_message()
+    static_message = get_static_shipping_source_message()
+    if static_message and _message_sort_time(static_message) >= _message_sort_time(gmail_message):
+        return static_message
+    return gmail_message or static_message
+
+
+def build_route_market_snapshot_from_categories(categories):
     snapshot = {}
-    for category in dashboard.get("categories", []):
+    for category in categories or []:
         for item in category.get("items", []):
             table = item.get("table") or {}
             rows = table.get("rows") or []
@@ -76,6 +126,50 @@ def build_route_market_snapshot(limit=300):
     for item in snapshot.values():
         item.pop("_priority", None)
     return snapshot
+
+
+def _categories_with_source_defaults(categories, source):
+    if not source:
+        return categories
+    cloned = deepcopy(categories)
+    for category in cloned or []:
+        for item in category.get("items", []) or []:
+            item.setdefault("subject", source.get("subject"))
+            item.setdefault("received_at", source.get("received_at"))
+            item.setdefault("gmail_message_id", source.get("gmail_message_id"))
+    return cloned
+
+
+def _load_static_shipping_data():
+    target = Path(__file__).resolve().parents[1] / "docs" / "data" / "shipping_data.json"
+    if not target.exists():
+        return None
+    try:
+        return json.loads(target.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def _static_shipping_is_newer_than_gmail():
+    static_message = get_static_shipping_source_message()
+    if not static_message:
+        return False
+    gmail_message = get_latest_target_message()
+    return _message_sort_time(static_message) >= _message_sort_time(gmail_message)
+
+
+def _message_sort_time(message):
+    if not message:
+        return datetime.min
+    for key in ("received_at", "synced_at"):
+        value = message.get(key)
+        if not value:
+            continue
+        try:
+            return datetime.fromisoformat(str(value).replace("Z", "+00:00")).replace(tzinfo=None)
+        except ValueError:
+            continue
+    return datetime.min
 
 
 def _enrich_attachment(item):
