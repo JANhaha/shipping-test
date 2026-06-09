@@ -332,10 +332,10 @@
   <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js"></script>
-  <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
   <script>
     const DATA_URL = "./data/map_data.json";
-    const AUTO_REFRESH_MS = 60 * 1000;
+    const AUTO_REFRESH_MS = 5 * 60 * 1000;
 
     const esc = (value) => {
       const div = document.createElement("div");
@@ -379,6 +379,7 @@
     let routeSeries = [];
     let reverseTimer = null;
     let dataLoading = false;
+    let mapSignature = "";
 
     function initMap() {
       am4core.useTheme(am4themes_animated);
@@ -430,6 +431,51 @@
     function getActiveRoute() {
       const index = getActiveIndex();
       return index?.routes?.[activeRouteIndex] || null;
+    }
+
+    function mapPayloadSignature(nextPayload) {
+      return [
+        nextPayload?.updated_at_beijing || nextPayload?.updated_at || "",
+        nextPayload?.source_message?.gmail_message_id || "",
+        nextPayload?.source_message?.synced_at || "",
+        nextPayload?.route_count || 0,
+        nextPayload?.index_count || 0
+      ].join("|");
+    }
+
+    function captureSelection() {
+      return {
+        segmentTitle: getActiveSegment()?.title || "",
+        indexTitle: getActiveIndex()?.title || "",
+        routeCode: getActiveRoute()?.code || ""
+      };
+    }
+
+    function restoreSelection(selection) {
+      if (!payload?.segments?.length) {
+        activeSegmentIndex = 0;
+        activeIndexIndex = 0;
+        activeRouteIndex = 0;
+        return;
+      }
+      const segmentIndex = payload.segments.findIndex((segment) => segment.title === selection.segmentTitle);
+      activeSegmentIndex = segmentIndex >= 0 ? segmentIndex : Math.min(activeSegmentIndex, payload.segments.length - 1);
+      const segment = getActiveSegment();
+      const indexes = segment?.indexes || [];
+      if (!indexes.length) {
+        activeIndexIndex = 0;
+        activeRouteIndex = 0;
+        return;
+      }
+      const indexIndex = indexes.findIndex((index) => index.title === selection.indexTitle);
+      activeIndexIndex = indexIndex >= 0 ? indexIndex : Math.min(activeIndexIndex, indexes.length - 1);
+      const routes = getActiveIndex()?.routes || [];
+      if (!routes.length) {
+        activeRouteIndex = 0;
+        return;
+      }
+      const routeIndex = routes.findIndex((route) => route.code === selection.routeCode);
+      activeRouteIndex = routeIndex >= 0 ? routeIndex : Math.min(activeRouteIndex, routes.length - 1);
     }
 
     function getTerminalPoints(route) {
@@ -778,33 +824,48 @@
       }
     }
 
-    async function loadData() {
+    async function loadData(options = {}) {
       if (dataLoading) return;
+      const background = Boolean(options.background);
       dataLoading = true;
       const status = document.getElementById("status");
       const heroUpdatedAt = document.getElementById("heroUpdatedAt");
-      status.textContent = "正在加载航线看板";
-      heroUpdatedAt.textContent = "加载中";
+      if (!background) {
+        status.textContent = "正在加载航线看板";
+        heroUpdatedAt.textContent = "加载中";
+      }
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
-        payload = await response.json();
+        const nextPayload = await response.json();
+        const incomingSignature = mapPayloadSignature(nextPayload);
+        const checkedAt = new Date();
+        const boardTime = timeText(nextPayload.updated_at_beijing || nextPayload.updated_at);
+        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
+        heroUpdatedAt.textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
+        if (background && payload && incomingSignature !== mapSignature) {
+          status.textContent = `检测到新的航线数据快照 ${boardTime}，点击“刷新数据”更新本页内容。当前阅读位置已保留。`;
+          return;
+        }
+        if (background) {
+          status.textContent = nextPayload.error
+            ? nextPayload.error
+            : `后台检查完成 | 当前数据快照 ${boardTime} | 下次检查 ${nextCheck} 北京时间`;
+          return;
+        }
+        const selection = captureSelection();
+        payload = nextPayload;
+        mapSignature = incomingSignature;
+        restoreSelection(selection);
         document.getElementById("segmentCount").textContent = payload.segments?.length ?? 0;
         document.getElementById("indexCount").textContent = payload.index_count ?? 0;
         document.getElementById("routeCount").textContent = payload.route_count ?? 0;
-        const checkedAt = new Date();
-        const boardTime = timeText(payload.updated_at_beijing || payload.updated_at);
         document.getElementById("updatedAt").textContent = boardTime;
-        heroUpdatedAt.textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
-        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
         status.textContent = payload.error
           ? payload.error
           : `航线看板已就绪 | 数据快照 ${boardTime} | 下次检查 ${nextCheck} 北京时间`;
-        activeSegmentIndex = 0;
-        activeIndexIndex = 0;
-        activeRouteIndex = 0;
         renderAll();
       } catch (error) {
         status.textContent = `加载失败：${error.message}`;
@@ -816,13 +877,13 @@
     }
 
     document.getElementById("refreshBtn").addEventListener("click", loadData);
-    window.addEventListener("focus", loadData);
+    window.addEventListener("focus", () => loadData({ background: true }));
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) loadData();
+      if (!document.hidden) loadData({ background: true });
     });
     initMap();
     loadData();
-    setInterval(loadData, AUTO_REFRESH_MS);
+    setInterval(() => loadData({ background: true }), AUTO_REFRESH_MS);
   </script>
 </body>
 </html>

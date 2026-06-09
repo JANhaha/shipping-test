@@ -419,7 +419,7 @@
 
   <script>
     const DATA_URL = "/api/dashboard";
-    const AUTO_REFRESH_MS = 60 * 1000;
+    const AUTO_REFRESH_MS = 5 * 60 * 1000;
     const STALE_AFTER_MS = 15 * 60 * 1000;
     const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
       timeZone: "Asia/Shanghai",
@@ -598,15 +598,43 @@
     }
 
     let dashboardLoading = false;
+    let dashboardSignature = "";
 
-    async function loadDashboard() {
+    function dashboardPayloadSignature(payload) {
+      return [
+        payload?.timestamp_beijing || payload?.timestamp || "",
+        payload?.source_message?.gmail_message_id || "",
+        payload?.source_message?.synced_at || ""
+      ].join("|");
+    }
+
+    async function loadDashboard(options = {}) {
       if (dashboardLoading) return;
+      const background = Boolean(options.background);
       dashboardLoading = true;
       const btn = document.getElementById("refreshBtn");
       btn.disabled = true;
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         const payload = await response.json();
+        const incomingSignature = dashboardPayloadSignature(payload);
+        const checkedAt = new Date();
+        const statusTime = payload.timestamp_beijing || payload.timestamp;
+        const statusDate = new Date(statusTime);
+        const ageMinutes = (checkedAt.getTime() - statusDate.getTime()) / 60000;
+        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
+        if (background && dashboardSignature && incomingSignature !== dashboardSignature) {
+          document.getElementById("refreshMeta").textContent =
+            `检测到新的数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，点击“刷新数据”更新页面内容。`;
+          return;
+        }
+        if (background) {
+          document.getElementById("refreshMeta").textContent =
+            `后台检查完成；当前数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
+          return;
+        }
+        dashboardSignature = incomingSignature;
         renderShippingIndices(payload.baltic);
         renderCrude(payload.crude);
         renderIronOre(payload.iron_ore);
@@ -614,12 +642,6 @@
         renderForex(payload.forex);
         renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || []);
-        const checkedAt = new Date();
-        const statusTime = payload.timestamp_beijing || payload.timestamp;
-        const statusDate = new Date(statusTime);
-        const ageMinutes = (checkedAt.getTime() - statusDate.getTime()) / 60000;
-        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
-        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
         document.getElementById("refreshMeta").textContent =
           Number.isFinite(ageMinutes) && ageMinutes > STALE_AFTER_MS / 60000
             ? `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，已超过 ${Math.round(ageMinutes)} 分钟，等待云端下一次生成。下次检查：${nextCheck} 北京时间。`
@@ -634,12 +656,12 @@
     }
 
     document.getElementById("refreshBtn").addEventListener("click", loadDashboard);
-    window.addEventListener("focus", loadDashboard);
+    window.addEventListener("focus", () => loadDashboard({ background: true }));
     document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) loadDashboard();
+      if (!document.hidden) loadDashboard({ background: true });
     });
     loadDashboard();
-    setInterval(loadDashboard, AUTO_REFRESH_MS);
+    setInterval(() => loadDashboard({ background: true }), AUTO_REFRESH_MS);
   </script>
 </body>
 </html>

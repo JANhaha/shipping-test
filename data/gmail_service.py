@@ -122,12 +122,21 @@ class GmailShippingDataService:
                 creds.refresh(Request())
                 self._save_credentials(creds)
             except RefreshError as exc:
-                raise RuntimeError(
-                    "Gmail token 已过期或被撤销。请重新运行 "
-                    "`py scripts\\gmail_oauth_setup.py` 完成授权；"
-                    "如果是 GitHub Actions 报错，还需要同步更新仓库 Secret "
-                    "`GMAIL_TOKEN_JSON`。"
-                ) from exc
+                if interactive:
+                    creds = None
+                    try:
+                        self.token_path.unlink()
+                    except FileNotFoundError:
+                        pass
+                    except OSError:
+                        pass
+                else:
+                    raise RuntimeError(
+                        "Gmail token 已过期或被撤销。请重新运行 "
+                        "`py scripts\\gmail_oauth_setup.py` 完成授权；"
+                        "如果是 GitHub Actions 报错，还需要同步更新仓库 Secret "
+                        "`GMAIL_TOKEN_JSON`。"
+                    ) from exc
         if creds and creds.valid:
             return creds
         if not self.credentials_path.exists():
