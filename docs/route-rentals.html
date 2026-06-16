@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>????</title>
+  <style>
+    :root{
+      --ink:#18343b;
+      --muted:#66808a;
+      --line:#dce8ec;
+      --panel:rgba(255,255,255,.96);
+      --bg:#eef6f7;
+      --accent:#0f6474;
+      --accent-2:#1b879d;
+      --gold:#c4862e;
+      --rise:#13805f;
+      --fall:#b94747;
+      --soft-rise:#e5f6ef;
+      --soft-fall:#fae9e8;
+      --shadow:0 18px 48px rgba(22,64,72,.12);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter,"Segoe UI","Microsoft YaHei",Arial,sans-serif;
+      color:var(--ink);
+      background:
+        linear-gradient(145deg,rgba(15,100,116,.10),rgba(196,134,46,.08)),
+        var(--bg);
+    }
+    .shell{max-width:1440px;margin:0 auto;padding:20px 18px 42px}
+    .hero,.panel,.route-card,.metric,.status-card{
+      background:var(--panel);
+      border:1px solid rgba(24,52,59,.08);
+      box-shadow:var(--shadow);
+      border-radius:22px;
+    }
+    .hero{padding:26px}
+    .hero-top,.section-head,.toolbar,.metric-row,.route-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+    .eyebrow{
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--accent);
+      font-size:12px;
+      font-weight:800;
+    }
+    h1,h2,h3,p{margin:0}
+    h1{font-size:clamp(32px,5vw,68px);line-height:1.02;margin-top:8px;letter-spacing:0}
+    h2{font-size:24px;margin-top:4px}
+    h3{font-size:18px}
+    .subtitle{max-width:760px;color:var(--muted);font-size:16px;line-height:1.8;margin-top:14px}
+    .status-card{padding:18px;min-width:min(100%,310px);background:#fffdfa}
+    .status-label,.sub,.meta{color:var(--muted);font-size:13px;line-height:1.6}
+    .status-value{font-size:22px;font-weight:850;margin-top:6px}
+    .button{
+      appearance:none;
+      border:0;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:#fff;
+      font-weight:800;
+      padding:11px 18px;
+      text-decoration:none;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      min-height:42px;
+    }
+    .button.secondary{background:#ecf4f6;color:var(--accent)}
+    .button:disabled{opacity:.6;cursor:default}
+    .toolbar{margin-top:22px;justify-content:flex-start}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:18px}
+    .metric{padding:18px}
+    .metric-value{font-size:30px;font-weight:900;margin-top:8px}
+    .metric-note{font-size:12px;color:var(--muted);margin-top:6px}
+    .panel{padding:22px;margin-top:16px}
+    .filters{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      border-radius:999px;
+      padding:9px 13px;
+      font-weight:800;
+      cursor:pointer;
+      min-height:38px;
+    }
+    .chip.active{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+    .leader-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+    .leader{
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      background:#fff;
+    }
+    .leader.rise{background:linear-gradient(135deg,#f5fffb,#fff)}
+    .leader.fall{background:linear-gradient(135deg,#fff7f6,#fff)}
+    .leader-code{font-size:38px;font-weight:950;line-height:1}
+    .leader-route{font-size:14px;color:var(--muted);line-height:1.6;margin-top:10px;min-height:44px}
+    .leader-value{font-size:28px;font-weight:900;margin-top:12px}
+    .change{font-weight:900}
+    .up{color:var(--rise)}
+    .down{color:var(--fall)}
+    .route-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:16px}
+    .route-card{padding:16px;box-shadow:none}
+    .route-code{font-size:26px;font-weight:950;line-height:1}
+    .route-name{font-size:13px;color:var(--muted);line-height:1.55;margin-top:10px;min-height:42px}
+    .source-pill{
+      color:var(--accent);
+      background:#edf8fa;
+      border:1px solid #d3ecf1;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      padding:5px 9px;
+      white-space:nowrap;
+    }
+    .rent-line{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:14px}
+    .rent-value{font-size:28px;font-weight:950}
+    .bar-track{
+      height:10px;
+      background:#edf2f3;
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:12px;
+    }
+    .bar-fill{height:100%;border-radius:999px;min-width:4px}
+    .bar-fill.up{background:linear-gradient(90deg,#7dd8b3,var(--rise))}
+    .bar-fill.down{background:linear-gradient(90deg,#efaaa7,var(--fall))}
+    .heat-list{display:grid;gap:10px;margin-top:16px}
+    .heat-row{
+      display:grid;
+      grid-template-columns:80px minmax(180px,1fr) 140px 110px;
+      gap:14px;
+      align-items:center;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:16px;
+      padding:12px 14px;
+    }
+    .heat-route{font-weight:800}
+    .heat-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-top:3px}
+    .table-wrap{overflow:auto;margin-top:16px;border:1px solid var(--line);border-radius:18px;background:#fff}
+    table{width:100%;border-collapse:collapse;min-width:860px}
+    th,td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:top}
+    th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em;background:#f7fafb}
+    tr:last-child td{border-bottom:0}
+    .empty{padding:22px;border:1px dashed var(--line);border-radius:18px;color:var(--muted);background:#fff}
+    @media (max-width:1000px){
+      .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .leader-grid,.route-grid{grid-template-columns:1fr}
+      .heat-row{grid-template-columns:72px minmax(0,1fr);gap:8px}
+      .heat-row .rent-value,.heat-row .change{text-align:left}
+    }
+    @media (max-width:680px){
+      .shell{padding:12px 10px 32px}
+      .hero,.panel{padding:18px;border-radius:18px}
+      .metrics{grid-template-columns:1fr}
+      .status-card{width:100%}
+      .leader-code{font-size:32px}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Mandarine Ocean Route Rentals</div>
+          <h1>????</h1>
+          <div class="subtitle">?????????? SSY/Baltic ??????????????????????</div>
+        </div>
+        <div class="status-card">
+          <div class="status-label">????</div>
+          <div id="heroStatus" class="status-value">???</div>
+          <div id="sourceMeta" class="meta" style="margin-top:8px">??????????</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <button id="refreshBtn" class="button">????</button>
+        <a class="button secondary" href="./">????</a>
+        <a class="button secondary" href="./map-data.html">????</a>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="sub">????</div><div id="linkedRoutes" class="metric-value">-</div><div class="metric-note">??????????</div></div>
+        <div class="metric"><div class="sub">????</div><div id="upRoutes" class="metric-value up">-</div><div class="metric-note">Change ?? 0</div></div>
+        <div class="metric"><div class="sub">????</div><div id="downRoutes" class="metric-value down">-</div><div class="metric-note">Change ?? 0</div></div>
+        <div class="metric"><div class="sub">????</div><div id="largestMove" class="metric-value">-</div><div id="largestMoveMeta" class="metric-note">-</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Market Pulse</div>
+          <h2>??????</h2>
+        </div>
+        <div id="snapshotTime" class="meta">-</div>
+      </div>
+      <div id="leaderGrid" class="leader-grid"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Vessel Group</div>
+          <h2>????</h2>
+        </div>
+        <div id="filters" class="filters"></div>
+      </div>
+      <div id="routeGrid" class="route-grid"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Heat Ranking</div>
+          <h2>??????</h2>
+        </div>
+        <div id="rankMeta" class="meta">-</div>
+      </div>
+      <div id="heatList" class="heat-list"></div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Route Matrix</div>
+          <h2>??????</h2>
+        </div>
+        <div id="tableMeta" class="meta">-</div>
+      </div>
+      <div id="tableRoot"></div>
+    </section>
+  </div>
+
+  <script>
+    const DATA_URL = "./data/map_data.json";
+    const GROUPS = ["??", "Capesize", "Panamax", "Supramax", "Handysize"];
+    let activeGroup = "??";
+    let routeRows = [];
+
+    const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
+      timeZone: "Asia/Shanghai",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    });
+
+    const esc = (value) => {
+      const div = document.createElement("div");
+      div.textContent = value ?? "";
+      return div.innerHTML;
+    };
+    const maybe = (value) => value === null || value === undefined || value === "" ? "-" : value;
+    const parseNumber = (value) => {
+      const num = Number(String(value ?? "").replace(/,/g, "").replace(/[^\d.+-]/g, ""));
+      return Number.isFinite(num) ? num : null;
+    };
+    const parseTime = (value) => {
+      if (!value) return null;
+      const text = String(value).trim().replace(" ", "T");
+      const hasTimezone = /([zZ]|[+-]\d{2}:?\d{2})$/.test(text);
+      const date = new Date(hasTimezone ? text : `${text}Z`);
+      return Number.isNaN(date.getTime()) ? null : date;
+    };
+    const timeText = (value) => {
+      const date = parseTime(value);
+      return date ? `${BEIJING_TIME_FORMATTER.format(date)} ????` : "-";
+    };
+    const signedText = (value) => {
+      const text = String(value ?? "").trim();
+      if (!text || text === "-") return "-";
+      return text.startsWith("-") || text.startsWith("+") ? text : `+${text}`;
+    };
+    const signClass = (num) => num < 0 ? "down" : "up";
+    const vesselGroup = (route, marketData) => {
+      const source = String(marketData.source_report || "");
+      if (["Capesize", "Panamax", "Supramax", "Handysize"].includes(source)) return source;
+      const code = String(route.code || marketData.code || "").toUpperCase();
+      if (code.startsWith("C")) return "Capesize";
+      if (code.startsWith("P")) return "Panamax";
+      if (code.startsWith("S")) return "Supramax";
+      if (code.startsWith("H")) return "Handysize";
+      return source || "Other";
+    };
+    const routeLabel = (route, marketData) => marketData.route_name || route.tooltip || route.description || route.title || route.code;
+
+    function flattenRoutes(payload) {
+      const rows = [];
+      for (const segment of payload.segments || []) {
+        for (const index of segment.indexes || []) {
+          for (const route of index.routes || []) {
+            const marketData = route.market_data;
+            if (!marketData) continue;
+            const changeNumber = parseNumber(marketData.change);
+            const valueNumber = parseNumber(marketData.value);
+            rows.push({
+              code: route.code || marketData.code,
+              route: routeLabel(route, marketData),
+              tooltip: route.tooltip || marketData.route_name || "-",
+              value: marketData.value,
+              valueNumber,
+              change: marketData.change,
+              changeNumber,
+              source: marketData.source_report || "-",
+              receivedAt: marketData.received_at || payload.source_message?.received_at,
+              group: vesselGroup(route, marketData),
+              segment: segment.title || "-",
+              index: index.title || "-",
+            });
+          }
+        }
+      }
+      return rows.sort((a, b) => Math.abs(b.changeNumber || 0) - Math.abs(a.changeNumber || 0));
+    }
+
+    function filteredRows() {
+      return activeGroup === "??" ? routeRows : routeRows.filter((row) => row.group === activeGroup);
+    }
+
+    function renderFilters() {
+      const root = document.getElementById("filters");
+      root.innerHTML = GROUPS.map((group) => `<button class="chip ${group === activeGroup ? "active" : ""}" data-group="${group}">${group}</button>`).join("");
+      root.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeGroup = button.dataset.group;
+          renderFilteredViews();
+        });
+      });
+    }
+
+    function renderMetrics(payload) {
+      const valid = routeRows.filter((row) => row.changeNumber !== null);
+      const up = valid.filter((row) => row.changeNumber > 0);
+      const down = valid.filter((row) => row.changeNumber < 0);
+      const largest = valid[0];
+      document.getElementById("linkedRoutes").textContent = routeRows.length;
+      document.getElementById("upRoutes").textContent = up.length;
+      document.getElementById("downRoutes").textContent = down.length;
+      document.getElementById("largestMove").textContent = largest ? signedText(largest.change) : "-";
+      document.getElementById("largestMove").className = `metric-value ${largest ? signClass(largest.changeNumber) : ""}`;
+      document.getElementById("largestMoveMeta").textContent = largest ? `${largest.code} / ${largest.group}` : "-";
+      document.getElementById("snapshotTime").textContent = `?? ${timeText(payload.updated_at_beijing || payload.updated_at)}`;
+      document.getElementById("sourceMeta").textContent = `${maybe(payload.source_message?.subject)} | ${timeText(payload.source_message?.received_at)}`;
+      document.getElementById("heroStatus").textContent = `${routeRows.length} ???`;
+    }
+
+    function renderLeaders() {
+      const valid = routeRows.filter((row) => row.changeNumber !== null);
+      const strongest = [...valid].sort((a, b) => b.changeNumber - a.changeNumber)[0];
+      const weakest = [...valid].sort((a, b) => a.changeNumber - b.changeNumber)[0];
+      const items = [
+        { title: "????", row: strongest, tone: "rise" },
+        { title: "????", row: weakest, tone: "fall" },
+      ];
+      document.getElementById("leaderGrid").innerHTML = items.map(({ title, row, tone }) => row ? `
+        <article class="leader ${tone}">
+          <div class="route-head">
+            <div>
+              <div class="eyebrow">${title}</div>
+              <div class="leader-code">${esc(row.code)}</div>
+            </div>
+            <span class="source-pill">${esc(row.group)}</span>
+          </div>
+          <div class="leader-route">${esc(row.route)}</div>
+          <div class="metric-row">
+            <div>
+              <div class="sub">????</div>
+              <div class="leader-value">${esc(maybe(row.value))}</div>
+            </div>
+            <div>
+              <div class="sub">??</div>
+              <div class="leader-value ${signClass(row.changeNumber)}">${esc(signedText(row.change))}</div>
+            </div>
+          </div>
+        </article>
+      ` : `<div class="empty">??${title}?</div>`).join("");
+    }
+
+    function renderRouteCards() {
+      const rows = filteredRows();
+      const maxAbs = Math.max(...rows.map((row) => Math.abs(row.changeNumber || 0)), 1);
+      document.getElementById("routeGrid").innerHTML = rows.slice(0, 12).map((row) => {
+        const width = `${Math.max(4, Math.min(100, Math.abs(row.changeNumber || 0) / maxAbs * 100))}%`;
+        const cls = signClass(row.changeNumber || 0);
+        return `
+          <article class="route-card">
+            <div class="route-head">
+              <div class="route-code">${esc(row.code)}</div>
+              <span class="source-pill">${esc(row.group)}</span>
+            </div>
+            <div class="route-name">${esc(row.route)}</div>
+            <div class="rent-line">
+              <div><div class="sub">????</div><div class="rent-value">${esc(maybe(row.value))}</div></div>
+              <div><div class="sub">??</div><div class="rent-value ${cls}">${esc(signedText(row.change))}</div></div>
+            </div>
+            <div class="bar-track"><div class="bar-fill ${cls}" style="width:${width}"></div></div>
+            <div class="meta" style="margin-top:10px">${esc(row.source)} | ${esc(timeText(row.receivedAt))}</div>
+          </article>
+        `;
+      }).join("") || `<div class="empty">?????????????</div>`;
+    }
+
+    function renderHeatList() {
+      const rows = filteredRows().slice(0, 10);
+      const maxAbs = Math.max(...rows.map((row) => Math.abs(row.changeNumber || 0)), 1);
+      document.getElementById("rankMeta").textContent = `${activeGroup} / ${rows.length} ?????`;
+      document.getElementById("heatList").innerHTML = rows.map((row) => {
+        const cls = signClass(row.changeNumber || 0);
+        const width = `${Math.max(4, Math.min(100, Math.abs(row.changeNumber || 0) / maxAbs * 100))}%`;
+        return `
+          <div class="heat-row">
+            <div class="route-code">${esc(row.code)}</div>
+            <div>
+              <div class="heat-route">${esc(row.route)}</div>
+              <div class="heat-sub">${esc(row.segment)} / ${esc(row.source)}</div>
+              <div class="bar-track"><div class="bar-fill ${cls}" style="width:${width}"></div></div>
+            </div>
+            <div class="rent-value">${esc(maybe(row.value))}</div>
+            <div class="change ${cls}">${esc(signedText(row.change))}</div>
+          </div>
+        `;
+      }).join("") || `<div class="empty">???????</div>`;
+    }
+
+    function renderTable() {
+      const rows = filteredRows();
+      document.getElementById("tableMeta").textContent = `${activeGroup} / ${rows.length} ?`;
+      document.getElementById("tableRoot").innerHTML = rows.length ? `
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>??</th><th>??</th><th>??</th><th>????</th><th>??</th><th>??</th><th>????</th></tr></thead>
+            <tbody>
+              ${rows.map((row) => `<tr>
+                <td><strong>${esc(row.code)}</strong></td>
+                <td>${esc(row.route)}</td>
+                <td>${esc(row.group)}</td>
+                <td>${esc(maybe(row.value))}</td>
+                <td class="${signClass(row.changeNumber || 0)}">${esc(signedText(row.change))}</td>
+                <td>${esc(row.source)}</td>
+                <td>${esc(timeText(row.receivedAt))}</td>
+              </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>
+      ` : `<div class="empty">???????</div>`;
+    }
+
+    function renderFilteredViews() {
+      renderFilters();
+      renderRouteCards();
+      renderHeatList();
+      renderTable();
+    }
+
+    async function loadData() {
+      const btn = document.getElementById("refreshBtn");
+      btn.disabled = true;
+      document.getElementById("heroStatus").textContent = "???";
+      try {
+        const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const payload = await response.json();
+        routeRows = flattenRoutes(payload);
+        renderMetrics(payload);
+        renderLeaders();
+        renderFilteredViews();
+      } catch (error) {
+        document.getElementById("heroStatus").textContent = "????";
+        document.getElementById("sourceMeta").textContent = String(error);
+        document.getElementById("routeGrid").innerHTML = `<div class="empty">?????${esc(String(error))}</div>`;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", loadData);
+    loadData();
+  </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>漢洋海运数据中心</title>
+  <title>????????</title>
   <style>
     :root{
       --bg:#f4ede5;
@@ -75,7 +75,7 @@
     }
     .entry-grid{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
+      grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
       gap:16px;
     }
     .entry-card{
@@ -280,43 +280,48 @@
       <div class="hero-top">
         <div>
           <div class="eyebrow">Mandarine Ocean</div>
-          <h1>漢洋海运数据中心</h1>
+          <h1>????????</h1>
           <div class="subtitle">
-            集中查看航运指数、原油、汇率、铁矿、中行美元折算价、沿海散货指数、
-            全球主要港口燃油价格，以及 SSY 报告和航线地图联动数据。
+            ?????????????????????????????????
+            ????????????? SSY ?????????????????
           </div>
         </div>
         <div>
-          <div class="release-meta">版本：V2<br>运营：ANDY</div>
-          <div class="section-tag" style="margin-top:8px">5 分钟云端刷新目标</div>
+          <div class="release-meta">???V2<br>???ANDY</div>
+          <div class="section-tag" style="margin-top:8px">5 ????????</div>
         </div>
       </div>
 
       <div class="hero-grid">
         <div class="entry-grid">
           <a href="./shipping-data.html" class="entry-card">
-            <div class="entry-title">航运数据</div>
-            <div class="entry-meta">查看最新 SSY 新加坡报告、附件表格、市场简报和航线相关数据。</div>
+            <div class="entry-title">????</div>
+            <div class="entry-meta">???? SSY ???????????????????????</div>
             <div class="entry-mark">DATA</div>
           </a>
           <a href="./map-data.html" class="entry-card">
-            <div class="entry-title">航线地图</div>
-            <div class="entry-meta">按航线族查看 Baltic 路线、地理路径和最新邮件数据中的航线价格。</div>
+            <div class="entry-title">????</div>
+            <div class="entry-meta">?????? Baltic ?????????????????????</div>
             <div class="entry-mark">MAP</div>
+          </a>
+          <a href="./route-rentals.html" class="entry-card">
+            <div class="entry-title">????</div>
+            <div class="entry-meta">????????????????????????????</div>
+            <div class="entry-mark">RATE</div>
           </a>
         </div>
 
         <div class="hero-side">
           <div class="metric-card">
-            <div class="metric-label">看板状态</div>
-            <div id="lastUpdated" class="metric-value">加载中</div>
-            <div class="meta" id="refreshMeta" style="margin-top:8px">正在读取最新发布数据</div>
+            <div class="metric-label">????</div>
+            <div id="lastUpdated" class="metric-value">???</div>
+            <div class="meta" id="refreshMeta" style="margin-top:8px">??????????</div>
           </div>
           <div class="metric-card">
-            <div class="metric-label">操作</div>
+            <div class="metric-label">??</div>
             <div class="toolbar">
-              <button id="refreshBtn" class="button">刷新数据</button>
-              <span class="toolbar-note">云端目标：5 分钟</span>
+              <button id="refreshBtn" class="button">????</button>
+              <span class="toolbar-note">?????5 ??</span>
             </div>
           </div>
         </div>
@@ -328,7 +333,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Shipping Indices</div>
-            <h2>航运市场指数</h2>
+            <h2>??????</h2>
           </div>
           <div class="dense-note">BDI / BCI / BPI / BSI / BHSI / BCTI / BDTI / BLNG / BLPG</div>
         </div>
@@ -339,7 +344,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Crude</div>
-            <h2>原油市场</h2>
+            <h2>????</h2>
           </div>
           <div class="dense-note">WTI Crude / Brent Crude CFD</div>
         </div>
@@ -350,7 +355,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Spot Focus</div>
-            <h2>现货关注</h2>
+            <h2>????</h2>
           </div>
           <div class="dense-note">Imported iron ore index / BOC USD conversion</div>
         </div>
@@ -372,7 +377,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">FX</div>
-            <h2>相关汇率</h2>
+            <h2>????</h2>
           </div>
           <div class="dense-note">All FX values shown with 4 decimal places</div>
         </div>
@@ -383,9 +388,9 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">CBFI</div>
-            <h2>中国沿海散货运价</h2>
+            <h2>????????</h2>
           </div>
-          <div id="cbfiDate" class="dense-note">加载中</div>
+          <div id="cbfiDate" class="dense-note">???</div>
         </div>
         <div id="cbfiRoot"></div>
       </section>
@@ -394,7 +399,7 @@
         <div class="panel-head">
           <div>
             <div class="eyebrow">Bunker</div>
-            <h2>全球主要港口燃油价格</h2>
+            <h2>??????????</h2>
           </div>
           <div class="dense-note">Including Zhoushan and all visible major ports with live published prices</div>
         </div>
@@ -456,7 +461,7 @@
     function renderShippingIndices(data) {
       const root = document.getElementById("shippingIndices");
       if (!data || data.error) {
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "航运指数暂不可用。"}</div>`;
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "?????????"}</div>`;
         return;
       }
       root.innerHTML = `
@@ -532,8 +537,8 @@
       const root = document.getElementById("cbfiRoot");
       const dateNode = document.getElementById("cbfiDate");
       if (!data || data.error) {
-        dateNode.textContent = "暂无数据";
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI 快照暂不可用。"}</div>`;
+        dateNode.textContent = "????";
+        root.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI ???????"}</div>`;
         return;
       }
 
@@ -623,15 +628,15 @@
         const statusDate = new Date(statusTime);
         const ageMinutes = (checkedAt.getTime() - statusDate.getTime()) / 60000;
         const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
-        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} ????`;
         if (background && dashboardSignature && incomingSignature !== dashboardSignature) {
           document.getElementById("refreshMeta").textContent =
-            `检测到新的数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，点击“刷新数据”更新页面内容。`;
+            `????????? ${BEIJING_TIME_FORMATTER.format(statusDate)}????????????????`;
           return;
         }
         if (background) {
           document.getElementById("refreshMeta").textContent =
-            `后台检查完成；当前数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
+            `????????????? ${BEIJING_TIME_FORMATTER.format(statusDate)}??????${nextCheck} ?????`;
           return;
         }
         dashboardSignature = incomingSignature;
@@ -644,10 +649,10 @@
         renderBunker(payload.bunker_index?.ports || []);
         document.getElementById("refreshMeta").textContent =
           Number.isFinite(ageMinutes) && ageMinutes > STALE_AFTER_MS / 60000
-            ? `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，已超过 ${Math.round(ageMinutes)} 分钟，等待云端下一次生成。下次检查：${nextCheck} 北京时间。`
-            : `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
+            ? `???????????? ${BEIJING_TIME_FORMATTER.format(statusDate)}???? ${Math.round(ageMinutes)} ??????????????????${nextCheck} ?????`
+            : `???????????? ${BEIJING_TIME_FORMATTER.format(statusDate)}??????${nextCheck} ?????`;
       } catch (error) {
-        document.getElementById("lastUpdated").textContent = "加载失败";
+        document.getElementById("lastUpdated").textContent = "????";
         document.getElementById("refreshMeta").textContent = `Error: ${error}`;
       } finally {
         btn.disabled = false;

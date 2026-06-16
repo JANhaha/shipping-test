@@ -16,7 +16,7 @@ class AppSmokeTest(unittest.TestCase):
 
     def test_page_routes_render(self):
         with app.test_client() as client:
-            for path in ("/", "/shipping-data", "/map-data"):
+            for path in ("/", "/shipping-data", "/map-data", "/route-rentals"):
                 response = client.get(path)
                 self.assertEqual(response.status_code, 200, path)
                 self.assertIn(b"html", response.data[:64].lower())

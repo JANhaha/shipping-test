@@ -43,6 +43,11 @@ def map_data_page():
     return render_template("map_data.html")
 
 
+@app.route("/route-rentals")
+def route_rentals_page():
+    return render_template("route_rentals.html")
+
+
 @app.route("/api/dashboard", methods=["GET"])
 def dashboard():
     payload = service.get_dashboard()
