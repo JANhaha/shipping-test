@@ -2,6 +2,42 @@
 
 > 记录 `shipping_project` 的关键变更、验证、发布状态和下次接手提示。新增日志请使用 `skills/project-log/SKILL.md` 的格式。
 
+
+## 2026-06-16 22:53 +0800 - 修复 Gmail token 过期导致数据不更新
+
+触发来源：troubleshooting
+
+用户需求：
+- 页面一直显示旧数据，根因是本地和 GitHub Secret 中的 Gmail token 均被 Google 判定为 expired or revoked。
+
+完成内容：
+- 重新完成 Gmail OAuth 授权；同步更新 GitHub Secret GMAIL_TOKEN_JSON；本地强制刷新 Gmail 和静态数据；优化 Gmail 同步逻辑，主报告保持长回看，普通邮件只扫最近 2 天，并复用已解析附件，降低 5 分钟任务延迟。
+
+关键文件：
+- data/gmail_service.py
+- data/gmail_store.py
+- .github/workflows/update-shipping-data.yml
+- docs/data/shipping_data.json
+- docs/data/map_data.json
+- docs/data/dashboard.json
+- docs/data/refresh_status.json
+
+验证：
+- unittest 通过
+- py_compile 通过
+- full_refresh 成功同步 21 封邮件
+- refresh_status 为 ok
+- 地图市场数据 34 条
+
+发布状态：
+- 准备发布到 stable 并触发线上工作流复验
+
+风险与待办：
+- Google OAuth token 若再次被撤销仍需重新授权；如 OAuth App 处于 Testing 模式，刷新 token 可能周期性失效
+
+下次接手提示：
+- 若再次出现旧数据，先看 docs/data/refresh_status.json 和 GitHub Actions 日志中的 Gmail token 状态。
+
 ## 2026-06-16 16:18 +08:00 - 数据中心收尾与航线租金看板优化
 
 触发来源：manual

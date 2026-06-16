@@ -131,6 +131,20 @@ def replace_attachments(gmail_message_id, attachments):
         )
 
 
+def get_message_by_gmail_id(gmail_message_id):
+    with get_connection() as conn:
+        row = conn.execute(
+            """
+            SELECT *
+            FROM gmail_messages
+            WHERE gmail_message_id = ?
+            LIMIT 1
+            """,
+            (gmail_message_id,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
 def list_messages(limit=50):
     with get_connection() as conn:
         rows = conn.execute(

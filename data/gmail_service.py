@@ -12,7 +12,13 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from openpyxl import load_workbook
 
-from data.gmail_store import init_db, replace_attachments, upsert_message
+from data.gmail_store import (
+    get_message_by_gmail_id,
+    init_db,
+    list_attachments_for_message_ids,
+    replace_attachments,
+    upsert_message,
+)
 
 
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
@@ -22,7 +28,9 @@ DEFAULT_TOKEN_PATH = ROOT / "credentials" / "gmail_token.json"
 DEFAULT_ATTACHMENT_DIR = ROOT / "data" / "gmail_attachments"
 GMAIL_API_ROOT = "https://gmail.googleapis.com/gmail/v1/users/me"
 DEFAULT_LOOKBACK_DAYS = 7
+DEFAULT_BROAD_LOOKBACK_DAYS = 2
 MAX_LOOKBACK_DAYS = 90
+MAX_GMAIL_RETRIES = 3
 
 
 class GmailShippingDataService:
@@ -35,6 +43,10 @@ class GmailShippingDataService:
             os.getenv("GMAIL_ATTACHMENT_DIR", DEFAULT_ATTACHMENT_DIR)
         )
         self.lookback_days = self._read_lookback_days()
+        self.broad_lookback_days = self._read_broad_lookback_days()
+        self.force_reparse_attachments = os.getenv(
+            "GMAIL_FORCE_REPARSE_ATTACHMENTS", ""
+        ).lower() in {"1", "true", "yes"}
 
     def ensure_oauth_token(self):
         creds = self._load_credentials(interactive=True)
@@ -53,8 +65,8 @@ class GmailShippingDataService:
             "newer_than:1d",
             f'subject:"SSY SINGAPORE" newer_than:{self.lookback_days}d',
         ]
-        if self.lookback_days > 1:
-            queries.append(f"newer_than:{self.lookback_days}d")
+        if self.broad_lookback_days > 1:
+            queries.append(f"newer_than:{self.broad_lookback_days}d")
         message_refs = []
         seen_ids = set()
         for query in queries:
@@ -92,7 +104,13 @@ class GmailShippingDataService:
         body_summary = self._summarize_text(
             body_text or message.get("snippet") or "", limit=220
         )
-        attachments = self._collect_attachments(session, payload, message["id"])
+        internal_ts = int(message.get("internalDate") or 0)
+        attachments = self._attachments_for_message(
+            session=session,
+            payload=payload,
+            message_id=message["id"],
+            internal_ts=internal_ts,
+        )
 
         record = {
             "gmail_message_id": message["id"],
@@ -100,7 +118,7 @@ class GmailShippingDataService:
             "label_ids": message.get("labelIds", []),
             "sender": headers.get("From", ""),
             "subject": headers.get("Subject", ""),
-            "internal_ts": int(message.get("internalDate") or 0),
+            "internal_ts": internal_ts,
             "received_at": self._format_ts(message.get("internalDate")),
             "snippet": message.get("snippet", ""),
             "body_text": body_text,
@@ -163,6 +181,17 @@ class GmailShippingDataService:
             days = int(raw_value)
         except (TypeError, ValueError):
             days = DEFAULT_LOOKBACK_DAYS
+        return max(1, min(days, MAX_LOOKBACK_DAYS))
+
+    @staticmethod
+    def _read_broad_lookback_days():
+        raw_value = os.getenv(
+            "GMAIL_BROAD_LOOKBACK_DAYS", str(DEFAULT_BROAD_LOOKBACK_DAYS)
+        )
+        try:
+            days = int(raw_value)
+        except (TypeError, ValueError):
+            days = DEFAULT_BROAD_LOOKBACK_DAYS
         return max(1, min(days, MAX_LOOKBACK_DAYS))
 
     def _authorized_session(self):
@@ -235,6 +264,20 @@ class GmailShippingDataService:
                 }
             )
         return attachments
+
+    def _attachments_for_message(self, session, payload, message_id, internal_ts):
+        if not self.force_reparse_attachments:
+            cached_message = get_message_by_gmail_id(message_id)
+            cached_attachments = list_attachments_for_message_ids([message_id]).get(
+                message_id, []
+            )
+            if (
+                cached_message
+                and int(cached_message.get("internal_ts") or 0) == int(internal_ts or 0)
+                and cached_attachments
+            ):
+                return cached_attachments
+        return self._collect_attachments(session, payload, message_id)
 
     def _parse_attachment(self, path, mime_type):
         suffix = path.suffix.lower()
@@ -357,7 +400,14 @@ class GmailShippingDataService:
 
     @staticmethod
     def _get_json(session, url):
-        response = session.get(url, timeout=30)
+        response = None
+        for attempt in range(1, MAX_GMAIL_RETRIES + 1):
+            try:
+                response = session.get(url, timeout=30)
+                break
+            except Exception:
+                if attempt == MAX_GMAIL_RETRIES:
+                    raise
         if response.status_code >= 400:
             raise RuntimeError(
                 f"Gmail API 请求失败: {response.status_code} {response.text[:300]}"

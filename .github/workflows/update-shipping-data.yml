@@ -32,6 +32,7 @@ jobs:
       MINIMAX_API_KEY: ${{ secrets.MINIMAX_API_KEY }}
       DATA_REFRESH_INTERVAL_MINUTES: "5"
       GMAIL_LOOKBACK_DAYS: ${{ github.event_name == 'workflow_dispatch' && inputs.gmail_lookback_days || '7' }}
+      GMAIL_BROAD_LOOKBACK_DAYS: "2"
 
     steps:
       - name: Checkout
