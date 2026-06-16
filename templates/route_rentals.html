@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>????</title>
+  <title>航线租金</title>
   <style>
     :root{
       --ink:#18343b;
@@ -174,25 +174,25 @@
       <div class="hero-top">
         <div>
           <div class="eyebrow">Mandarine Ocean Route Rentals</div>
-          <h1>????</h1>
-          <div class="subtitle">?????????? SSY/Baltic ??????????????????????</div>
+          <h1>航线租金</h1>
+          <div class="subtitle">按船型和路线查看最新 SSY/Baltic 联动租金，突出强弱变化、重点航线和涨跌方向。</div>
         </div>
         <div class="status-card">
-          <div class="status-label">????</div>
-          <div id="heroStatus" class="status-value">???</div>
-          <div id="sourceMeta" class="meta" style="margin-top:8px">??????????</div>
+          <div class="status-label">数据状态</div>
+          <div id="heroStatus" class="status-value">加载中</div>
+          <div id="sourceMeta" class="meta" style="margin-top:8px">正在读取航线租金快照</div>
         </div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">????</button>
-        <a class="button secondary" href="/">????</a>
-        <a class="button secondary" href="/map-data">????</a>
+        <button id="refreshBtn" class="button">刷新数据</button>
+        <a class="button secondary" href="/">返回首页</a>
+        <a class="button secondary" href="/map-data">航线地图</a>
       </div>
       <div class="metrics">
-        <div class="metric"><div class="sub">????</div><div id="linkedRoutes" class="metric-value">-</div><div class="metric-note">??????????</div></div>
-        <div class="metric"><div class="sub">????</div><div id="upRoutes" class="metric-value up">-</div><div class="metric-note">Change ?? 0</div></div>
-        <div class="metric"><div class="sub">????</div><div id="downRoutes" class="metric-value down">-</div><div class="metric-note">Change ?? 0</div></div>
-        <div class="metric"><div class="sub">????</div><div id="largestMove" class="metric-value">-</div><div id="largestMoveMeta" class="metric-note">-</div></div>
+        <div class="metric"><div class="sub">联动航线</div><div id="linkedRoutes" class="metric-value">-</div><div class="metric-note">来自最新邮件附件解析</div></div>
+        <div class="metric"><div class="sub">上涨航线</div><div id="upRoutes" class="metric-value up">-</div><div class="metric-note">Change 大于 0</div></div>
+        <div class="metric"><div class="sub">下跌航线</div><div id="downRoutes" class="metric-value down">-</div><div class="metric-note">Change 小于 0</div></div>
+        <div class="metric"><div class="sub">最大波动</div><div id="largestMove" class="metric-value">-</div><div id="largestMoveMeta" class="metric-note">-</div></div>
       </div>
     </section>
 
@@ -200,7 +200,7 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Market Pulse</div>
-          <h2>??????</h2>
+          <h2>租金强弱速览</h2>
         </div>
         <div id="snapshotTime" class="meta">-</div>
       </div>
@@ -211,7 +211,7 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Vessel Group</div>
-          <h2>????</h2>
+          <h2>船型筛选</h2>
         </div>
         <div id="filters" class="filters"></div>
       </div>
@@ -222,7 +222,7 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Heat Ranking</div>
-          <h2>??????</h2>
+          <h2>涨跌热力排行</h2>
         </div>
         <div id="rankMeta" class="meta">-</div>
       </div>
@@ -233,7 +233,7 @@
       <div class="section-head">
         <div>
           <div class="eyebrow">Route Matrix</div>
-          <h2>??????</h2>
+          <h2>完整航线矩阵</h2>
         </div>
         <div id="tableMeta" class="meta">-</div>
       </div>
@@ -243,8 +243,8 @@
 
   <script>
     const DATA_URL = "/api/map-data";
-    const GROUPS = ["??", "Capesize", "Panamax", "Supramax", "Handysize"];
-    let activeGroup = "??";
+    const GROUPS = ["全部", "Capesize", "Panamax", "Supramax", "Handysize"];
+    let activeGroup = "全部";
     let routeRows = [];
 
     const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
@@ -276,7 +276,7 @@
     };
     const timeText = (value) => {
       const date = parseTime(value);
-      return date ? `${BEIJING_TIME_FORMATTER.format(date)} ????` : "-";
+      return date ? `${BEIJING_TIME_FORMATTER.format(date)} 北京时间` : "-";
     };
     const signedText = (value) => {
       const text = String(value ?? "").trim();
@@ -326,7 +326,7 @@
     }
 
     function filteredRows() {
-      return activeGroup === "??" ? routeRows : routeRows.filter((row) => row.group === activeGroup);
+      return activeGroup === "全部" ? routeRows : routeRows.filter((row) => row.group === activeGroup);
     }
 
     function renderFilters() {
@@ -351,9 +351,9 @@
       document.getElementById("largestMove").textContent = largest ? signedText(largest.change) : "-";
       document.getElementById("largestMove").className = `metric-value ${largest ? signClass(largest.changeNumber) : ""}`;
       document.getElementById("largestMoveMeta").textContent = largest ? `${largest.code} / ${largest.group}` : "-";
-      document.getElementById("snapshotTime").textContent = `?? ${timeText(payload.updated_at_beijing || payload.updated_at)}`;
+      document.getElementById("snapshotTime").textContent = `快照 ${timeText(payload.updated_at_beijing || payload.updated_at)}`;
       document.getElementById("sourceMeta").textContent = `${maybe(payload.source_message?.subject)} | ${timeText(payload.source_message?.received_at)}`;
-      document.getElementById("heroStatus").textContent = `${routeRows.length} ???`;
+      document.getElementById("heroStatus").textContent = `${routeRows.length} 条航线`;
     }
 
     function renderLeaders() {
@@ -361,8 +361,8 @@
       const strongest = [...valid].sort((a, b) => b.changeNumber - a.changeNumber)[0];
       const weakest = [...valid].sort((a, b) => a.changeNumber - b.changeNumber)[0];
       const items = [
-        { title: "????", row: strongest, tone: "rise" },
-        { title: "????", row: weakest, tone: "fall" },
+        { title: "最强航线", row: strongest, tone: "rise" },
+        { title: "承压航线", row: weakest, tone: "fall" },
       ];
       document.getElementById("leaderGrid").innerHTML = items.map(({ title, row, tone }) => row ? `
         <article class="leader ${tone}">
@@ -376,16 +376,16 @@
           <div class="leader-route">${esc(row.route)}</div>
           <div class="metric-row">
             <div>
-              <div class="sub">????</div>
+              <div class="sub">最新租金</div>
               <div class="leader-value">${esc(maybe(row.value))}</div>
             </div>
             <div>
-              <div class="sub">??</div>
+              <div class="sub">涨跌</div>
               <div class="leader-value ${signClass(row.changeNumber)}">${esc(signedText(row.change))}</div>
             </div>
           </div>
         </article>
-      ` : `<div class="empty">??${title}?</div>`).join("");
+      ` : `<div class="empty">暂无${title}。</div>`).join("");
     }
 
     function renderRouteCards() {
@@ -402,20 +402,20 @@
             </div>
             <div class="route-name">${esc(row.route)}</div>
             <div class="rent-line">
-              <div><div class="sub">????</div><div class="rent-value">${esc(maybe(row.value))}</div></div>
-              <div><div class="sub">??</div><div class="rent-value ${cls}">${esc(signedText(row.change))}</div></div>
+              <div><div class="sub">最新租金</div><div class="rent-value">${esc(maybe(row.value))}</div></div>
+              <div><div class="sub">涨跌</div><div class="rent-value ${cls}">${esc(signedText(row.change))}</div></div>
             </div>
             <div class="bar-track"><div class="bar-fill ${cls}" style="width:${width}"></div></div>
             <div class="meta" style="margin-top:10px">${esc(row.source)} | ${esc(timeText(row.receivedAt))}</div>
           </article>
         `;
-      }).join("") || `<div class="empty">?????????????</div>`;
+      }).join("") || `<div class="empty">暂无可展示的航线租金数据。</div>`;
     }
 
     function renderHeatList() {
       const rows = filteredRows().slice(0, 10);
       const maxAbs = Math.max(...rows.map((row) => Math.abs(row.changeNumber || 0)), 1);
-      document.getElementById("rankMeta").textContent = `${activeGroup} / ${rows.length} ?????`;
+      document.getElementById("rankMeta").textContent = `${activeGroup} / ${rows.length} 条重点航线`;
       document.getElementById("heatList").innerHTML = rows.map((row) => {
         const cls = signClass(row.changeNumber || 0);
         const width = `${Math.max(4, Math.min(100, Math.abs(row.changeNumber || 0) / maxAbs * 100))}%`;
@@ -431,16 +431,16 @@
             <div class="change ${cls}">${esc(signedText(row.change))}</div>
           </div>
         `;
-      }).join("") || `<div class="empty">???????</div>`;
+      }).join("") || `<div class="empty">暂无排行数据。</div>`;
     }
 
     function renderTable() {
       const rows = filteredRows();
-      document.getElementById("tableMeta").textContent = `${activeGroup} / ${rows.length} ?`;
+      document.getElementById("tableMeta").textContent = `${activeGroup} / ${rows.length} 条`;
       document.getElementById("tableRoot").innerHTML = rows.length ? `
         <div class="table-wrap">
           <table>
-            <thead><tr><th>??</th><th>??</th><th>??</th><th>????</th><th>??</th><th>??</th><th>????</th></tr></thead>
+            <thead><tr><th>代码</th><th>航线</th><th>船型</th><th>最新租金</th><th>涨跌</th><th>来源</th><th>更新时间</th></tr></thead>
             <tbody>
               ${rows.map((row) => `<tr>
                 <td><strong>${esc(row.code)}</strong></td>
@@ -454,7 +454,7 @@
             </tbody>
           </table>
         </div>
-      ` : `<div class="empty">???????</div>`;
+      ` : `<div class="empty">暂无表格数据。</div>`;
     }
 
     function renderFilteredViews() {
@@ -467,7 +467,7 @@
     async function loadData() {
       const btn = document.getElementById("refreshBtn");
       btn.disabled = true;
-      document.getElementById("heroStatus").textContent = "???";
+      document.getElementById("heroStatus").textContent = "加载中";
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -477,9 +477,9 @@
         renderLeaders();
         renderFilteredViews();
       } catch (error) {
-        document.getElementById("heroStatus").textContent = "????";
+        document.getElementById("heroStatus").textContent = "加载失败";
         document.getElementById("sourceMeta").textContent = String(error);
-        document.getElementById("routeGrid").innerHTML = `<div class="empty">?????${esc(String(error))}</div>`;
+        document.getElementById("routeGrid").innerHTML = `<div class="empty">加载失败：${esc(String(error))}</div>`;
       } finally {
         btn.disabled = false;
       }
