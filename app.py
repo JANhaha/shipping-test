@@ -53,6 +53,11 @@ def route_rentals_v2_page():
     return render_template("route_rentals_v2.html")
 
 
+@app.route("/route-rentals-v3")
+def route_rentals_v3_page():
+    return render_template("route_rentals_v3.html")
+
+
 @app.route("/api/dashboard", methods=["GET"])
 def dashboard():
     payload = service.get_dashboard()
