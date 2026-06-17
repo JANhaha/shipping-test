@@ -153,7 +153,9 @@ class GmailShippingDataService:
                         "Gmail token 已过期或被撤销。请重新运行 "
                         "`py scripts\\gmail_oauth_setup.py` 完成授权；"
                         "如果是 GitHub Actions 报错，还需要同步更新仓库 Secret "
-                        "`GMAIL_TOKEN_JSON`。"
+                        "`GMAIL_TOKEN_JSON`。如果该问题频繁出现，请检查 Google Cloud "
+                        "OAuth consent screen 是否仍处于 Testing；Testing 模式的 "
+                        "refresh token 会周期性失效，应发布到 Production。"
                     ) from exc
         if creds and creds.valid:
             return creds

@@ -37,6 +37,33 @@ py scripts\gmail_oauth_setup.py
 credentials/gmail_token.json
 ```
 
+授权脚本会自动尝试把新 token 同步到 GitHub Secret：
+
+```text
+GMAIL_TOKEN_JSON
+```
+
+如不希望自动同步，可临时设置：
+
+```powershell
+$env:SKIP_GITHUB_SECRET_SYNC="1"
+py scripts\gmail_oauth_setup.py
+```
+
+## 3.1 避免频繁重新授权
+
+如果 Google Cloud OAuth consent screen 仍处于 `Testing`，Google 可能会周期性让 refresh token 失效，表现为自动任务报：
+
+```text
+invalid_grant: Token has been expired or revoked
+```
+
+长期运行建议：
+- 在 Google Cloud Console 中把 OAuth consent screen 发布为 `In production`。
+- 保持 `credentials/gmail_credentials.json` 对应同一个 OAuth Desktop App。
+- 不要在 Google 账号安全设置里撤销该应用访问权限。
+- 重新授权后确认 GitHub Secret `GMAIL_TOKEN_JSON` 已更新。
+
 ## 4. 手动同步邮件
 
 ```powershell

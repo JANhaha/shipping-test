@@ -3,6 +3,42 @@
 > 记录 `shipping_project` 的关键变更、验证、发布状态和下次接手提示。新增日志请使用 `skills/project-log/SKILL.md` 的格式。
 
 
+
+## 2026-06-17 10:51 +0800 - 刷新 2026-06-17 Gmail 航运数据
+
+触发来源：gmail-refresh
+
+用户需求：
+- 用户反馈 Gmail 有最新数据，要求再次强制拉取并解决频繁授权问题。
+
+完成内容：
+- 成功同步 SSY SINGAPORE REPORT- 17 JUNE 2026；重新生成 shipping_data、map_data、dashboard 和 refresh_status；更新 GitHub Secret GMAIL_TOKEN_JSON；增强 gmail_oauth_setup.py，重新授权后自动尝试同步 GitHub Secret；补充 Testing 模式会导致 refresh token 周期性失效的说明。
+
+关键文件：
+- docs/data/shipping_data.json
+- docs/data/map_data.json
+- docs/data/dashboard.json
+- docs/data/refresh_status.json
+- scripts/gmail_oauth_setup.py
+- data/gmail_service.py
+- GMAIL_SETUP.md
+
+验证：
+- unittest 通过
+- py_compile 通过
+- 本地 full_refresh 成功同步 5 封邮件
+- 数据源为 SSY SINGAPORE REPORT- 17 JUNE 2026
+- 地图市场数据 34 条
+
+发布状态：
+- 准备发布 stable 并触发线上工作流复验
+
+风险与待办：
+- 若 Google OAuth consent screen 仍为 Testing，refresh token 仍可能周期性失效；需发布到 Production 才是根治。
+
+下次接手提示：
+- 如再次提示授权，先检查 Google Cloud OAuth consent screen 是否已 In production。
+
 ## 2026-06-16 22:53 +0800 - 修复 Gmail token 过期导致数据不更新
 
 触发来源：troubleshooting
