@@ -407,6 +407,49 @@ class ShippingDashboardService:
         }
 
     def get_bunker_prices(self):
+        rows = []
+        error = None
+        try:
+            rows = self._load_bunker_index_ports()
+        except Exception as exc:
+            error = f"BunkerIndex load failed: {exc}"
+
+        zhoushan = self._call_safe(self.get_zhoushan_bunker, "Zhoushan bunker prices")
+        fallback_ports = self._load_latest_bunker_ports()
+        used_static_fallback = False
+        if not rows and fallback_ports:
+            rows = fallback_ports
+            used_static_fallback = True
+
+        if zhoushan.get("prices"):
+            rows = [row for row in rows if (row.get("port") or "").lower() != "zhoushan"]
+            rows.insert(
+                0,
+                {
+                    "port": zhoushan.get("port") or "Zhoushan",
+                    "country": "CN",
+                    "ifo380": zhoushan["prices"].get("IFO380"),
+                    "ifo380_change": None,
+                    "vlsfo": zhoushan["prices"].get("VLSFO"),
+                    "vlsfo_change": None,
+                    "mgo": zhoushan["prices"].get("LSMGO"),
+                    "mgo_change": None,
+                    "date": zhoushan.get("date"),
+                },
+            )
+        elif zhoushan.get("error"):
+            error = f"{error}; {zhoushan['error']}" if error else zhoushan["error"]
+
+        return {
+            "ports": rows,
+            "source_url": self.BUNKER_INDEX_URL,
+            "updated_at": datetime.now().isoformat(),
+            "fallback_used": bool((error and rows) or used_static_fallback),
+            "fallback_source": "docs/data/dashboard.json" if used_static_fallback else None,
+            "error": error,
+        }
+
+    def _load_bunker_index_ports(self):
         html = self._get_text(self.BUNKER_INDEX_URL)
         soup = BeautifulSoup(html, "html.parser")
         table = soup.select_one("#price-table")
@@ -432,29 +475,18 @@ class ShippingDashboardService:
                         "date": cells[8],
                     }
                 )
+        return rows
 
-        zhoushan = self.get_zhoushan_bunker()
-        if zhoushan.get("prices"):
-            rows.insert(
-                0,
-                {
-                    "port": zhoushan.get("port") or "Zhoushan",
-                    "country": "CN",
-                    "ifo380": zhoushan["prices"].get("IFO380"),
-                    "ifo380_change": None,
-                    "vlsfo": zhoushan["prices"].get("VLSFO"),
-                    "vlsfo_change": None,
-                    "mgo": zhoushan["prices"].get("LSMGO"),
-                    "mgo_change": None,
-                    "date": zhoushan.get("date"),
-                },
-            )
-
-        return {
-            "ports": rows,
-            "source_url": self.BUNKER_INDEX_URL,
-            "updated_at": datetime.now().isoformat(),
-        }
+    def _load_latest_bunker_ports(self):
+        dashboard_path = self.root / "docs" / "data" / "dashboard.json"
+        if not dashboard_path.exists():
+            return []
+        try:
+            payload = json.loads(dashboard_path.read_text(encoding="utf-8"))
+            ports = payload.get("bunker_index", {}).get("ports", [])
+            return ports if isinstance(ports, list) else []
+        except Exception:
+            return []
 
     def get_zhoushan_bunker(self):
         response = self.session.get(

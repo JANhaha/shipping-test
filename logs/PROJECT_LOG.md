@@ -4,6 +4,39 @@
 
 
 
+
+## 2026-07-02 22:43 +0800 - 修复首页燃油价格消失
+
+触发来源：manual
+
+用户需求：
+- 网站首页燃油价格因 BunkerIndex 临时连接失败而不显示，本次增加数据兜底并强制刷新静态数据。
+
+完成内容：
+- 燃油价格拉取改为先解析 BunkerIndex，失败或为空时使用最近 dashboard 快照；舟山价格独立刷新并去重；首页燃油表增加空态和兜底提示；重新生成 dashboard.json，恢复 7 个港口燃油价格。
+
+关键文件：
+- data/dashboard_service.py
+- docs/index.html
+- templates/index.html
+- docs/data/dashboard.json
+- tests/test_app_smoke.py
+
+验证：
+- python -B -m unittest discover 通过 6 项测试
+- node 首页脚本解析通过
+- python -B -m py_compile 通过
+- 本地 dashboard.json 确认 bunker_count=7 且 Zhoushan VLSFO=648
+
+发布状态：
+- 待提交并同步 GitHub Pages
+
+风险与待办：
+- BunkerIndex 如继续拒绝连接，页面会显示最近可用快照并提示兜底；外部源恢复后会自动显示实时解析数据。
+
+下次接手提示：
+- 发布后检查线上 /data/dashboard.json 的 bunker_index.ports 数量和首页燃油表显示。
+
 ## 2026-06-17 10:51 +0800 - 刷新 2026-06-17 Gmail 航运数据
 
 触发来源：gmail-refresh

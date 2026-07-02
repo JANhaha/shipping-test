@@ -1,8 +1,12 @@
+import json
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from app import app
 from data import attachment_visualization
+from data.dashboard_service import ShippingDashboardService
 from data.gmail_service import GmailShippingDataService
 
 
@@ -91,6 +95,44 @@ class AppSmokeTest(unittest.TestCase):
 
         self.assertEqual(snapshot["C5"]["value"], "16.870")
         self.assertEqual(snapshot["C5"]["received_at"], "2026-05-29T02:38:48")
+
+    def test_bunker_prices_keep_static_snapshot_when_source_fails(self):
+        service = ShippingDashboardService()
+        static_ports = [
+            {"port": "Zhoushan", "country": "CN", "ifo380": 558, "vlsfo": 676, "mgo": 983, "date": "16 Jun"},
+            {"port": "Singapore", "country": "SG", "ifo380": "451.00", "vlsfo": "664.00", "mgo": "905.00", "date": "02 Jul"},
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            service.root = Path(tmp_dir)
+            dashboard_path = service.root / "docs" / "data" / "dashboard.json"
+            dashboard_path.parent.mkdir(parents=True)
+            dashboard_path.write_text(
+                json.dumps({"bunker_index": {"ports": static_ports}}),
+                encoding="utf-8",
+            )
+
+            with patch.object(
+                service,
+                "_load_bunker_index_ports",
+                side_effect=RuntimeError("connection reset"),
+            ), patch.object(
+                service,
+                "get_zhoushan_bunker",
+                return_value={
+                    "port": "Zhoushan",
+                    "date": "02 Jul",
+                    "prices": {"IFO380": 452, "VLSFO": 648, "LSMGO": 939},
+                },
+            ):
+                payload = service.get_bunker_prices()
+
+        self.assertTrue(payload["fallback_used"])
+        self.assertEqual(payload["fallback_source"], "docs/data/dashboard.json")
+        self.assertIn("BunkerIndex load failed", payload["error"])
+        self.assertEqual(payload["ports"][0]["port"], "Zhoushan")
+        self.assertEqual(payload["ports"][0]["vlsfo"], 648)
+        self.assertEqual([row["port"] for row in payload["ports"]], ["Zhoushan", "Singapore"])
 
 
 if __name__ == "__main__":
