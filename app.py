@@ -10,7 +10,12 @@ from data.map_data_service import BalticMapDataService
 from data.shipping_data_payload import build_shipping_data_payload
 
 
-app = Flask(__name__, template_folder="templates")
+app = Flask(
+    __name__,
+    template_folder="templates",
+    static_folder="docs/assets",
+    static_url_path="/assets",
+)
 service = ShippingDashboardService()
 gmail_service = GmailShippingDataService()
 map_data_service = BalticMapDataService()

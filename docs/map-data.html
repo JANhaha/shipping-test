@@ -218,8 +218,24 @@
       #map{height:420px}
     }
   </style>
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260711">
 </head>
-<body>
+<body class="page-map">
+  <header class="site-header">
+    <nav class="site-nav" aria-label="主导航">
+      <a class="brand-link" href="./">
+        <span class="brand-symbol" aria-hidden="true">MO</span>
+        <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Shipping Intelligence</small></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="./">市场总览</a>
+        <a class="nav-link" href="./shipping-data.html">航运数据</a>
+        <a class="nav-link" aria-current="page" href="./map-data.html">航线地图</a>
+        <a class="nav-link" href="./route-rentals-v3.html">航线租金</a>
+      </div>
+      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
+    </nav>
+  </header>
   <div class="shell">
     <section class="hero">
       <div class="hero-top">
@@ -229,27 +245,25 @@
               <div class="eyebrow">MAP DATA</div>
               <h1>航线地图</h1>
             </div>
-            <div class="sub" id="status">正在加载航线看板</div>
+            <div class="sub" id="status" hidden>正在加载航线看板</div>
           </div>
           <div class="hero-copy">
-            按航线族、指数和路线代码查看 Baltic 航线地图，并联动 Shipping Data 中的最新航线价格和变化。
+            按航线族、指数与路线代码查看 Baltic 全球航线，并联动最新可用航线价格和涨跌。
           </div>
           <div class="hero-badges">
-            <span class="pill active" style="cursor:default">实时航线图</span>
-            <span class="pill" style="cursor:default">航线价格联动</span>
-            <span class="pill" style="cursor:default">北京时间</span>
+            <span class="pill active" style="cursor:default">全球航线</span>
+            <span class="pill" style="cursor:default">价格联动</span>
+            <span class="pill" style="cursor:default">邮件快照</span>
           </div>
         </div>
         <div class="status-card">
-          <div class="status-meta">版本：V2<br>运营：ANDY</div>
-          <div class="status-label" style="margin-top:14px">页面检查时间</div>
+          <div class="status-label">页面检查时间</div>
           <div class="status-value" id="heroUpdatedAt">-</div>
-          <div class="sub" style="margin-top:8px">航线看板跟随最新发布的邮箱数据快照。</div>
+          <div class="sub" style="margin-top:8px">地图跟随最新有效邮箱数据；无新邮件时延用最近一次可用快照。</div>
         </div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">刷新数据</button>
-        <a class="button secondary" href="./">返回首页</a>
+        <button id="refreshBtn" class="button" type="button">刷新数据</button>
       </div>
       <div class="metrics">
         <div class="metric">
@@ -459,7 +473,12 @@
         return;
       }
       const segmentIndex = payload.segments.findIndex((segment) => segment.title === selection.segmentTitle);
-      activeSegmentIndex = segmentIndex >= 0 ? segmentIndex : Math.min(activeSegmentIndex, payload.segments.length - 1);
+      const drySegmentIndex = payload.segments.findIndex((segment) => /dry/i.test(segment.title || ""));
+      activeSegmentIndex = segmentIndex >= 0
+        ? segmentIndex
+        : selection.segmentTitle
+          ? Math.min(activeSegmentIndex, payload.segments.length - 1)
+          : Math.max(0, drySegmentIndex);
       const segment = getActiveSegment();
       const indexes = segment?.indexes || [];
       if (!indexes.length) {
@@ -876,7 +895,12 @@
       }
     }
 
-    document.getElementById("refreshBtn").addEventListener("click", loadData);
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+      await loadData();
+      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+    });
     window.addEventListener("focus", () => loadData({ background: true }));
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) loadData({ background: true });

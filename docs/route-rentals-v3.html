@@ -203,26 +203,40 @@
       .leader-code{font-size:32px}
     }
   </style>
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260711">
 </head>
-<body>
+<body class="page-rentals">
+  <header class="site-header">
+    <nav class="site-nav" aria-label="主导航">
+      <a class="brand-link" href="./">
+        <span class="brand-symbol" aria-hidden="true">MO</span>
+        <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Shipping Intelligence</small></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="./">市场总览</a>
+        <a class="nav-link" href="./shipping-data.html">航运数据</a>
+        <a class="nav-link" href="./map-data.html">航线地图</a>
+        <a class="nav-link" aria-current="page" href="./route-rentals-v3.html">航线租金</a>
+      </div>
+      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
+    </nav>
+  </header>
   <div class="shell">
     <section class="hero">
       <div class="hero-top">
         <div>
-          <div class="eyebrow">Mandarine Ocean Route Rentals</div>
+          <div class="eyebrow">Mandarine Ocean · Spot Freight</div>
           <h1>航线租金</h1>
-          <div class="subtitle">按船型和路线查看最新 SSY/Baltic 现货航线租金，Dry FFA 单独列为参考，不参与现货强弱排行和涨跌对比。</div>
+          <div class="subtitle">按船型与路线判断 SSY/Baltic 现货租金强弱。Dry FFA 独立展示，仅作远期参考，不进入现货排行、均值或涨跌面。</div>
         </div>
         <div class="status-card">
-          <div class="status-label">数据状态</div>
+          <div class="status-label">最新市场快照</div>
           <div id="heroStatus" class="status-value">加载中</div>
           <div id="sourceMeta" class="meta" style="margin-top:8px">正在读取航线租金快照</div>
         </div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">刷新数据</button>
-        <a class="button secondary" href="./">返回首页</a>
-        <a class="button secondary" href="./map-data.html">航线地图</a>
+        <button id="refreshBtn" class="button" type="button">刷新数据</button>
       </div>
       <div class="metrics">
         <div class="metric"><div class="sub">现货航线</div><div id="linkedRoutes" class="metric-value">-</div><div class="metric-note">不含 Dry FFA</div></div>
@@ -289,7 +303,7 @@
       <div id="heatList" class="heat-list"></div>
     </section>
 
-    <section class="panel">
+    <section class="panel ffa-panel">
       <div class="section-head">
         <div>
           <div class="eyebrow">FFA Reference</div>
@@ -459,11 +473,11 @@
       const maxAbs = Math.max(...stats.map((item) => Math.abs(item.average)), 1);
       document.getElementById("groupChangeChart").innerHTML = stats.map((item) => {
         const cls = signClass(item.average);
-        const width = `${Math.max(4, Math.min(100, Math.abs(item.average) / maxAbs * 100))}%`;
+        const width = `${Math.max(2, Math.min(48, Math.abs(item.average) / maxAbs * 48))}%`;
         return `
           <div class="chart-row">
             <div class="chart-label">${esc(item.group)}<span>${item.count} 条 / ${item.up} 涨 ${item.down} 跌</span></div>
-            <div class="chart-track"><div class="chart-fill ${cls}" style="width:${width}"></div></div>
+            <div class="chart-track diverging"><div class="chart-fill ${cls}" style="width:${width}"></div></div>
             <div class="change ${cls}">${esc(formatSignedNumber(item.average))}</div>
           </div>
         `;
@@ -503,12 +517,12 @@
       const maxAbs = Math.max(...rows.map((row) => Math.abs(row.changeNumber)), 1);
       document.getElementById("moveChart").innerHTML = rows.map((row) => {
         const cls = signClass(row.changeNumber);
-        const width = `${Math.max(4, Math.min(100, Math.abs(row.changeNumber) / maxAbs * 100))}%`;
+        const width = `${Math.max(2, Math.min(48, Math.abs(row.changeNumber) / maxAbs * 48))}%`;
         return `
           <div class="chart-row">
             <div class="chart-label">${esc(row.code)}<span>${esc(row.group)}</span></div>
             <div>
-              <div class="chart-track"><div class="chart-fill ${cls}" style="width:${width}"></div></div>
+              <div class="chart-track diverging"><div class="chart-fill ${cls}" style="width:${width}"></div></div>
               <div class="meta" style="margin-top:5px">${esc(row.route)}</div>
             </div>
             <div class="change ${cls}">${esc(signedText(row.change))}</div>
@@ -677,7 +691,12 @@
       }
     }
 
-    document.getElementById("refreshBtn").addEventListener("click", loadData);
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+      await loadData();
+      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+    });
     loadData();
   </script>
 </body>

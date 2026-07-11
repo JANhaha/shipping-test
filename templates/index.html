@@ -273,22 +273,38 @@
       th,td{padding:10px 8px}
     }
   </style>
+  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260711">
 </head>
-<body>
+<body class="page-home">
+  <header class="site-header">
+    <nav class="site-nav" aria-label="主导航">
+      <a class="brand-link" href="/">
+        <span class="brand-symbol" aria-hidden="true">MO</span>
+        <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Shipping Intelligence</small></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" aria-current="page" href="/">市场总览</a>
+        <a class="nav-link" href="/shipping-data">航运数据</a>
+        <a class="nav-link" href="/map-data">航线地图</a>
+        <a class="nav-link" href="/route-rentals-v3">航线租金</a>
+      </div>
+      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
+    </nav>
+  </header>
   <div class="shell">
     <section class="hero">
       <div class="hero-top">
         <div>
-          <div class="eyebrow">Mandarine Ocean</div>
+          <div class="eyebrow">Market Intelligence · UTC+8</div>
           <h1>漢洋海运数据中心</h1>
           <div class="subtitle">
-            集中查看航运指数、原油、汇率、铁矿、中行美元折算价、沿海散货指数、
-            全球主要港口燃油价格，以及 SSY 报告、航线地图和航线租金联动数据。
+            一屏掌握航运指数、能源、汇率、铁矿、沿海散货与全球港口燃油价格，
+            并联动最新 SSY 报告、航线地图和航线租金。
           </div>
         </div>
         <div>
-          <div class="release-meta">版本：V2<br>运营：ANDY</div>
-          <div class="section-tag" style="margin-top:8px">5 分钟云端刷新目标</div>
+          <div class="release-meta">MANDARINE OCEAN<br>MARKET DESK</div>
+          <div class="section-tag" style="margin-top:8px">5 分钟数据检查</div>
         </div>
       </div>
 
@@ -296,32 +312,29 @@
         <div class="entry-grid">
           <a href="/shipping-data" class="entry-card">
             <div class="entry-title">航运数据</div>
-            <div class="entry-meta">查看最新 SSY 新加坡报告、附件表格、市场简报和航线相关数据。</div>
+            <div class="entry-meta">SSY 报告、市场简报与附件表格。</div>
             <div class="entry-mark">DATA</div>
           </a>
           <a href="/map-data" class="entry-card">
             <div class="entry-title">航线地图</div>
-            <div class="entry-meta">按航线族查看 Baltic 路线、地理路径和最新邮件数据中的航线价格。</div>
+            <div class="entry-meta">Baltic 路线、地理路径与价格联动。</div>
             <div class="entry-mark">MAP</div>
           </a>
           <a href="/route-rentals-v3" class="entry-card">
             <div class="entry-title">航线租金</div>
-            <div class="entry-meta">用排行、热力条和船型筛选直观看每条航线的最新租金与涨跌。</div>
+            <div class="entry-meta">现货强弱、船型对比与 Dry FFA 参考。</div>
             <div class="entry-mark">RATE</div>
           </a>
         </div>
 
         <div class="hero-side">
           <div class="metric-card">
-            <div class="metric-label">看板状态</div>
+            <div class="metric-label">页面检查时间</div>
             <div id="lastUpdated" class="metric-value">加载中</div>
             <div class="meta" id="refreshMeta" style="margin-top:8px">正在读取最新发布数据</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-label">操作</div>
             <div class="toolbar">
-              <button id="refreshBtn" class="button">刷新数据</button>
-              <span class="toolbar-note">云端目标：5 分钟</span>
+              <button id="refreshBtn" class="button" type="button">刷新数据</button>
+              <span class="toolbar-note">页面静默更新，不会跳转</span>
             </div>
           </div>
         </div>
@@ -673,7 +686,12 @@
       }
     }
 
-    document.getElementById("refreshBtn").addEventListener("click", loadDashboard);
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+      await loadDashboard();
+      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+    });
     window.addEventListener("focus", () => loadDashboard({ background: true }));
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) loadDashboard({ background: true });

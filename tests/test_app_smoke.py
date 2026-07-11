@@ -32,6 +32,24 @@ class AppSmokeTest(unittest.TestCase):
                 self.assertEqual(response.status_code, 200, path)
                 self.assertIn(b"html", response.data[:64].lower())
 
+    def test_shared_visual_system_is_served_on_primary_pages(self):
+        with app.test_client() as client:
+            stylesheet = client.get("/assets/ocean-ui.css")
+            self.assertEqual(stylesheet.status_code, 200)
+            self.assertIn(b".site-header", stylesheet.data)
+            stylesheet.close()
+
+            for path, page_class in (
+                ("/", b"page-home"),
+                ("/shipping-data", b"page-shipping"),
+                ("/map-data", b"page-map"),
+                ("/route-rentals-v3", b"page-rentals"),
+            ):
+                response = client.get(path)
+                self.assertEqual(response.status_code, 200, path)
+                self.assertIn(page_class, response.data)
+                self.assertIn(b"site-header", response.data)
+
     def test_api_responses_disable_cache(self):
         with app.test_client() as client:
             response = client.get("/api/health")

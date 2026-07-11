@@ -181,8 +181,24 @@
     @media (max-width:1180px){.mail-grid,.cards-grid,.brief-grid,.hero-top{grid-template-columns:1fr}}
     @media (max-width:760px){.shell{padding:14px 10px 36px}.hero,.section{padding:18px}}
   </style>
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260711">
 </head>
-<body>
+<body class="page-shipping">
+  <header class="site-header">
+    <nav class="site-nav" aria-label="主导航">
+      <a class="brand-link" href="./">
+        <span class="brand-symbol" aria-hidden="true">MO</span>
+        <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Shipping Intelligence</small></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="./">市场总览</a>
+        <a class="nav-link" aria-current="page" href="./shipping-data.html">航运数据</a>
+        <a class="nav-link" href="./map-data.html">航线地图</a>
+        <a class="nav-link" href="./route-rentals-v3.html">航线租金</a>
+      </div>
+      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
+    </nav>
+  </header>
   <div class="shell">
     <section class="hero">
       <div class="hero-top">
@@ -192,29 +208,27 @@
               <div class="eyebrow">SHIPPING DATA</div>
               <h1>航运数据</h1>
             </div>
-            <div class="sub" id="status">正在加载最新报告</div>
+            <div class="sub" id="status" hidden>正在加载最新报告</div>
           </div>
           <div class="hero-copy">
-            把最新 SSY 新加坡报告、邮件正文和附件表格整理成可快速浏览的市场工作台，
-            用于跟踪干散货、航线价格、成交信号和后续观察点。
+            将最新 SSY 新加坡报告、邮件正文和附件表格整理为可快速判断市场的工作台，
+            聚焦干散货、航线价格、成交信号与后续观察点。
           </div>
           <div class="hero-badges">
-            <span class="pill">最新 SSY 邮件</span>
-            <span class="pill">结构化表格</span>
-            <span class="pill">5 分钟云端目标</span>
+            <span class="pill">SSY 最新邮件</span>
+            <span class="pill">正文提炼</span>
+            <span class="pill">附件表格</span>
           </div>
         </div>
         <div class="status-card">
-          <div class="status-meta">版本：V2<br>运营：ANDY</div>
-          <div class="status-label" style="margin-top:14px">当前同步状态</div>
+          <div class="status-label">页面检查时间</div>
           <div class="status-value" id="heroStatus">正在加载最新报告</div>
-          <div class="sub" style="margin-top:8px">页面展示最新可用的邮箱快照和附件解析结果。</div>
+          <div class="sub" style="margin-top:8px">优先展示最新可用邮件；新邮件暂不可用时保留最近一次有效数据。</div>
         </div>
       </div>
       <div class="toolbar">
-        <button id="refreshBtn" class="button">刷新数据</button>
-        <button id="syncBtn" class="button secondary">同步邮箱</button>
-        <a class="button secondary" href="./">返回首页</a>
+        <button id="refreshBtn" class="button" type="button">刷新数据</button>
+        <button id="syncBtn" class="button secondary" type="button">同步邮箱</button>
       </div>
     </section>
 
@@ -516,7 +530,12 @@
       }
     }
 
-    document.getElementById("refreshBtn").addEventListener("click", loadData);
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
+      await loadData();
+      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+    });
     window.addEventListener("focus", () => loadData({ background: true }));
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) loadData({ background: true });
