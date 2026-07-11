@@ -6,6 +6,48 @@
 
 
 
+
+## 2026-07-12 00:11 +0800 - 补齐四页静默自动更新
+
+触发来源：deploy
+
+用户需求：
+- 继续优化四个看板的数据检查与阅读体验，让新快照自动更新且不改变当前阅读位置。
+
+完成内容：
+- 首页、航运数据和地图从仅提示新快照改为静默替换内容并恢复滚动位置；航线租金页新增 5 分钟后台检查、窗口聚焦检查与快照签名；邮箱和地图状态详情改为可见；静态站不可用的同步邮箱按钮强制隐藏；共享 CSS 版本升级为 20260711r2。
+
+关键文件：
+- docs/assets/ocean-ui.css
+- docs/index.html
+- docs/shipping-data.html
+- docs/map-data.html
+- docs/route-rentals-v3.html
+- templates/index.html
+- templates/shipping_data.html
+- templates/map_data.html
+- templates/route_rentals_v3.html
+
+验证：
+- python -B -m unittest discover 通过 7 项测试
+- 8 个 HTML 脚本解析和重复 ID 检查通过
+- 桌面与 390px 手机页面无横向溢出
+- 静态同步按钮 computed display 为 none
+- 线上 dashboard 和 map 快照为 2026-07-11 23:38
+- 线上燃油港口 7 个
+
+发布状态：
+- 提交 21f8e3c 已推送 stable
+- GitHub Pages 运行 29159270593 成功
+- 正式域名已读取 CSS r2 和四页静默更新代码
+
+风险与待办：
+- 前端每 5 分钟检查与 GitHub Actions 每 5 分钟生成保持一致；Gmail 或外部行情源没有新内容时继续展示最近一次有效数据
+- 航线租金来源邮件日期仍按页面显示的最近有效 SSY 邮件为准
+
+下次接手提示：
+- 后续刷新逻辑统一保持 background 检查、快照签名和滚动位置恢复；修改共享 CSS 后继续提升版本参数避免旧缓存。
+
 ## 2026-07-11 23:39 +0800 - 统一重构数据中心四页界面
 
 触发来源：deploy
