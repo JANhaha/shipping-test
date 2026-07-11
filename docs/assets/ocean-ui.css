@@ -41,6 +41,10 @@ select {
   letter-spacing: 0;
 }
 
+html [hidden] {
+  display: none !important;
+}
+
 .site-header {
   position: sticky;
   top: 0;

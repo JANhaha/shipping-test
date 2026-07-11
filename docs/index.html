@@ -273,7 +273,7 @@
       th,td{padding:10px 8px}
     }
   </style>
-  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260711">
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260711r2">
 </head>
 <body class="page-home">
   <header class="site-header">
@@ -655,16 +655,16 @@
         const ageMinutes = (checkedAt.getTime() - statusDate.getTime()) / 60000;
         const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
         document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
-        if (background && dashboardSignature && incomingSignature !== dashboardSignature) {
-          document.getElementById("refreshMeta").textContent =
-            `检测到新的数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，点击“刷新数据”更新页面内容。`;
-          return;
-        }
-        if (background) {
+        const snapshotChanged = Boolean(
+          background && dashboardSignature && incomingSignature !== dashboardSignature
+        );
+        if (background && !snapshotChanged) {
           document.getElementById("refreshMeta").textContent =
             `后台检查完成；当前数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
           return;
         }
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
         dashboardSignature = incomingSignature;
         renderShippingIndices(payload.baltic);
         renderCrude(payload.crude);
@@ -673,10 +673,14 @@
         renderForex(payload.forex);
         renderCbfi(payload.cbfi);
         renderBunker(payload.bunker_index?.ports || [], payload.bunker_index || {});
-        document.getElementById("refreshMeta").textContent =
-          Number.isFinite(ageMinutes) && ageMinutes > STALE_AFTER_MS / 60000
+        document.getElementById("refreshMeta").textContent = snapshotChanged
+          ? `已静默更新到数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}；阅读位置保持不变。`
+          : Number.isFinite(ageMinutes) && ageMinutes > STALE_AFTER_MS / 60000
             ? `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，已超过 ${Math.round(ageMinutes)} 分钟，等待云端下一次生成。下次检查：${nextCheck} 北京时间。`
             : `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
+        if (snapshotChanged) {
+          requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+        }
       } catch (error) {
         document.getElementById("lastUpdated").textContent = "加载失败";
         document.getElementById("refreshMeta").textContent = `Error: ${error}`;

@@ -203,7 +203,7 @@
       .leader-code{font-size:32px}
     }
   </style>
-  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260711">
+  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260711r2">
 </head>
 <body class="page-rentals">
   <header class="site-header">
@@ -328,11 +328,14 @@
 
   <script>
     const DATA_URL = "/api/map-data";
+    const AUTO_REFRESH_MS = 5 * 60 * 1000;
     const SPOT_GROUPS = ["Capesize", "Panamax", "Supramax", "Handysize"];
     const GROUPS = ["全部", ...SPOT_GROUPS];
     let activeGroup = "全部";
     let routeRows = [];
     let ffaRows = [];
+    let rentalLoading = false;
+    let rentalSignature = "";
 
     const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
       timeZone: "Asia/Shanghai",
@@ -365,6 +368,12 @@
       const date = parseTime(value);
       return date ? `${BEIJING_TIME_FORMATTER.format(date)} 北京时间` : "-";
     };
+    const rentalPayloadSignature = (payload) => [
+      payload?.updated_at_beijing || payload?.updated_at || "",
+      payload?.source_message?.gmail_message_id || "",
+      payload?.source_message?.synced_at || "",
+      payload?.route_count || 0,
+    ].join("|");
     const signedText = (value) => {
       const text = String(value ?? "").trim();
       if (!text || text === "-") return "-";
@@ -666,28 +675,53 @@
       renderTable();
     }
 
-    async function loadData() {
+    async function loadData(options = {}) {
+      if (rentalLoading) return;
+      const background = Boolean(options.background);
+      rentalLoading = true;
       const btn = document.getElementById("refreshBtn");
-      btn.disabled = true;
-      document.getElementById("heroStatus").textContent = "加载中";
+      if (!background) {
+        btn.disabled = true;
+        document.getElementById("heroStatus").textContent = "加载中";
+      }
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json();
+        const incomingSignature = rentalPayloadSignature(payload);
+        const snapshotChanged = Boolean(
+          background && rentalSignature && incomingSignature !== rentalSignature
+        );
+        if (background && !snapshotChanged) {
+          document.getElementById("heroStatus").textContent = `${routeRows.length} 条现货航线`;
+          document.getElementById("sourceMeta").textContent =
+            `页面已检查 ${BEIJING_TIME_FORMATTER.format(new Date())} | ${maybe(payload.source_message?.subject)} | 邮件 ${timeText(payload.source_message?.received_at)}`;
+          return;
+        }
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
         const allRows = flattenRoutes(payload);
         ffaRows = allRows.filter(isFfaRow);
         routeRows = allRows.filter((row) => !isFfaRow(row) && SPOT_GROUPS.includes(row.group));
+        rentalSignature = incomingSignature;
         renderMetrics(payload);
         renderMarketCharts();
         renderLeaders();
         renderFfaReference();
         renderFilteredViews();
+        if (snapshotChanged) {
+          document.getElementById("heroStatus").textContent = `已自动更新 · ${routeRows.length} 条现货`;
+          document.getElementById("sourceMeta").textContent =
+            `地图快照 ${timeText(payload.updated_at_beijing || payload.updated_at)} | 来源 ${maybe(payload.source_message?.subject)} | 阅读位置保持不变`;
+          requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+        }
       } catch (error) {
         document.getElementById("heroStatus").textContent = "加载失败";
         document.getElementById("sourceMeta").textContent = String(error);
         document.getElementById("routeGrid").innerHTML = `<div class="empty">加载失败：${esc(String(error))}</div>`;
       } finally {
-        btn.disabled = false;
+        if (!background) btn.disabled = false;
+        rentalLoading = false;
       }
     }
 
@@ -697,7 +731,12 @@
       await loadData();
       requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
     });
+    window.addEventListener("focus", () => loadData({ background: true }));
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) loadData({ background: true });
+    });
     loadData();
+    setInterval(() => loadData({ background: true }), AUTO_REFRESH_MS);
   </script>
 </body>
 </html>

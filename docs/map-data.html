@@ -218,7 +218,7 @@
       #map{height:420px}
     }
   </style>
-  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260711">
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260711r2">
 </head>
 <body class="page-map">
   <header class="site-header">
@@ -245,7 +245,6 @@
               <div class="eyebrow">MAP DATA</div>
               <h1>航线地图</h1>
             </div>
-            <div class="sub" id="status" hidden>正在加载航线看板</div>
           </div>
           <div class="hero-copy">
             按航线族、指数与路线代码查看 Baltic 全球航线，并联动最新可用航线价格和涨跌。
@@ -259,7 +258,7 @@
         <div class="status-card">
           <div class="status-label">页面检查时间</div>
           <div class="status-value" id="heroUpdatedAt">-</div>
-          <div class="sub" style="margin-top:8px">地图跟随最新有效邮箱数据；无新邮件时延用最近一次可用快照。</div>
+          <div class="sub" id="status" style="margin-top:8px">正在读取最新有效邮箱数据和航线快照。</div>
         </div>
       </div>
       <div class="toolbar">
@@ -864,16 +863,17 @@
         const boardTime = timeText(nextPayload.updated_at_beijing || nextPayload.updated_at);
         const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
         heroUpdatedAt.textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
-        if (background && payload && incomingSignature !== mapSignature) {
-          status.textContent = `检测到新的航线数据快照 ${boardTime}，点击“刷新数据”更新本页内容。当前阅读位置已保留。`;
-          return;
-        }
-        if (background) {
+        const snapshotChanged = Boolean(
+          background && payload && incomingSignature !== mapSignature
+        );
+        if (background && !snapshotChanged) {
           status.textContent = nextPayload.error
             ? nextPayload.error
             : `后台检查完成 | 当前数据快照 ${boardTime} | 下次检查 ${nextCheck} 北京时间`;
           return;
         }
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
         const selection = captureSelection();
         payload = nextPayload;
         mapSignature = incomingSignature;
@@ -884,8 +884,13 @@
         document.getElementById("updatedAt").textContent = boardTime;
         status.textContent = payload.error
           ? payload.error
-          : `航线看板已就绪 | 数据快照 ${boardTime} | 下次检查 ${nextCheck} 北京时间`;
+          : snapshotChanged
+            ? `已静默更新到航线快照 ${boardTime} | 当前选择与阅读位置保持不变`
+            : `航线看板已就绪 | 数据快照 ${boardTime} | 下次检查 ${nextCheck} 北京时间`;
         renderAll();
+        if (snapshotChanged) {
+          requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
+        }
       } catch (error) {
         status.textContent = `加载失败：${error.message}`;
         heroUpdatedAt.textContent = "加载失败";
