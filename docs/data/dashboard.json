@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-07-11T11:13:24.953736",
-  "timestamp_beijing": "2026-07-11T19:13:24.953739+08:00",
+  "timestamp": "2026-07-11T12:07:01.428575",
+  "timestamp_beijing": "2026-07-11T20:07:01.428578+08:00",
   "date_beijing": "2026-07-11",
   "refresh_interval_minutes": 5,
   "source_message": {
@@ -86,7 +86,7 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-07-11T11:12:55.307931"
+    "updated_at": "2026-07-11T12:06:55.625162"
   },
   "cbfi": {
     "name": "China Coastal Bulk Freight Index",
@@ -279,7 +279,7 @@
     "previous_date": "2026-07-03",
     "current_date": "2026-07-10",
     "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
-    "updated_at": "2026-07-11T11:12:55.383010"
+    "updated_at": "2026-07-11T12:07:01.427972"
   },
   "crude": {
     "cl": {
@@ -292,7 +292,7 @@
       "change_percent_from_open": -0.0993,
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.722469"
+      "updated_at": "2026-07-11T12:06:54.963714"
     },
     "oil": {
       "code": "OIL",
@@ -304,7 +304,7 @@
       "change_percent_from_open": 0.012,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.720963"
+      "updated_at": "2026-07-11T12:06:54.965054"
     }
   },
   "iron_ore": {
@@ -319,7 +319,7 @@
     },
     "change_percent": 0.58,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-07-11T11:13:24.953014"
+    "updated_at": "2026-07-11T12:06:55.285427"
   },
   "boc_usd": {
     "currency": "美元",
@@ -331,7 +331,7 @@
     "published_at": "2026/07/11 10:30:00",
     "published_time": "10:30:00",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-07-11T11:12:57.176684"
+    "updated_at": "2026-07-11T12:06:57.159195"
   },
   "forex": {
     "DINIW": {
@@ -344,7 +344,7 @@
       "change_percent_from_open": 0.0244,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.724216"
+      "updated_at": "2026-07-11T12:06:54.964138"
     },
     "EURUSD": {
       "code": "EURUSD",
@@ -356,7 +356,7 @@
       "change_percent_from_open": -0.1313,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.720331"
+      "updated_at": "2026-07-11T12:06:54.965716"
     },
     "GBPUSD": {
       "code": "GBPUSD",
@@ -368,7 +368,7 @@
       "change_percent_from_open": -0.0149,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.720678"
+      "updated_at": "2026-07-11T12:06:54.965407"
     },
     "USDCNY": {
       "code": "USDCNY",
@@ -380,7 +380,7 @@
       "change_percent_from_open": -0.2119,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.896488"
+      "updated_at": "2026-07-11T12:06:55.135867"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -392,7 +392,7 @@
       "change_percent_from_open": 0.0523,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.896851"
+      "updated_at": "2026-07-11T12:06:55.135289"
     },
     "USDJPY": {
       "code": "USDJPY",
@@ -404,7 +404,7 @@
       "change_percent_from_open": -0.4188,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-11T11:12:54.896052"
+      "updated_at": "2026-07-11T12:06:55.136440"
     }
   },
   "bunker_index": {
@@ -418,6 +418,17 @@
         "vlsfo_change": null,
         "mgo": 999.0,
         "mgo_change": null,
+        "date": "10 Jul"
+      },
+      {
+        "port": "Kaohsiung",
+        "country": "TW",
+        "ifo380": "623.00",
+        "ifo380_change": "0.00",
+        "vlsfo": "685.00",
+        "vlsfo_change": "0.00",
+        "mgo": "985.00",
+        "mgo_change": "0.00",
         "date": "10 Jul"
       },
       {
@@ -474,21 +485,10 @@
         "mgo": "984.00",
         "mgo_change": "-27.50",
         "date": "10 Jul"
-      },
-      {
-        "port": "Kaohsiung",
-        "country": "TW",
-        "ifo380": "623.00",
-        "ifo380_change": "0.00",
-        "vlsfo": "685.00",
-        "vlsfo_change": "0.00",
-        "mgo": "985.00",
-        "mgo_change": "0.00",
-        "date": "10 Jul"
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-07-11T11:12:57.716722",
+    "updated_at": "2026-07-11T12:06:58.420392",
     "fallback_used": false,
     "fallback_source": null,
     "error": null
