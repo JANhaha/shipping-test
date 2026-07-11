@@ -5,6 +5,51 @@
 
 
 
+
+## 2026-07-11 23:39 +0800 - 统一重构数据中心四页界面
+
+触发来源：deploy
+
+用户需求：
+- 删除重复的 Shipping Data Freshness 定时任务，并统一优化首页、航运数据、航线地图和航线租金的视觉与信息层级。
+
+完成内容：
+- 新增共享海运数据终端设计系统与固定导航；合并首页重复状态框；压缩各页首屏；地图默认聚焦 Dry 航线并修复手机横向溢出；租金涨跌图改为零轴双向图，FFA 继续独立展示；四页手动刷新保持阅读位置。
+
+关键文件：
+- app.py
+- docs/assets/ocean-ui.css
+- docs/index.html
+- docs/shipping-data.html
+- docs/map-data.html
+- docs/route-rentals-v3.html
+- templates/index.html
+- templates/shipping_data.html
+- templates/map_data.html
+- templates/route_rentals_v3.html
+- tests/test_app_smoke.py
+
+验证：
+- python -B -m unittest discover 通过 7 项测试
+- 8 个 HTML 内联脚本解析通过
+- 桌面与 390px 手机浏览器检查通过且无横向溢出
+- 首页燃油 7 个港口正常
+- 地图默认 Dry 航线且画布正常
+- 租金页 29 条现货与 6 条 FFA 独立显示
+- 线上 HTML 与 26266 字节共享 CSS 均已核验
+
+发布状态：
+- 提交 fc9d7a5 已推送 stable
+- GitHub Pages 运行 29158224687 成功
+- https://www.mandarineocean.cn/ 已上线
+
+风险与待办：
+- 地图仍依赖 amCharts CDN；外部网络异常时地图底图可能延迟
+- Shipping Data Freshness 自动任务已删除，不再生成后续同名任务框
+
+下次接手提示：
+- 后续页面视觉调整优先修改 docs/assets/ocean-ui.css；保持 Dry FFA 与现货数据独立，刷新继续使用静默数据更新。
+
 ## 2026-07-02 22:43 +0800 - 修复首页燃油价格消失
 
 触发来源：manual
