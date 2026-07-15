@@ -7,6 +7,38 @@
 
 
 
+
+## 2026-07-15 11:38 +0800 - 恢复 Gmail 授权并修复刷新时间
+
+触发来源：data-refresh
+
+用户需求：
+- 重新完成 Gmail OAuth 授权并同步 GitHub Secret，强制回溯邮件、更新全站数据，同时修复 UTC 时间误差和刷新任务假成功问题。
+
+完成内容：
+- 最新来源为 SSY SINGAPORE REPORT- 15 JULY 2026；线上 Gmail 状态为正常，邮件接收和同步时间统一为带 +08:00 的北京时间；手动与定时刷新改为串行执行；新增 Gmail 健康检查，授权失效时工作流明确失败。
+
+关键文件：
+- .github/workflows/update-shipping-data.yml
+- data/gmail_service.py
+- tests/test_app_smoke.py
+- docs/data/shipping_data.json
+- docs/data/map_data.json
+- docs/data/dashboard.json
+- docs/data/refresh_status.json
+
+验证：
+- 8 项 unittest 通过；Python 编译通过；本地 Gmail 抓取成功；GitHub Actions 29386893606 成功并通过 Gmail health check；线上 JSON 显示 gmail_sync_ok=true、最新邮件 2026-07-15 09:48:40+08:00、9 个附件。
+
+发布状态：
+- GitHub Pages 29386940068 部署成功：https://www.mandarineocean.cn/
+
+风险与待办：
+- 若 Google Cloud OAuth 应用仍处于 Testing，refresh token 仍可能被 Google 周期性撤销；代码无法绕过 Google 的交互授权，需将 OAuth consent screen 发布为 Production 才能长期避免反复授权。
+
+下次接手提示：
+- 观察下一次定时任务；若再次出现 invalid_grant，优先检查 Google Cloud OAuth 发布状态，而不是重复修改网页刷新代码。
+
 ## 2026-07-12 00:11 +0800 - 补齐四页静默自动更新
 
 触发来源：deploy
