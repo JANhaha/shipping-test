@@ -1,7 +1,7 @@
 import base64
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import quote
 
@@ -31,6 +31,7 @@ DEFAULT_LOOKBACK_DAYS = 7
 DEFAULT_BROAD_LOOKBACK_DAYS = 2
 MAX_LOOKBACK_DAYS = 90
 MAX_GMAIL_RETRIES = 3
+BEIJING_TZ = timezone(timedelta(hours=8), name="Asia/Shanghai")
 
 
 class GmailShippingDataService:
@@ -94,7 +95,7 @@ class GmailShippingDataService:
             "message_ids": synced,
             "label": "shipping-data",
             "query": f"newer_than:1d + SSY SINGAPORE within {self.lookback_days}d",
-            "synced_at": datetime.now().isoformat(),
+            "synced_at": datetime.now(BEIJING_TZ).isoformat(),
         }
 
     def _save_message(self, session, message):
@@ -125,7 +126,7 @@ class GmailShippingDataService:
             "body_summary": body_summary,
             "has_attachments": bool(attachments),
             "raw_payload_json": payload,
-            "synced_at": datetime.now().isoformat(),
+            "synced_at": datetime.now(BEIJING_TZ).isoformat(),
         }
         upsert_message(record)
         replace_attachments(message["id"], attachments)
@@ -232,7 +233,7 @@ class GmailShippingDataService:
 
     def _collect_attachments(self, session, payload, message_id):
         attachments = []
-        now = datetime.now().isoformat()
+        now = datetime.now(BEIJING_TZ).isoformat()
         for part in self._walk_parts(payload):
             filename = part.get("filename") or ""
             body = part.get("body", {})
@@ -248,7 +249,7 @@ class GmailShippingDataService:
             )
             data = self._decode_base64_bytes(blob.get("data", ""))
             safe_name = self._safe_filename(filename)
-            target_dir = self.attachment_dir / datetime.now().strftime("%Y%m%d")
+            target_dir = self.attachment_dir / datetime.now(BEIJING_TZ).strftime("%Y%m%d")
             target_dir.mkdir(parents=True, exist_ok=True)
             local_path = target_dir / f"{message_id}_{safe_name}"
             local_path.write_bytes(data)
@@ -370,7 +371,10 @@ class GmailShippingDataService:
     def _format_ts(internal_date):
         if not internal_date:
             return None
-        return datetime.fromtimestamp(int(internal_date) / 1000).isoformat()
+        return datetime.fromtimestamp(
+            int(internal_date) / 1000,
+            tz=BEIJING_TZ,
+        ).isoformat()
 
     @staticmethod
     def _summarize_text(text, limit=220):

@@ -14,7 +14,9 @@ on:
 
 concurrency:
   group: shipping-data-refresh
-  cancel-in-progress: true
+  # Serialize manual and scheduled refreshes so a force refresh is never
+  # canceled by a scheduled run that starts a few seconds later.
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -90,3 +92,20 @@ jobs:
             sleep $((attempt * 15))
           done
           exit 1
+
+      - name: Verify Gmail sync health
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          status = json.loads(
+              Path("docs/data/refresh_status.json").read_text(encoding="utf-8")
+          )
+          if not status.get("gmail_sync_ok"):
+              raise SystemExit(
+                  "Gmail sync failed. Re-authorize with "
+                  "`py scripts/gmail_oauth_setup.py` and refresh GMAIL_TOKEN_JSON."
+              )
+          print("Gmail sync health check passed.")
+          PY

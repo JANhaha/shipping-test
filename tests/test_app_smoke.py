@@ -68,6 +68,11 @@ class AppSmokeTest(unittest.TestCase):
         self.assertTrue(safe_name.endswith(".pdf"))
         self.assertNotIn(" ", safe_name)
 
+    def test_gmail_message_timestamp_is_beijing_aware(self):
+        timestamp = GmailShippingDataService._format_ts("0")
+
+        self.assertEqual(timestamp, "1970-01-01T08:00:00+08:00")
+
     def test_route_market_snapshot_prefers_newer_static_shipping_data(self):
         old_categories = [
             {
