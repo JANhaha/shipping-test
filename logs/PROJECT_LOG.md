@@ -8,6 +8,61 @@
 
 
 
+
+## 2026-07-21 13:21 +0800 - 上线公司宣传首页并全量刷新 Gmail
+
+触发来源：deploy
+
+用户需求：
+- 将网站首页改为基于公司附件的专业宣传页，移除公开航运数据栏目，保留市场总览、航线地图和航线租金三个项目，并重新读取 Gmail 全部相关信息。
+
+完成内容：
+- 从 Mandarine Ocean 公司 PDF 提取品牌、业务、航线、98 条历史租约记录及真实货运图片；原首页迁移为市场总览；统一三个项目导航与旧地址跳转；90 天回溯同步 100 封 shipping-data 标签邮件并强制解析附件；重新生成 dashboard、map_data、shipping_data 和 refresh_status。
+
+关键文件：
+- docs/index.html
+- docs/market-overview.html
+- docs/map-data.html
+- docs/route-rentals-v3.html
+- docs/assets/company.css
+- docs/assets/company/
+- templates/index.html
+- templates/market_overview.html
+- app.py
+- docs/data/shipping_data.json
+- docs/data/map_data.json
+- docs/data/dashboard.json
+- docs/data/refresh_status.json
+- tests/test_app_smoke.py
+
+验证：
+- 10 项 unittest 全部通过
+- py_compile 与 6 个页面内联脚本语法检查通过
+- UTF-8 连续问号扫描为 0
+- 桌面 1440x900 和手机 390x844 无非预期横向溢出
+- 最新来源 SSY SINGAPORE REPORT- 21 JULY 2026 收件时间 09:39 +08:00
+- 地图 120 条航线且 SVG 非空
+- 航线租金 31 条现货且 Dry FFA 独立
+- 云端 Gmail 工作流 29802979603 成功
+- Pages 工作流 29803108097 成功
+- 正式站点四个 HTML 响应 200 且文件长度与 Git blob 一致
+
+发布状态：
+- stable 主页面提交 e536621 已推送
+- 云端数据提交 2c2d5e6 已生成
+- GitHub Pages 已部署成功
+- 正式首页 https://www.mandarineocean.cn/
+- 市场总览 https://www.mandarineocean.cn/market-overview.html
+- 航线地图 https://www.mandarineocean.cn/map-data.html
+- 航线租金 https://www.mandarineocean.cn/route-rentals-v3.html
+
+风险与待办：
+- GitHub Pages Cache-Control 为 max-age=600，边缘节点最多可能短暂保留旧响应
+- 若 Google Cloud OAuth consent screen 仍处于 Testing，refresh token 仍有周期失效风险；当前本机与云端自动工作流均授权正常
+
+下次接手提示：
+- 后续先查看 refresh_status.json 和 Update Shipping Data 工作流；公司首页资料来源为 2024 PDF，新增公司实绩时同步更新附件口径和历史说明。
+
 ## 2026-07-15 11:38 +0800 - 恢复 Gmail 授权并修复刷新时间
 
 触发来源：data-refresh
