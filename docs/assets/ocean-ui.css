@@ -101,6 +101,15 @@ html [hidden] {
   background: var(--accent-2);
 }
 
+.brand-logo {
+  width: 48px;
+  height: 38px;
+  flex: 0 0 48px;
+  display: block;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
 .brand-copy {
   min-width: 0;
   display: grid;
@@ -667,6 +676,28 @@ tbody tr:hover td {
 .page-home .hero-side .metric-value {
   font-size: 18px !important;
   white-space: nowrap;
+}
+
+.page-market .hero-grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.page-market .hero-side {
+  display: block !important;
+}
+
+.page-market .hero-side .metric-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 24px;
+}
+
+.page-market .hero-side .toolbar {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  margin-top: 0 !important;
 }
 
 .page-home .stats-grid,
@@ -1236,6 +1267,12 @@ tbody tr:hover td {
     flex-basis: 34px;
   }
 
+  .brand-logo {
+    width: 38px;
+    height: 32px;
+    flex-basis: 38px;
+  }
+
   .nav-links {
     min-width: 0;
     justify-content: stretch;
@@ -1302,6 +1339,16 @@ tbody tr:hover td {
 
   .page-home .hero-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  .page-market .hero-side .metric-card {
+    grid-template-columns: 1fr;
+  }
+
+  .page-market .hero-side .toolbar {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 14px !important;
   }
 
   .page-home .hero-top > div:last-child {

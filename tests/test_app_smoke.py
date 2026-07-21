@@ -22,7 +22,7 @@ class AppSmokeTest(unittest.TestCase):
         with app.test_client() as client:
             for path in (
                 "/",
-                "/shipping-data",
+                "/market-overview",
                 "/map-data",
                 "/route-rentals",
                 "/route-rentals-v2",
@@ -32,6 +32,13 @@ class AppSmokeTest(unittest.TestCase):
                 self.assertEqual(response.status_code, 200, path)
                 self.assertIn(b"html", response.data[:64].lower())
 
+    def test_legacy_shipping_data_page_redirects_to_market_overview(self):
+        with app.test_client() as client:
+            response = client.get("/shipping-data")
+
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.headers["Location"].endswith("/market-overview"))
+
     def test_shared_visual_system_is_served_on_primary_pages(self):
         with app.test_client() as client:
             stylesheet = client.get("/assets/ocean-ui.css")
@@ -40,8 +47,8 @@ class AppSmokeTest(unittest.TestCase):
             stylesheet.close()
 
             for path, page_class in (
-                ("/", b"page-home"),
-                ("/shipping-data", b"page-shipping"),
+                ("/", b"page-company"),
+                ("/market-overview", b"page-market"),
                 ("/map-data", b"page-map"),
                 ("/route-rentals-v3", b"page-rentals"),
             ):
@@ -49,6 +56,24 @@ class AppSmokeTest(unittest.TestCase):
                 self.assertEqual(response.status_code, 200, path)
                 self.assertIn(page_class, response.data)
                 self.assertIn(b"site-header", response.data)
+
+            company_stylesheet = client.get("/assets/company.css")
+            self.assertEqual(company_stylesheet.status_code, 200)
+            self.assertIn(b".company-hero", company_stylesheet.data)
+            company_stylesheet.close()
+
+            company_logo = client.get("/assets/company/logo.webp")
+            self.assertEqual(company_logo.status_code, 200)
+            company_logo.close()
+
+    def test_company_home_has_exactly_three_project_entries(self):
+        with app.test_client() as client:
+            response = client.get("/")
+
+        html = response.get_data(as_text=True)
+        self.assertEqual(html.count('class="project-card"'), 3)
+        self.assertNotIn("航运数据", html)
+        self.assertIn("Mandarine Ocean Ltd", html)
 
     def test_api_responses_disable_cache(self):
         with app.test_client() as client:

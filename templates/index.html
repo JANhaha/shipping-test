@@ -3,705 +3,200 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>漢洋海运数据中心</title>
-  <style>
-    :root{
-      --bg:#f4ede5;
-      --panel:rgba(255,255,255,.94);
-      --panel-strong:#fffdfa;
-      --ink:#17262d;
-      --muted:#667983;
-      --line:rgba(18,46,58,.12);
-      --accent:#0b5969;
-      --accent-2:#d18a2d;
-      --accent-soft:#eef6f8;
-      --up:#00b050;
-      --down:#ff3b30;
-      --shadow:0 20px 44px rgba(20,36,43,.10);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      color:var(--ink);
-      font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(11,89,105,.14), transparent 28%),
-        radial-gradient(circle at top right, rgba(209,138,45,.11), transparent 24%),
-        linear-gradient(180deg,#f8f3ec,#efe6dc 42%, #f4ede5 100%);
-    }
-    .shell{max-width:1540px;margin:0 auto;padding:24px 16px 52px}
-    .hero,.panel,.tile,.metric-card,.entry-card{
-      background:var(--panel);
-      border:1px solid rgba(255,255,255,.76);
-      border-radius:24px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(8px);
-    }
-    .hero,.panel{padding:24px}
-    .panel{margin-top:16px}
-    .hero-top,.panel-head,.card-top{
-      display:flex;
-      justify-content:space-between;
-      gap:14px;
-      align-items:flex-start;
-      flex-wrap:wrap;
-    }
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:12px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      color:var(--accent);
-      font-weight:700;
-    }
-    h1,h2,h3,p{margin:0}
-    h1{font-size:clamp(30px,4vw,48px);letter-spacing:.02em}
-    h2{font-size:22px}
-    h3{font-size:18px}
-    .subtitle{
-      margin-top:12px;
-      max-width:940px;
-      color:var(--muted);
-      line-height:1.8;
-      font-size:14px;
-    }
-    .hero-grid{
-      display:grid;
-      grid-template-columns:1.2fr .8fr;
-      gap:16px;
-      margin-top:18px;
-    }
-    .entry-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-      gap:16px;
-    }
-    .entry-card{
-      padding:18px 18px 16px;
-      text-decoration:none;
-      color:#fff;
-      background:linear-gradient(135deg,#0b5969 0%,#127b90 56%,#d18a2d 100%);
-      border-color:rgba(255,255,255,.18);
-      min-height:132px;
-    }
-    .entry-card:hover{transform:translateY(-1px)}
-    .entry-title{font-size:20px;font-weight:800;line-height:1.2}
-    .entry-meta{margin-top:8px;font-size:13px;line-height:1.7;opacity:.95}
-    .entry-mark{
-      margin-top:16px;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width:54px;
-      height:54px;
-      border-radius:16px;
-      background:rgba(255,255,255,.16);
-      font-size:14px;
-      font-weight:800;
-      letter-spacing:.06em;
-    }
-    .hero-side{
-      display:grid;
-      gap:14px;
-      align-content:start;
-    }
-    .metric-card{
-      padding:16px;
-      background:var(--panel-strong);
-      border:1px solid var(--line);
-      box-shadow:none;
-    }
-    .metric-label,.meta,.mini-label{
-      color:var(--muted);
-      font-size:12px;
-    }
-    .metric-value{
-      margin-top:8px;
-      font-size:30px;
-      line-height:1.05;
-      font-weight:800;
-    }
-    .meta{line-height:1.7}
-    .button{
-      border:0;
-      border-radius:999px;
-      background:linear-gradient(135deg,var(--accent),#0f7b90);
-      color:#fff;
-      padding:11px 18px;
-      font-weight:700;
-      cursor:pointer;
-    }
-    .button:disabled{opacity:.65;cursor:default}
-    .toolbar{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top:16px;
-    }
-    .toolbar-note{
-      color:var(--muted);
-      font-size:13px;
-    }
-    .panel-grid{
-      display:grid;
-      grid-template-columns:repeat(12,minmax(0,1fr));
-      gap:16px;
-    }
-    .span-12{grid-column:span 12}
-    .span-6{grid-column:span 6}
-    .stats-grid,.cards-2,.cards-3,.cards-4,.quick-grid{
-      display:grid;
-      gap:16px;
-    }
-    .stats-grid{grid-template-columns:repeat(auto-fit,minmax(144px,1fr));margin-top:18px}
-    .cards-2{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .cards-3{grid-template-columns:repeat(3,minmax(0,1fr))}
-    .cards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
-    .quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-    .tile{
-      padding:18px;
-      background:var(--panel-strong);
-      border:1px solid var(--line);
-      box-shadow:none;
-    }
-    .tile.soft{
-      background:linear-gradient(180deg,rgba(11,89,105,.05),rgba(11,89,105,.015));
-    }
-    .code{
-      font-size:12px;
-      color:var(--muted);
-      letter-spacing:.08em;
-      text-transform:uppercase;
-    }
-    .primary{
-      margin-top:8px;
-      font-size:32px;
-      line-height:1.05;
-      font-weight:800;
-    }
-    .secondary{
-      margin-top:6px;
-      color:var(--muted);
-      font-size:13px;
-    }
-    .metric-grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      margin-top:16px;
-    }
-    .mini-metric{
-      padding:12px 12px 10px;
-      border-radius:16px;
-      background:#fff;
-      border:1px solid rgba(11,89,105,.09);
-    }
-    .mini-metric .value{
-      margin-top:6px;
-      font-size:18px;
-      font-weight:800;
-    }
-    .table-wrap{
-      overflow:auto;
-      margin-top:16px;
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:var(--panel-strong);
-    }
-    table{width:100%;border-collapse:collapse;font-size:14px}
-    th,td{
-      padding:12px 10px;
-      border-bottom:1px solid var(--line);
-      text-align:left;
-      vertical-align:top;
-    }
-    th{
-      background:rgba(11,89,105,.04);
-      color:var(--muted);
-      font-weight:700;
-      position:sticky;
-      top:0;
-    }
-    tr:hover td{background:#fbfdfe}
-    .up{color:var(--up);font-weight:800}
-    .down{color:var(--down);font-weight:800}
-    .warning{
-      padding:16px 18px;
-      border-radius:18px;
-      background:#fff3df;
-      border:1px solid rgba(188,108,37,.16);
-      color:#8a4f16;
-    }
-    .section-tag{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 12px;
-      border-radius:999px;
-      background:var(--accent-soft);
-      color:var(--accent);
-      font-size:12px;
-      font-weight:700;
-    }
-    .release-meta{
-      text-align:right;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.8;
-      letter-spacing:.04em;
-      font-weight:700;
-    }
-    .dense-note{
-      font-size:13px;
-      color:var(--muted);
-      line-height:1.7;
-    }
-    @media (max-width:1280px){
-      .span-6{grid-column:span 12}
-      .hero-grid{grid-template-columns:1fr}
-      .cards-4{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .cards-3{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-    @media (max-width:760px){
-      .shell{padding:14px 10px 34px}
-      .hero,.panel{padding:18px;border-radius:20px}
-      .entry-grid,.cards-2,.cards-3,.cards-4,.metric-grid,.quick-grid{grid-template-columns:1fr}
-      .primary,.metric-value{font-size:26px}
-      th,td{padding:10px 8px}
-    }
-  </style>
-  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260711r2">
+  <meta name="description" content="Mandarine Ocean Ltd 专注全球干散货运输与船舶运营，覆盖木材、矿产、煤炭、钢材、水泥、粮食及项目货物。">
+  <title>Mandarine Ocean Ltd | 全球干散货运输与船舶运营</title>
+  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260721r2">
+  <link rel="stylesheet" href="/assets/company.css?v=20260721r2">
 </head>
-<body class="page-home">
+<body class="page-company">
   <header class="site-header">
     <nav class="site-nav" aria-label="主导航">
-      <a class="brand-link" href="/">
-        <span class="brand-symbol" aria-hidden="true">MO</span>
-        <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Shipping Intelligence</small></span>
+      <a class="brand-link" href="/" aria-current="page">
+        <img class="brand-logo" src="/assets/company/logo.webp" alt="Mandarine Ocean">
+        <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Global Dry Bulk Operator</small></span>
       </a>
       <div class="nav-links">
-        <a class="nav-link" aria-current="page" href="/">市场总览</a>
-        <a class="nav-link" href="/shipping-data">航运数据</a>
+        <a class="nav-link" aria-current="page" href="/">公司首页</a>
+        <a class="nav-link" href="/market-overview">市场总览</a>
         <a class="nav-link" href="/map-data">航线地图</a>
         <a class="nav-link" href="/route-rentals-v3">航线租金</a>
       </div>
-      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
+      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>Est. 2012 · Global Service</span></div>
     </nav>
   </header>
-  <div class="shell">
-    <section class="hero">
-      <div class="hero-top">
-        <div>
-          <div class="eyebrow">Market Intelligence · UTC+8</div>
-          <h1>漢洋海运数据中心</h1>
-          <div class="subtitle">
-            一屏掌握航运指数、能源、汇率、铁矿、沿海散货与全球港口燃油价格，
-            并联动最新 SSY 报告、航线地图和航线租金。
-          </div>
-        </div>
-        <div>
-          <div class="release-meta">MANDARINE OCEAN<br>MARKET DESK</div>
-          <div class="section-tag" style="margin-top:8px">5 分钟数据检查</div>
-        </div>
-      </div>
 
-      <div class="hero-grid">
-        <div class="entry-grid">
-          <a href="/shipping-data" class="entry-card">
-            <div class="entry-title">航运数据</div>
-            <div class="entry-meta">SSY 报告、市场简报与附件表格。</div>
-            <div class="entry-mark">DATA</div>
-          </a>
-          <a href="/map-data" class="entry-card">
-            <div class="entry-title">航线地图</div>
-            <div class="entry-meta">Baltic 路线、地理路径与价格联动。</div>
-            <div class="entry-mark">MAP</div>
-          </a>
-          <a href="/route-rentals-v3" class="entry-card">
-            <div class="entry-title">航线租金</div>
-            <div class="entry-meta">现货强弱、船型对比与 Dry FFA 参考。</div>
-            <div class="entry-mark">RATE</div>
-          </a>
+  <main class="company-main">
+    <section class="company-hero" aria-labelledby="companyTitle">
+      <div class="company-hero-inner">
+        <p class="hero-kicker">Dry Bulk Shipping · Vessel Operations</p>
+        <h1 id="companyTitle">Mandarine Ocean Ltd</h1>
+        <p class="hero-offer">
+          面向全球贸易提供专业、可靠的干散货运输与船舶运营服务，
+          在木材运输、工业原料及区域干散货航线上积累长期实务经验。
+        </p>
+        <div class="hero-facts" aria-label="公司重点能力">
+          <span class="hero-fact">全球干散货运输</span>
+          <span class="hero-fact">木材运输专长</span>
+          <span class="hero-fact">航次与期租运营</span>
+          <span class="hero-fact">远东市场网络</span>
         </div>
-
-        <div class="hero-side">
-          <div class="metric-card">
-            <div class="metric-label">页面检查时间</div>
-            <div id="lastUpdated" class="metric-value">加载中</div>
-            <div class="meta" id="refreshMeta" style="margin-top:8px">正在读取最新发布数据</div>
-            <div class="toolbar">
-              <button id="refreshBtn" class="button" type="button">刷新数据</button>
-              <span class="toolbar-note">页面静默更新，不会跳转</span>
-            </div>
-          </div>
+        <div class="hero-actions">
+          <a class="company-button" href="#business">了解我们的业务</a>
+          <a class="company-button secondary" href="/market-overview">进入市场总览</a>
         </div>
       </div>
     </section>
 
-    <div class="panel-grid">
-      <section class="panel span-12">
-        <div class="panel-head">
-          <div>
-            <div class="eyebrow">Shipping Indices</div>
-            <h2>航运市场指数</h2>
-          </div>
-          <div class="dense-note">BDI / BCI / BPI / BSI / BHSI / BCTI / BDTI / BLNG / BLPG</div>
-        </div>
-        <div id="shippingIndices"></div>
-      </section>
-
-      <section class="panel span-6">
-        <div class="panel-head">
-          <div>
-            <div class="eyebrow">Crude</div>
-            <h2>原油市场</h2>
-          </div>
-          <div class="dense-note">WTI Crude / Brent Crude CFD</div>
-        </div>
-        <div class="cards-2" id="crudeCards"></div>
-      </section>
-
-      <section class="panel span-6">
-        <div class="panel-head">
-          <div>
-            <div class="eyebrow">Spot Focus</div>
-            <h2>现货关注</h2>
-          </div>
-          <div class="dense-note">Imported iron ore index / BOC USD conversion</div>
-        </div>
-        <div class="quick-grid">
-          <div class="tile soft">
-            <div class="mini-label">Imported Iron Ore</div>
-            <div id="oreToday" class="primary">-</div>
-            <div id="oreMeta" class="secondary"></div>
-          </div>
-          <div class="tile soft">
-            <div class="mini-label">BOC USD Conversion</div>
-            <div id="bocPrice" class="primary">-</div>
-            <div id="bocMeta" class="secondary"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="panel span-12">
-        <div class="panel-head">
-          <div>
-            <div class="eyebrow">FX</div>
-            <h2>相关汇率</h2>
-          </div>
-          <div class="dense-note">All FX values shown with 4 decimal places</div>
-        </div>
-        <div id="forexCards" class="cards-3"></div>
-      </section>
-
-      <section class="panel span-12">
-        <div class="panel-head">
-          <div>
-            <div class="eyebrow">CBFI</div>
-            <h2>中国沿海散货运价</h2>
-          </div>
-          <div id="cbfiDate" class="dense-note">加载中</div>
-        </div>
-        <div id="cbfiRoot"></div>
-      </section>
-
-      <section class="panel span-12">
-        <div class="panel-head">
-          <div>
-            <div class="eyebrow">Bunker</div>
-            <h2>全球主要港口燃油价格</h2>
-          </div>
-          <div id="bunkerNote" class="dense-note">含舟山及主要港口最新可用燃油价格</div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Port</th>
-                <th>Country</th>
-                <th>IFO380</th>
-                <th>VLSFO</th>
-                <th>MGO / LSMGO</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody id="bunkerTable"></tbody>
-          </table>
-        </div>
-      </section>
-    </div>
-  </div>
-
-  <script>
-    const DATA_URL = "/api/dashboard";
-    const AUTO_REFRESH_MS = 5 * 60 * 1000;
-    const STALE_AFTER_MS = 15 * 60 * 1000;
-    const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
-      timeZone: "Asia/Shanghai",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false
-    });
-    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
-    const fmtForex = (v) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(4);
-    const maybe = (v) => v === null || v === undefined || v === "" ? "-" : v;
-    const formatCell = (v) => {
-      if (v === null || v === undefined || v === "") return "-";
-      const num = Number(String(v).replace(/,/g, ""));
-      return Number.isNaN(num) ? String(v) : num.toFixed(2);
-    };
-    const coloredChange = (value, suffix = "", decimals = 2) => {
-      if (value === null || value === undefined || Number.isNaN(Number(value))) return "-";
-      const num = Number(value);
-      const cls = num >= 0 ? "up" : "down";
-      const sign = num >= 0 ? "+" : "";
-      return `<span class="${cls}">${sign}${num.toFixed(decimals)}${suffix}</span>`;
-    };
-    const miniMetric = (label, value, formatter = fmt, isChange = false, suffix = "", decimals = 2) => `
-      <div class="mini-metric">
-        <div class="mini-label">${label}</div>
-        <div class="value">${isChange ? coloredChange(value, suffix, decimals) : formatter(value)}</div>
+    <section class="proof-strip" aria-label="公司概览">
+      <div class="company-inner proof-grid">
+        <div class="proof-item"><div class="proof-value">2012</div><div class="proof-label">公司成立年份</div></div>
+        <div class="proof-item"><div class="proof-value">98</div><div class="proof-label">附件所列参考成交与租约记录</div></div>
+        <div class="proof-item"><div class="proof-value">8.5K-81.6K</div><div class="proof-label">参考船舶载重吨覆盖范围</div></div>
+        <div class="proof-item"><div class="proof-value">2015-2024</div><div class="proof-label">附件成交记录时间跨度</div></div>
       </div>
-    `;
+    </section>
 
-    function renderShippingIndices(data) {
-      const root = document.getElementById("shippingIndices");
-      if (!data || data.error) {
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "航运指数暂不可用。"}</div>`;
-        return;
-      }
-      root.innerHTML = `
-        <div class="stats-grid">
-          ${(data.data || []).map((item) => `
-            <div class="tile">
-              <div class="code">${item.code}</div>
-              <div class="primary">${fmt(item.value)}</div>
-              <div class="secondary">${maybe(item.name)}</div>
-              <div class="secondary" style="margin-top:10px">${maybe(item.date)} | Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
-            </div>
-          `).join("")}
+    <section class="company-section white" id="company">
+      <div class="company-inner about-grid">
+        <div class="section-heading">
+          <p class="section-kicker">Company Profile</p>
+          <h2>连接货物、船舶与全球贸易航线</h2>
+          <p class="section-copy">
+            Mandarine Ocean Ltd 成立于 2012 年，是面向全球市场的干散货船舶运营商。
+            公司承运木材、袋装水泥、钢材、设备、矿产品、袋装大米、粮食等一般与大宗货物，
+            并持续发展航次期租、短期期租及中长期运营业务。
+          </p>
+          <ul class="about-points">
+            <li>由熟悉租船、运营与货运执行的专业团队提供全流程服务。</li>
+            <li>重视可靠履约、货物安全、信息透明及客户长期合作。</li>
+            <li>持续拓展可控运力，为不同货种与航线匹配合适船型。</li>
+          </ul>
         </div>
-      `;
-    }
+        <img class="about-image" src="/assets/company/port-log-cargo.webp" alt="装载木材的干散货船在港作业" loading="lazy">
+      </div>
+    </section>
 
-    function renderCrude(data) {
-      const items = [data?.cl, data?.oil].filter(Boolean);
-      document.getElementById("crudeCards").innerHTML = items.map((item) => `
-        <div class="tile">
-          <div class="card-top">
-            <div>
-              <div class="mini-label">${maybe(item.name)}</div>
-              <div class="primary">${fmt(item.latest)}</div>
-            </div>
-            <div class="section-tag">Live</div>
-          </div>
-          <div class="metric-grid">
-            ${miniMetric("Open", item.open)}
-            ${miniMetric("Prev Close", item.previous_close)}
-            ${miniMetric("Vs Open", item.change_from_open, fmt, true, "", 2)}
-            ${miniMetric("Change %", item.change_percent_from_open, fmt, true, "%", 2)}
+    <section class="company-section" id="business">
+      <div class="company-inner">
+        <div class="section-heading">
+          <p class="section-kicker">Core Capabilities</p>
+          <h2>围绕真实货盘与船舶执行的专业能力</h2>
+          <p class="section-copy">从货盘评估、船型匹配到航次执行，以市场判断和运营协同支持每一次运输。</p>
+        </div>
+        <div class="service-grid">
+          <article class="service-card"><span class="service-index">01</span><h3>全球干散货运营</h3><p>承接区域与跨洋干散货航次，覆盖 Handysize、Supramax、Panamax 等不同运力需求。</p></article>
+          <article class="service-card"><span class="service-index">02</span><h3>木材运输专长</h3><p>积累西非、南美东岸及大洋洲至中国、越南、印度等市场的原木与锯材运输经验。</p></article>
+          <article class="service-card"><span class="service-index">03</span><h3>矿产与能源货物</h3><p>服务铁矿石、煤炭、熟料、石膏、矿物及镍生铁等工业供应链运输。</p></article>
+          <article class="service-card"><span class="service-index">04</span><h3>钢材与项目货</h3><p>承运钢材、机械设备及其他一般货物，结合港口条件与货物特性制定执行方案。</p></article>
+          <article class="service-card"><span class="service-index">05</span><h3>农产品与袋装货</h3><p>覆盖粮食、木薯、袋装大米、袋装水泥及肥料等货种的区域运输需求。</p></article>
+          <article class="service-card"><span class="service-index">06</span><h3>航次与期租方案</h3><p>提供 TCT、单航次、多航次及短中长期 period 运营方案，提升运力配置效率。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="company-section white">
+      <div class="company-inner">
+        <div class="section-heading">
+          <p class="section-kicker">Cargo Experience</p>
+          <h2>来自实际运输场景的货物经验</h2>
+          <p class="section-copy">附件中的真实作业照片展示了公司资料所覆盖的木材、钢材、设备、金属及袋装货物场景。</p>
+        </div>
+        <div class="cargo-gallery">
+          <figure class="cargo-figure"><img src="/assets/company/deck-log-cargo.webp" alt="甲板木材货物" loading="lazy"><figcaption>Logs · Timber Cargo</figcaption></figure>
+          <figure class="cargo-figure"><img src="/assets/company/steel-cargo.webp" alt="船舱内钢管货物" loading="lazy"><figcaption>Steel Products</figcaption></figure>
+          <figure class="cargo-figure"><img src="/assets/company/industrial-cargo.webp" alt="大型工业设备装船" loading="lazy"><figcaption>Industrial Equipment</figcaption></figure>
+          <figure class="cargo-figure"><img src="/assets/company/metal-cargo.webp" alt="船舱内金属货物" loading="lazy"><figcaption>Metal Cargo</figcaption></figure>
+          <figure class="cargo-figure"><img src="/assets/company/bagged-cargo.webp" alt="船舱内袋装货物" loading="lazy"><figcaption>Bagged Cargo</figcaption></figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="company-section dark">
+      <div class="company-inner network-grid">
+        <div class="section-heading">
+          <p class="section-kicker">Trade Network</p>
+          <h2>从资源产地连接远东需求市场</h2>
+          <p class="section-copy network-copy">
+            公司资料显示，Mandarine Ocean 在木材和区域干散货运输方面形成了跨西非、南美东岸、
+            大洋洲与东南亚的业务经验，并长期服务中国及远东市场。
+          </p>
+          <div class="network-list">
+            <div class="network-row"><strong>West Africa</strong><span>Cameroon · Gabon · Liberia · Equatorial Guinea</span></div>
+            <div class="network-row"><strong>East Coast South America</strong><span>Suriname · Brazil · Uruguay</span></div>
+            <div class="network-row"><strong>Oceania & Southeast Asia</strong><span>Papua New Guinea · Solomon Islands · Indonesia · Vietnam · Thailand</span></div>
+            <div class="network-row"><strong>Destination Markets</strong><span>China · Vietnam · India · Far East</span></div>
           </div>
         </div>
-      `).join("");
-    }
+        <img class="network-image" src="/assets/company/hero-log-cargo.webp" alt="木材货物海上运输" loading="lazy">
+      </div>
+    </section>
 
-    function renderIronOre(data) {
-      document.getElementById("oreToday").textContent = fmt(data?.today?.value);
-      document.getElementById("oreMeta").innerHTML = `Previous ${fmt(data?.yesterday?.value)} | Change ${coloredChange(data?.change_percent, "%", 2)} | ${maybe(data?.today?.date)}`;
-    }
-
-    function renderBoc(data) {
-      document.getElementById("bocPrice").textContent = fmt(data?.conversion_price);
-      document.getElementById("bocMeta").textContent = `Spot Buy ${fmt(data?.spot_buy)} | Spot Sell ${fmt(data?.spot_sell)} | ${maybe(data?.published_at)} ${maybe(data?.published_time)}`;
-    }
-
-    function renderForex(data) {
-      const order = ["DINIW", "EURUSD", "GBPUSD", "USDCNY", "USDHKD", "USDJPY"];
-      document.getElementById("forexCards").innerHTML = order.map((key) => {
-        const item = data?.[key] || {};
-        return `
-          <div class="tile">
-            <div class="card-top">
-              <div>
-                <div class="mini-label">${maybe(item.title || key)}</div>
-                <div class="primary">${fmtForex(item.latest)}</div>
-              </div>
-              <div class="section-tag">4 Decimals</div>
-            </div>
-            <div class="metric-grid">
-              ${miniMetric("Open", item.open, fmtForex)}
-              ${miniMetric("Prev Close", item.previous_close, fmtForex)}
-              ${miniMetric("Vs Open", item.change_from_open, fmtForex, true, "", 4)}
-              ${miniMetric("Change %", item.change_percent_from_open, fmt, true, "%", 4)}
-            </div>
+    <section class="company-section white">
+      <div class="company-inner">
+        <div class="record-head">
+          <div class="section-heading">
+            <p class="section-kicker">Selected Fixtures</p>
+            <h2>2024 年参考成交记录</h2>
+            <p class="section-copy">选取附件中最近一年的部分船舶与货运记录，用于展示业务覆盖和执行经验。</p>
           </div>
-        `;
-      }).join("");
-    }
-
-    function renderCbfi(data) {
-      const root = document.getElementById("cbfiRoot");
-      const dateNode = document.getElementById("cbfiDate");
-      if (!data || data.error) {
-        dateNode.textContent = "暂无数据";
-        root.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI 快照暂不可用。"}</div>`;
-        return;
-      }
-
-      const overview = data.overview || {};
-      dateNode.textContent = `${maybe(data.previous_date)} -> ${maybe(data.current_date)}`;
-      const highlights = (data.highlights || []).slice(0, 6);
-      const routes = data.routes || [];
-
-      root.innerHTML = `
-        <div class="cards-4">
-          <div class="tile soft">
-            <div class="mini-label">Current Composite</div>
-            <div class="primary">${fmt(overview.current)}</div>
-            <div class="secondary">${maybe(overview.route)} | Previous ${fmt(overview.previous)} | ${coloredChange(overview.change_percent, "%", 2)}</div>
-          </div>
-          ${highlights.map((item, idx) => `
-            <div class="tile soft">
-              <div class="mini-label">${maybe(item.route)}</div>
-              <div class="primary">${fmt(item.current)}</div>
-              <div class="secondary">${maybe(item.ship_type)} | Previous ${fmt(item.previous)} | ${coloredChange(item.change_percent, "%", 2)}</div>
-            </div>
-          `).join("")}
+          <div class="record-stat"><strong>98</strong><span>附件累计参考记录</span></div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Lane</th>
-                <th>Vessel Size</th>
-                <th>Previous</th>
-                <th>Current</th>
-                <th>Change %</th>
-              </tr>
-            </thead>
+        <div class="fixture-table-wrap">
+          <table class="fixture-table">
+            <thead><tr><th>船舶</th><th>DWT</th><th>航线 / 方式</th><th>货种</th><th>时间</th></tr></thead>
             <tbody>
-              ${routes.map((item, idx) => `
-                <tr>
-                  <td>${maybe(item.route)}</td>
-                  <td>${maybe(item.ship_type)}</td>
-                  <td>${fmt(item.previous)}</td>
-                  <td>${fmt(item.current)}</td>
-                  <td>${coloredChange(item.change_percent, "%", 2)}</td>
-                </tr>
-              `).join("")}
+              <tr><td>MV Chang Ning</td><td>22,500</td><td>China to Vietnam</td><td>Gypsum</td><td>Mar / Apr 2024</td></tr>
+              <tr><td>MV Pu An Tong</td><td>81,603</td><td>Australia to China</td><td>Iron Ore</td><td>Jul 2024</td></tr>
+              <tr><td>MV Pansolar</td><td>76,343</td><td>Indonesia to China</td><td>Coal</td><td>Aug 2024</td></tr>
+              <tr><td>MV Navi Sunny</td><td>17,556</td><td>One-year period</td><td>Period Charter</td><td>Oct 2024</td></tr>
+              <tr><td>MV DD Viligant</td><td>26,550</td><td>China to Southeast Asia</td><td>Fertilizer</td><td>Nov 2024</td></tr>
+              <tr><td>MV Egret Oasis</td><td>76,028</td><td>Indonesia to China</td><td>Coal</td><td>Nov 2024</td></tr>
+              <tr><td>MV Aom Julia</td><td>76,662</td><td>Indonesia to China</td><td>Coal</td><td>Dec 2024</td></tr>
+              <tr><td>MV Candour 8</td><td>28,274</td><td>West Africa to Vietnam</td><td>Logs</td><td>Dec 2024</td></tr>
             </tbody>
           </table>
         </div>
-      `;
-    }
+        <p class="source-note">资料来源：Mandarine Ocean Ltd - BG and Fixtures 2024。以上为历史参考记录，不构成实时运价或承运承诺。</p>
+      </div>
+    </section>
 
-    function renderBunker(rows, meta = {}) {
-      const list = rows || [];
-      const note = document.getElementById("bunkerNote");
-      if (meta.error && list.length) {
-        note.textContent = "BunkerIndex 暂时连接失败，已使用最近可用快照；舟山价格会单独刷新。";
-      } else if (meta.error) {
-        note.textContent = "燃油价格源暂时不可用，正在等待下次云端刷新。";
-      } else {
-        note.textContent = "含舟山及主要港口最新可用燃油价格";
-      }
-      if (!list.length) {
-        document.getElementById("bunkerTable").innerHTML = `<tr><td colspan="6">暂无燃油价格数据，正在等待下次刷新。</td></tr>`;
-        return;
-      }
-      document.getElementById("bunkerTable").innerHTML = list.map((row) => `
-        <tr>
-          <td>${maybe(row.port)}</td>
-          <td>${maybe(row.country)}</td>
-          <td>${formatCell(row.ifo380)}</td>
-          <td>${formatCell(row.vlsfo)}</td>
-          <td>${formatCell(row.mgo)}</td>
-          <td>${maybe(row.date)}</td>
-        </tr>
-      `).join("");
-    }
+    <section class="company-section" id="intelligence">
+      <div class="company-inner">
+        <div class="section-heading">
+          <p class="section-kicker">Shipping Intelligence</p>
+          <h2>三个市场工具，支持更快判断</h2>
+          <p class="section-copy">进入实时数据项目，查看市场方向、全球航线与现货租金变化。</p>
+        </div>
+        <div class="project-grid">
+          <a class="project-card" href="/market-overview"><img src="/assets/company/metal-cargo.webp" alt="市场总览" loading="lazy"><span class="project-content"><span class="project-label">Market Overview</span><h3>市场总览</h3><p>航运指数、能源、汇率、铁矿与港口燃油价格集中展示。</p><span class="project-action">进入项目</span></span></a>
+          <a class="project-card" href="/map-data"><img src="/assets/company/port-log-cargo.webp" alt="航线地图" loading="lazy"><span class="project-content"><span class="project-label">Route Intelligence</span><h3>航线地图</h3><p>按航线族、指数和路线代码查看 Baltic 全球航线与价格联动。</p><span class="project-action">进入项目</span></span></a>
+          <a class="project-card" href="/route-rentals-v3"><img src="/assets/company/grab-loading.webp" alt="航线租金" loading="lazy"><span class="project-content"><span class="project-label">Spot Freight</span><h3>航线租金</h3><p>比较现货租金、船型强弱与独立 Dry FFA 远期参考。</p><span class="project-action">进入项目</span></span></a>
+        </div>
+      </div>
+    </section>
 
-    let dashboardLoading = false;
-    let dashboardSignature = "";
+    <section class="company-section white" id="contact">
+      <div class="company-inner contact-grid">
+        <div class="section-heading">
+          <p class="section-kicker">Chartering Contact</p>
+          <h2>与我们的租船团队联系</h2>
+          <p class="section-copy">针对干散货、木材、矿产、钢材、项目货及期租需求，欢迎提供货物、装卸港、受载期和数量信息。</p>
+        </div>
+        <div class="contact-block">
+          <div class="contact-label">Email</div>
+          <div class="contact-value"><a href="mailto:chartering@moshipping.com">chartering@moshipping.com</a></div>
+          <div class="contact-label" style="margin-top:24px">Registered Address</div>
+          <div class="contact-value">Trust Company Complex, Ajeltake Road, Ajeltake Island, Majuro, Republic of the Marshall Islands, MH 96960</div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    function dashboardPayloadSignature(payload) {
-      return [
-        payload?.timestamp_beijing || payload?.timestamp || "",
-        payload?.source_message?.gmail_message_id || "",
-        payload?.source_message?.synced_at || ""
-      ].join("|");
-    }
-
-    async function loadDashboard(options = {}) {
-      if (dashboardLoading) return;
-      const background = Boolean(options.background);
-      dashboardLoading = true;
-      const btn = document.getElementById("refreshBtn");
-      btn.disabled = true;
-      try {
-        const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
-        const payload = await response.json();
-        const incomingSignature = dashboardPayloadSignature(payload);
-        const checkedAt = new Date();
-        const statusTime = payload.timestamp_beijing || payload.timestamp;
-        const statusDate = new Date(statusTime);
-        const ageMinutes = (checkedAt.getTime() - statusDate.getTime()) / 60000;
-        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
-        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
-        const snapshotChanged = Boolean(
-          background && dashboardSignature && incomingSignature !== dashboardSignature
-        );
-        if (background && !snapshotChanged) {
-          document.getElementById("refreshMeta").textContent =
-            `后台检查完成；当前数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
-          return;
-        }
-        const scrollX = window.scrollX;
-        const scrollY = window.scrollY;
-        dashboardSignature = incomingSignature;
-        renderShippingIndices(payload.baltic);
-        renderCrude(payload.crude);
-        renderIronOre(payload.iron_ore);
-        renderBoc(payload.boc_usd);
-        renderForex(payload.forex);
-        renderCbfi(payload.cbfi);
-        renderBunker(payload.bunker_index?.ports || [], payload.bunker_index || {});
-        document.getElementById("refreshMeta").textContent = snapshotChanged
-          ? `已静默更新到数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}；阅读位置保持不变。`
-          : Number.isFinite(ageMinutes) && ageMinutes > STALE_AFTER_MS / 60000
-            ? `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，已超过 ${Math.round(ageMinutes)} 分钟，等待云端下一次生成。下次检查：${nextCheck} 北京时间。`
-            : `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
-        if (snapshotChanged) {
-          requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
-        }
-      } catch (error) {
-        document.getElementById("lastUpdated").textContent = "加载失败";
-        document.getElementById("refreshMeta").textContent = `Error: ${error}`;
-      } finally {
-        btn.disabled = false;
-        dashboardLoading = false;
-      }
-    }
-
-    document.getElementById("refreshBtn").addEventListener("click", async () => {
-      const scrollX = window.scrollX;
-      const scrollY = window.scrollY;
-      await loadDashboard();
-      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
-    });
-    window.addEventListener("focus", () => loadDashboard({ background: true }));
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden) loadDashboard({ background: true });
-    });
-    loadDashboard();
-    setInterval(() => loadDashboard({ background: true }), AUTO_REFRESH_MS);
-  </script>
+  <footer class="company-footer">
+    <div class="company-inner footer-row">
+      <strong>Mandarine Ocean Ltd</strong>
+      <span>Global Dry Bulk Shipping · Professional Vessel Operations</span>
+    </div>
+  </footer>
 </body>
 </html>

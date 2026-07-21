@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, redirect, render_template
 
 from data.dashboard_service import ShippingDashboardService
 from data.gmail_service import GmailShippingDataService
@@ -40,7 +40,12 @@ def index():
 
 @app.route("/shipping-data")
 def shipping_data_page():
-    return render_template("shipping_data.html")
+    return redirect("/market-overview", code=302)
+
+
+@app.route("/market-overview")
+def market_overview_page():
+    return render_template("market_overview.html")
 
 
 @app.route("/map-data")
