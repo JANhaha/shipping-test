@@ -445,13 +445,6 @@ body.page-company {
   font-weight: 800;
 }
 
-.source-note {
-  margin-top: 14px;
-  color: var(--company-muted);
-  font-size: 11px;
-  line-height: 1.6;
-}
-
 .project-grid {
   margin-top: 38px;
   display: grid;
@@ -529,32 +522,62 @@ body.page-company {
   font-weight: 800;
 }
 
+.contact-section {
+  background: #eaf1ef;
+  border-top: 1px solid var(--company-line);
+}
+
 .contact-grid {
-  align-items: start;
+  align-items: center;
 }
 
-.contact-block {
-  padding-top: 4px;
+.contact-directory {
+  border-top: 2px solid var(--company-deep);
+  border-bottom: 1px solid var(--company-line);
 }
 
-.contact-label {
-  color: var(--company-orange);
-  font-size: 11px;
+.contact-directory-head,
+.contact-person {
+  display: grid;
+  grid-template-columns: minmax(120px, 0.65fr) minmax(0, 1.35fr);
+  gap: 20px;
+  align-items: center;
+}
+
+.contact-directory-head {
+  padding: 11px 16px;
+  color: var(--company-muted);
+  background: rgba(255, 255, 255, 0.42);
+  font-size: 10px;
   font-weight: 850;
   text-transform: uppercase;
 }
 
-.contact-value {
-  margin-top: 8px;
+.contact-person {
+  min-height: 68px;
+  padding: 14px 16px;
+  border-top: 1px solid var(--company-line);
   color: var(--company-ink);
-  font-size: 15px;
-  line-height: 1.8;
+  text-decoration: none;
+  transition: color 0.16s ease, background 0.16s ease;
 }
 
-.contact-value a {
+.contact-person:hover {
   color: var(--company-sea);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.contact-name {
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.contact-email {
+  min-width: 0;
+  color: var(--company-sea);
+  font-size: 14px;
   font-weight: 800;
-  text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
 .company-footer {
@@ -708,6 +731,16 @@ body.page-company {
   .record-head,
   .footer-row {
     display: grid;
+  }
+
+  .contact-directory-head,
+  .contact-person {
+    grid-template-columns: 1fr;
+    gap: 5px;
+  }
+
+  .contact-directory-head span:last-child {
+    display: none;
   }
 
   .record-stat {

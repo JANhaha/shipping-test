@@ -74,6 +74,22 @@ class AppSmokeTest(unittest.TestCase):
         self.assertEqual(html.count('class="project-card"'), 3)
         self.assertNotIn("航运数据", html)
         self.assertIn("Mandarine Ocean Ltd", html)
+        for forbidden in (
+            "资料来源",
+            "历史参考记录",
+            "承运承诺",
+            "Registered Address",
+            "Trust Company Complex",
+            "公司资料显示",
+            "附件",
+        ):
+            self.assertNotIn(forbidden, html)
+        for email in (
+            "daisy@moshipping.com",
+            "kira@moshipping.com",
+            "charlie@moshipping.com",
+        ):
+            self.assertIn(email, html)
 
     def test_api_responses_disable_cache(self):
         with app.test_client() as client:
