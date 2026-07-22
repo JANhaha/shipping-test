@@ -10,6 +10,38 @@
 
 
 
+
+## 2026-07-22 18:01 +0800 - 修复 Gmail 数据更新失败与健康检查误报
+
+触发来源：gmail.refresh.recovered
+
+用户需求：
+- 定位并修复 Gmail refresh token 失效导致的更新失败邮件，恢复授权并让可降级场景不再错误标记整条任务失败。
+
+完成内容：
+- 复现 invalid_grant；重新完成 Gmail OAuth 并同步 GMAIL_TOKEN_JSON；新增可测试的刷新健康检查脚本；REQUIRE_GMAIL_SYNC=false 时保留缓存并发出 warning，true 时继续严格失败；手动执行 30 天全量刷新。
+
+关键文件：
+- .github/workflows/update-shipping-data.yml
+- scripts/check_refresh_health.py
+- tests/test_refresh_health.py
+- docs/data/shipping_data.json
+- docs/data/map_data.json
+- docs/data/dashboard.json
+- docs/data/refresh_status.json
+
+验证：
+- 14 项 unittest 全部通过；Update Shipping Data 运行 29909986217 成功并读取 16 封邮件；Pages 运行 29910073359 成功；正式站点 gmail_sync_ok=true，更新时间 2026-07-22 17:58，来源邮件为 SSY SINGAPORE REPORT- 22 JULY 2026。
+
+发布状态：
+- 修复提交 db38e0d 与数据提交 e543a3f 已进入 stable，GitHub Pages 发布成功。
+
+风险与待办：
+- 如 Google Cloud OAuth consent screen 仍处于 Testing，refresh token 仍可能周期性失效；本次已避免失效时持续发送失败邮件，但长期应确认应用发布状态。
+
+下次接手提示：
+- 在 Google Cloud Console 确认 OAuth 应用处于 Production，并观察后续定时任务连续成功。
+
 ## 2026-07-21 13:56 +0800 - 优化公司官网文案与租船联系方式
 
 触发来源：site.homepage.refined
