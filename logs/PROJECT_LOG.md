@@ -11,6 +11,33 @@
 
 
 
+
+## 2026-07-24 13:45 +0800 - 恢复本机浏览器访问公司网站
+
+触发来源：site.access.recovered
+
+用户需求：
+- 排查网站打不开问题，确认站点服务正常并修复 Edge 经系统代理访问时的连接关闭故障。
+
+完成内容：
+- 核验 DNS、HTTPS 与 GitHub Pages 均正常；复现 Edge ERR_CONNECTION_CLOSED；确认系统代理为 Clash 127.0.0.1:7897；为 mandarineocean.cn 增加直连例外、刷新 DNS 与 WinINet 设置，并重启 Edge 网络子进程而不关闭标签页。
+
+关键文件：
+- Windows Internet Settings ProxyOverride
+- Edge NetworkService
+
+验证：
+- www 域名返回 HTTP 200，裸域名正确跳转；IPv4 直连和代理 curl 均返回 200；Edge 实际打开首页成功，标题和 3 个项目入口正常，页面控制台无错误。
+
+发布状态：
+- 网站端无需代码回滚或重新部署；最近 Update Shipping Data 与 Pages 发布均为 success。
+
+风险与待办：
+- 该修复只调整本机代理绕过列表，不影响网站线上内容；GitHub Pages 在部分网络环境仍可能存在跨境链路波动。
+
+下次接手提示：
+- 继续观察访问延迟；如需要面向中国大陆长期稳定访问，应迁移至带中国线路的对象存储或 CDN。
+
 ## 2026-07-22 18:01 +0800 - 修复 Gmail 数据更新失败与健康检查误报
 
 触发来源：gmail.refresh.recovered
