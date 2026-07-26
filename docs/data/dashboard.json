@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-07-26T04:47:16.886271",
-  "timestamp_beijing": "2026-07-26T12:47:16.886274+08:00",
+  "timestamp": "2026-07-26T07:28:02.428655",
+  "timestamp_beijing": "2026-07-26T15:28:02.428657+08:00",
   "date_beijing": "2026-07-26",
   "refresh_interval_minutes": 5,
   "source_message": {
     "gmail_message_id": "19f91f4c83f43989",
     "subject": "SSY SINGAPORE REPORT- 24 JULY 2026",
     "received_at": "2026-07-24T10:25:35+08:00",
-    "synced_at": "2026-07-26T12:46:31.242758+08:00"
+    "synced_at": "2026-07-26T15:26:33.722410+08:00"
   },
   "baltic": {
     "data": [
@@ -86,7 +86,9 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-07-26T04:47:14.748600"
+    "updated_at": "2026-07-26T07:28:02.427449",
+    "note": "HiFleet live fetch failed, showing last successful snapshot: HTTPSConnectionPool(host='www.hifleet.com', port=443): Max retries exceeded with url: /shipdetail/getBalticexchangeToTable (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='www.hifleet.com', port=443): Read timed out. (read timeout=15)\"))",
+    "fallback": true
   },
   "cbfi": {
     "name": "China Coastal Bulk Freight Index",
@@ -279,7 +281,7 @@
     "previous_date": "2026-07-17",
     "current_date": "2026-07-24",
     "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
-    "updated_at": "2026-07-26T04:47:15.143508"
+    "updated_at": "2026-07-26T07:27:17.370177"
   },
   "crude": {
     "cl": {
@@ -292,7 +294,7 @@
       "change_percent_from_open": 0.2774,
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:14.920000"
+      "updated_at": "2026-07-26T07:27:16.702594"
     },
     "oil": {
       "code": "OIL",
@@ -304,7 +306,7 @@
       "change_percent_from_open": 0.1875,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:14.921358"
+      "updated_at": "2026-07-26T07:27:16.703213"
     }
   },
   "iron_ore": {
@@ -319,7 +321,7 @@
     },
     "change_percent": -0.19,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-07-26T04:47:13.983926"
+    "updated_at": "2026-07-26T07:27:17.371980"
   },
   "boc_usd": {
     "currency": "美元",
@@ -331,7 +333,7 @@
     "published_at": "2026/07/26 10:30:00",
     "published_time": "10:30:00",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-07-26T04:47:16.649332"
+    "updated_at": "2026-07-26T07:27:18.095338"
   },
   "forex": {
     "DINIW": {
@@ -344,7 +346,7 @@
       "change_percent_from_open": 0.0306,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:14.897048"
+      "updated_at": "2026-07-26T07:27:16.701982"
     },
     "EURUSD": {
       "code": "EURUSD",
@@ -356,7 +358,7 @@
       "change_percent_from_open": -0.0352,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:14.922971"
+      "updated_at": "2026-07-26T07:27:16.708144"
     },
     "GBPUSD": {
       "code": "GBPUSD",
@@ -368,7 +370,7 @@
       "change_percent_from_open": 0.0902,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:14.920972"
+      "updated_at": "2026-07-26T07:27:16.708563"
     },
     "USDCNY": {
       "code": "USDCNY",
@@ -380,7 +382,7 @@
       "change_percent_from_open": -0.0856,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:14.900790"
+      "updated_at": "2026-07-26T07:27:16.850099"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -392,7 +394,7 @@
       "change_percent_from_open": 0.0,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:15.383620"
+      "updated_at": "2026-07-26T07:27:16.850626"
     },
     "USDJPY": {
       "code": "USDJPY",
@@ -404,7 +406,7 @@
       "change_percent_from_open": 0.0061,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-07-26T04:47:15.098551"
+      "updated_at": "2026-07-26T07:27:16.851038"
     }
   },
   "bunker_index": {
@@ -488,7 +490,7 @@
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-07-26T04:47:16.884974",
+    "updated_at": "2026-07-26T07:27:19.166465",
     "fallback_used": false,
     "fallback_source": null,
     "error": null
