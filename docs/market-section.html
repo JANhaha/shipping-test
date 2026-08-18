@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>航运数据 | Mandarine Ocean</title>
+  <style>
+    :root{
+      --bg:#f4ede5;
+      --panel:rgba(255,255,255,.94);
+      --panel-strong:#fffdfa;
+      --ink:#17262d;
+      --muted:#667983;
+      --line:rgba(18,46,58,.12);
+      --accent:#0b5969;
+      --accent-2:#d18a2d;
+      --accent-soft:#eef6f8;
+      --up:#00b050;
+      --down:#ff3b30;
+      --shadow:0 20px 44px rgba(20,36,43,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(11,89,105,.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(209,138,45,.11), transparent 24%),
+        linear-gradient(180deg,#f8f3ec,#efe6dc 42%, #f4ede5 100%);
+    }
+    .shell{max-width:1080px;margin:0 auto;padding:24px 16px 52px}
+    .panel-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+    .span-12{grid-column:span 12}
+    .stats-grid,.cards-4{display:grid;gap:16px}
+    .stats-grid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:18px}
+    .cards-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .tile{padding:18px;background:var(--panel-strong);border:1px solid var(--line);box-shadow:none}
+    .tile.soft{background:linear-gradient(180deg,rgba(11,89,105,.05),rgba(11,89,105,.015))}
+    .code{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+    .primary{margin-top:8px;font-size:32px;line-height:1.05;font-weight:800}
+    .secondary{margin-top:6px;color:var(--muted);font-size:13px}
+    .metric-label,.meta,.mini-label{color:var(--muted);font-size:12px}
+    .metric-value{margin-top:8px;font-size:30px;line-height:1.05;font-weight:800}
+    .meta{line-height:1.7}
+    .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+    .toolbar-note{color:var(--muted);font-size:13px}
+    .dense-note{font-size:13px;color:var(--muted);line-height:1.7}
+    .section-tag{
+      display:inline-flex;align-items:center;gap:8px;padding:7px 12px;
+      border-radius:999px;background:var(--accent-soft);color:var(--accent);
+      font-size:12px;font-weight:700;
+    }
+    .release-meta{
+      text-align:right;color:var(--muted);font-size:12px;
+      line-height:1.8;letter-spacing:.04em;font-weight:700;
+    }
+    .view-switch{
+      display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;
+    }
+    .view-pill{
+      display:inline-flex;align-items:center;gap:6px;padding:8px 14px;
+      border-radius:999px;background:var(--panel-strong);border:1px solid var(--line);
+      color:var(--ink);font-size:13px;font-weight:700;text-decoration:none;
+    }
+    .view-pill[aria-current="true"]{
+      background:linear-gradient(135deg,var(--accent),#0f7b90);color:#fff;border-color:transparent;
+    }
+    .table-wrap{
+      overflow:auto;margin-top:16px;border-radius:18px;
+      border:1px solid var(--line);background:var(--panel-strong);
+    }
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+    th{background:rgba(11,89,105,.04);color:var(--muted);font-weight:700;position:sticky;top:0}
+    tr:hover td{background:#fbfdfe}
+    .up{color:var(--up);font-weight:800}
+    .down{color:var(--down);font-weight:800}
+    .warning{
+      padding:16px 18px;border-radius:18px;background:#fff3df;
+      border:1px solid rgba(188,108,37,.16);color:#8a4f16;
+    }
+    @media (max-width:760px){
+      .shell{padding:14px 10px 34px}
+      .stats-grid,.cards-4{grid-template-columns:1fr}
+      .primary,.metric-value{font-size:26px}
+      th,td{padding:10px 8px}
+    }
+  </style>
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260721r2">
+</head>
+<body class="page-market">
+  <header class="site-header">
+    <nav class="site-nav" aria-label="主导航">
+      <a class="brand-link" href="./">
+        <img class="brand-logo" src="./assets/company/logo.webp" alt="Mandarine Ocean">
+        <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Shipping Intelligence</small></span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="./">公司首页</a>
+        <a class="nav-link" href="./market-overview.html">市场总览</a>
+        <a class="nav-link" href="./route-rentals-v3.html">航线租金</a>
+      </div>
+      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
+    </nav>
+  </header>
+  <div class="shell">
+    <section class="hero">
+      <div class="hero-top">
+        <div>
+          <div class="eyebrow">Market Intelligence · UTC+8</div>
+          <h1 id="pageTitle">航运数据</h1>
+          <div class="subtitle" id="pageSubtitle"></div>
+        </div>
+        <div>
+          <div class="release-meta">MANDARINE OCEAN<br>MARKET DESK</div>
+          <div class="section-tag" style="margin-top:8px">5 分钟数据检查</div>
+        </div>
+      </div>
+      <div class="hero-grid">
+        <div class="hero-side">
+          <div class="metric-card">
+            <div class="metric-label">页面检查时间</div>
+            <div id="lastUpdated" class="metric-value">加载中</div>
+            <div class="meta" id="refreshMeta" style="margin-top:8px">正在读取最新发布数据</div>
+            <div class="toolbar">
+              <button id="refreshBtn" class="button" type="button">刷新数据</button>
+              <span class="toolbar-note">数据与市场总览同源</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav class="view-switch" aria-label="板块切换">
+        <a class="view-pill" data-view="indices" href="./market-section.html?view=indices">航运指数</a>
+        <a class="view-pill" data-view="cbfi" href="./market-section.html?view=cbfi">沿海运价</a>
+        <a class="view-pill" data-view="bunker" href="./market-section.html?view=bunker">港口油价</a>
+        <a class="view-pill" data-view="overview" href="./market-overview.html">市场总览</a>
+      </nav>
+    </section>
+
+    <div class="panel-grid">
+      <section class="panel span-12" id="contentPanel"></section>
+    </div>
+  </div>
+
+  <script>
+    const DATA_URL = "./data/dashboard.json";
+    const AUTO_REFRESH_MS = 5 * 60 * 1000;
+    const STALE_AFTER_MS = 15 * 60 * 1000;
+    const VIEWS = {
+      indices: {
+        title: "航运指数",
+        subtitle: "BDI / BCI / BPI / BSI / BHSI / BCTI / BDTI / BLNG / BLPG 每日波罗的海指数快照。",
+        eyebrow: "Shipping Indices"
+      },
+      cbfi: {
+        title: "沿海运价",
+        subtitle: "中国沿海散货运价指数（CBFI）：综合指数、重点航线与主要船型运价。",
+        eyebrow: "China Coastal Freight Index"
+      },
+      bunker: {
+        title: "港口油价",
+        subtitle: "全球主要港口（含舟山）最新 VLSFO / IFO380 / MGO 燃油价格。",
+        eyebrow: "Port Bunker Prices"
+      }
+    };
+    const BEIJING_TIME_FORMATTER = new Intl.DateTimeFormat("zh-CN", {
+      timeZone: "Asia/Shanghai",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    });
+    const fmt = (v, d = 2) => v === null || v === undefined || Number.isNaN(Number(v)) ? "-" : Number(v).toFixed(d);
+    const maybe = (v) => v === null || v === undefined || v === "" ? "-" : v;
+    const formatCell = (v) => {
+      if (v === null || v === undefined || v === "") return "-";
+      const num = Number(String(v).replace(/,/g, ""));
+      return Number.isNaN(num) ? String(v) : num.toFixed(2);
+    };
+    const coloredChange = (value, suffix = "", decimals = 2) => {
+      if (value === null || value === undefined || Number.isNaN(Number(value))) return "-";
+      const num = Number(value);
+      const cls = num >= 0 ? "up" : "down";
+      const sign = num >= 0 ? "+" : "";
+      return `<span class="${cls}">${sign}${num.toFixed(decimals)}${suffix}</span>`;
+    };
+
+    const params = new URLSearchParams(location.search);
+    const view = VIEWS[params.get("view")] ? params.get("view") : "indices";
+    const meta = VIEWS[view];
+    const panel = document.getElementById("contentPanel");
+
+    document.title = `${meta.title} | Mandarine Ocean`;
+    document.getElementById("pageTitle").textContent = meta.title;
+    document.getElementById("pageSubtitle").textContent = meta.subtitle;
+    document.querySelectorAll(".view-pill").forEach((el) => {
+      if (el.dataset.view === view) el.setAttribute("aria-current", "true");
+    });
+
+    function renderIndices(data) {
+      if (!data || data.error) {
+        panel.innerHTML = `<div class="warning">${maybe(data?.error) || "航运指数暂不可用。"}</div>`;
+        return;
+      }
+      panel.innerHTML = `
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">${meta.eyebrow}</div>
+            <h2>${meta.title}</h2>
+          </div>
+          <div class="dense-note">BDI / BCI / BPI / BSI / BHSI / BCTI / BDTI / BLNG / BLPG</div>
+        </div>
+        <div class="stats-grid">
+          ${(data.data || []).map((item) => `
+            <div class="tile">
+              <div class="code">${item.code}</div>
+              <div class="primary">${fmt(item.value)}</div>
+              <div class="secondary">${maybe(item.name)}</div>
+              <div class="secondary" style="margin-top:10px">${maybe(item.date)} | Daily ${coloredChange(item.daily_percent, "%", 2)}</div>
+            </div>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderCbfi(data) {
+      if (!data || data.error) {
+        panel.innerHTML = `<div class="warning">${maybe(data?.error) || "CBFI 快照暂不可用。"}</div>`;
+        return;
+      }
+      const overview = data.overview || {};
+      const highlights = (data.highlights || []).slice(0, 6);
+      const routes = data.routes || [];
+      panel.innerHTML = `
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">${meta.eyebrow}</div>
+            <h2>${meta.title}</h2>
+          </div>
+          <div class="dense-note">${maybe(data.previous_date)} → ${maybe(data.current_date)}</div>
+        </div>
+        <div class="cards-4">
+          <div class="tile soft">
+            <div class="mini-label">Current Composite</div>
+            <div class="primary">${fmt(overview.current)}</div>
+            <div class="secondary">${maybe(overview.route)} | Previous ${fmt(overview.previous)} | ${coloredChange(overview.change_percent, "%", 2)}</div>
+          </div>
+          ${highlights.map((item) => `
+            <div class="tile soft">
+              <div class="mini-label">${maybe(item.route)}</div>
+              <div class="primary">${fmt(item.current)}</div>
+              <div class="secondary">${maybe(item.ship_type)} | Previous ${fmt(item.previous)} | ${coloredChange(item.change_percent, "%", 2)}</div>
+            </div>
+          `).join("")}
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Lane</th>
+                <th>Vessel Size</th>
+                <th>Previous</th>
+                <th>Current</th>
+                <th>Change %</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${routes.map((item) => `
+                <tr>
+                  <td>${maybe(item.route)}</td>
+                  <td>${maybe(item.ship_type)}</td>
+                  <td>${fmt(item.previous)}</td>
+                  <td>${fmt(item.current)}</td>
+                  <td>${coloredChange(item.change_percent, "%", 2)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function renderBunker(rows, metaInfo = {}) {
+      const list = rows || [];
+      if (!list.length) {
+        panel.innerHTML = `<div class="warning">暂无燃油价格数据，正在等待下次刷新。</div>`;
+        return;
+      }
+      panel.innerHTML = `
+        <div class="panel-head">
+          <div>
+            <div class="eyebrow">${meta.eyebrow}</div>
+            <h2>${meta.title}</h2>
+          </div>
+          <div class="dense-note">${metaInfo.error ? "燃油价格源暂时不可用，已使用最近可用快照。" : "含舟山及主要港口最新可用燃油价格"}</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Port</th>
+                <th>Country</th>
+                <th>IFO380</th>
+                <th>VLSFO</th>
+                <th>MGO</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${list.map((row) => `
+                <tr>
+                  <td>${maybe(row.port)}</td>
+                  <td>${maybe(row.country)}</td>
+                  <td>${formatCell(row.ifo380)}</td>
+                  <td>${formatCell(row.vlsfo)}</td>
+                  <td>${formatCell(row.mgo)}</td>
+                  <td>${maybe(row.date)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    let dashboardLoading = false;
+    let dashboardSignature = "";
+
+    function dashboardPayloadSignature(payload) {
+      return [
+        payload?.timestamp_beijing || payload?.timestamp || "",
+        payload?.source_message?.gmail_message_id || "",
+        payload?.source_message?.synced_at || ""
+      ].join("|");
+    }
+
+    async function loadDashboard(options = {}) {
+      if (dashboardLoading) return;
+      const background = Boolean(options.background);
+      dashboardLoading = true;
+      const btn = document.getElementById("refreshBtn");
+      btn.disabled = true;
+      try {
+        const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
+        const payload = await response.json();
+        const incomingSignature = dashboardPayloadSignature(payload);
+        const checkedAt = new Date();
+        const statusTime = payload.timestamp_beijing || payload.timestamp;
+        const statusDate = new Date(statusTime);
+        const ageMinutes = (checkedAt.getTime() - statusDate.getTime()) / 60000;
+        const nextCheck = BEIJING_TIME_FORMATTER.format(new Date(Date.now() + AUTO_REFRESH_MS));
+        document.getElementById("lastUpdated").textContent = `${BEIJING_TIME_FORMATTER.format(checkedAt)} 北京时间`;
+        const snapshotChanged = Boolean(background && dashboardSignature && incomingSignature !== dashboardSignature);
+        if (background && !snapshotChanged) {
+          document.getElementById("refreshMeta").textContent =
+            `后台检查完成；当前数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
+          return;
+        }
+        dashboardSignature = incomingSignature;
+        if (view === "indices") renderIndices(payload.baltic);
+        else if (view === "cbfi") renderCbfi(payload.cbfi);
+        else renderBunker(payload.bunker_index?.ports || [], payload.bunker_index || {});
+        document.getElementById("refreshMeta").textContent = snapshotChanged
+          ? `已静默更新到数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。`
+          : Number.isFinite(ageMinutes) && ageMinutes > STALE_AFTER_MS / 60000
+            ? `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}，已超过 ${Math.round(ageMinutes)} 分钟，等待云端下一次生成。下次检查：${nextCheck} 北京时间。`
+            : `页面刚检查完成；数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
+      } catch (error) {
+        document.getElementById("lastUpdated").textContent = "加载失败";
+        document.getElementById("refreshMeta").textContent = `Error: ${error}`;
+        panel.innerHTML = `<div class="warning">数据加载失败，请点击「刷新数据」重试。</div>`;
+      } finally {
+        dashboardLoading = false;
+        btn.disabled = false;
+      }
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", () => loadDashboard());
+    loadDashboard();
+    setInterval(() => loadDashboard({ background: true }), AUTO_REFRESH_MS);
+  </script>
+</body>
+</html>
