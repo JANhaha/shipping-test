@@ -1444,3 +1444,21 @@ tbody tr:hover td {
     width: min(100% - 20px, 740px);
   }
 }
+
+html.wechat-lock .nav-links,
+html.wechat-lock .nav-health,
+html.wechat-lock .hero-actions .company-button.secondary,
+html.wechat-lock #intelligence,
+html.wechat-lock .entry-grid,
+html.wechat-lock .project-grid,
+html.wechat-lock .view-pill {
+  display: none !important;
+}
+
+html.wechat-lock .brand-link {
+  pointer-events: none;
+}
+
+html.wechat-lock a {
+  cursor: default;
+}
