@@ -765,3 +765,18 @@ body.page-company {
     transition: none;
   }
 }
+
+.feedback-note {
+  margin: 22px 0 0;
+  padding: 14px 16px;
+  border-top: 1px solid var(--company-line);
+  color: var(--company-muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.feedback-note a {
+  color: var(--company-sea);
+  font-weight: 800;
+  text-decoration: none;
+}
