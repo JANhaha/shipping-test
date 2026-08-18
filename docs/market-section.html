@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-lock="always">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -87,21 +87,17 @@
       th,td{padding:10px 8px}
     }
   </style>
-  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260721r2">
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260818r2">
+  <script src="./assets/wechat-lock.js?v=20260818r2"></script>
 </head>
 <body class="page-market">
   <header class="site-header">
+    <div class="site-ops-note">公司网站运营维护：小编ANDY</div>
     <nav class="site-nav" aria-label="主导航">
-      <a class="brand-link" href="./">
+      <div class="brand-link" role="img" aria-label="Mandarine Ocean">
         <img class="brand-logo" src="./assets/company/logo.webp" alt="Mandarine Ocean">
         <span class="brand-copy"><strong>Mandarine Ocean</strong><small>Shipping Intelligence</small></span>
-      </a>
-      <div class="nav-links">
-        <a class="nav-link" href="./">公司首页</a>
-        <a class="nav-link" href="./market-overview.html">市场总览</a>
-        <a class="nav-link" href="./route-rentals-v3.html">航线租金</a>
       </div>
-      <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
     </nav>
   </header>
   <div class="shell">
@@ -130,12 +126,6 @@
           </div>
         </div>
       </div>
-      <nav class="view-switch" aria-label="板块切换">
-        <a class="view-pill" data-view="indices" href="./market-section.html?view=indices">航运指数</a>
-        <a class="view-pill" data-view="cbfi" href="./market-section.html?view=cbfi">沿海运价</a>
-        <a class="view-pill" data-view="bunker" href="./market-section.html?view=bunker">港口油价</a>
-        <a class="view-pill" data-view="overview" href="./market-overview.html">市场总览</a>
-      </nav>
     </section>
 
     <div class="panel-grid">
@@ -378,5 +368,6 @@
     loadDashboard();
     setInterval(() => loadDashboard({ background: true }), AUTO_REFRESH_MS);
   </script>
+  <div class="legal-disclaimer">免责声明：本文仅代表小编Andy个人观点及个人市场搜集数据汇总，不代表漢洋海运/MANDARINE OCEAN立场，亦不构成任何投资或经营建议。</div>
 </body>
 </html>
