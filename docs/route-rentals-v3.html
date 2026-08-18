@@ -227,7 +227,7 @@
         <div>
           <div class="eyebrow">Mandarine Ocean · Spot Freight</div>
           <h1>航线租金</h1>
-          <div class="subtitle">按船型与路线判断 SSY/Baltic 现货租金强弱。Dry FFA 独立展示，仅作远期参考，不进入现货排行、均值或涨跌面。</div>
+          <div class="subtitle">按船型与路线判断现货租金强弱。Dry FFA 独立展示，仅作远期参考，不进入现货排行、均值或涨跌面。</div>
         </div>
         <div class="status-card">
           <div class="status-label">最新市场快照</div>
@@ -457,7 +457,7 @@
       document.getElementById("largestMove").className = `metric-value ${largest ? signClass(largest.changeNumber) : ""}`;
       document.getElementById("largestMoveMeta").textContent = largest ? `${largest.code} / ${largest.group}` : "-";
       document.getElementById("snapshotTime").textContent = `快照 ${timeText(payload.updated_at_beijing || payload.updated_at)}`;
-      document.getElementById("sourceMeta").textContent = `${maybe(payload.source_message?.subject)} | ${timeText(payload.source_message?.received_at)}`;
+      document.getElementById("sourceMeta").textContent = `漢洋海运 | ${timeText(payload.source_message?.received_at)}`;
       document.getElementById("heroStatus").textContent = `${routeRows.length} 条现货航线`;
       document.getElementById("chartMeta").textContent = `现货 ${routeRows.length} 条 / Dry FFA ${ffaRows.length} 条单独参考`;
     }
@@ -596,7 +596,7 @@
               <div><div class="sub">涨跌</div><div class="rent-value ${cls}">${esc(signedText(row.change))}</div></div>
             </div>
             <div class="bar-track"><div class="bar-fill ${cls}" style="width:${width}"></div></div>
-            <div class="meta" style="margin-top:10px">${esc(row.source)} | ${esc(timeText(row.receivedAt))}</div>
+            <div class="meta" style="margin-top:10px">${esc(timeText(row.receivedAt))}</div>
           </article>
         `;
       }).join("") || `<div class="empty">暂无可展示的航线租金数据。</div>`;
@@ -614,7 +614,7 @@
             <div class="route-code">${esc(row.code)}</div>
             <div>
               <div class="heat-route">${esc(row.route)}</div>
-              <div class="heat-sub">${esc(row.segment)} / ${esc(row.source)}</div>
+              <div class="heat-sub">${esc(row.segment)}</div>
               <div class="bar-track"><div class="bar-fill ${cls}" style="width:${width}"></div></div>
             </div>
             <div class="rent-value">${esc(maybe(row.value))}</div>
@@ -639,7 +639,7 @@
               <div><div class="sub">FFA 数值</div><div class="rent-value">${esc(maybe(row.value))}</div></div>
               <div><div class="sub">变动</div><div class="rent-value ${cls}">${esc(signedText(row.change))}</div></div>
             </div>
-            <div class="meta" style="margin-top:10px">${esc(row.source)} | ${esc(timeText(row.receivedAt))}</div>
+            <div class="meta" style="margin-top:10px">${esc(timeText(row.receivedAt))}</div>
           </article>
         `;
       }).join("") : `<div class="empty">本次数据中没有 Dry FFA 项。</div>`;
@@ -651,7 +651,7 @@
       document.getElementById("tableRoot").innerHTML = rows.length ? `
         <div class="table-wrap">
           <table>
-            <thead><tr><th>代码</th><th>航线</th><th>船型</th><th>最新租金</th><th>涨跌</th><th>来源</th><th>更新时间</th></tr></thead>
+            <thead><tr><th>代码</th><th>航线</th><th>船型</th><th>最新租金</th><th>涨跌</th><th>更新时间</th></tr></thead>
             <tbody>
               ${rows.map((row) => `<tr>
                 <td><strong>${esc(row.code)}</strong></td>
@@ -659,7 +659,6 @@
                 <td>${esc(row.group)}</td>
                 <td>${esc(maybe(row.value))}</td>
                 <td class="${signClass(row.changeNumber || 0)}">${esc(signedText(row.change))}</td>
-                <td>${esc(row.source)}</td>
                 <td>${esc(timeText(row.receivedAt))}</td>
               </tr>`).join("")}
             </tbody>
@@ -695,7 +694,7 @@
         if (background && !snapshotChanged) {
           document.getElementById("heroStatus").textContent = `${routeRows.length} 条现货航线`;
           document.getElementById("sourceMeta").textContent =
-            `页面已检查 ${BEIJING_TIME_FORMATTER.format(new Date())} | ${maybe(payload.source_message?.subject)} | 邮件 ${timeText(payload.source_message?.received_at)}`;
+            `页面已检查 ${BEIJING_TIME_FORMATTER.format(new Date())} | 漢洋海运 | 更新时间 ${timeText(payload.source_message?.received_at)}`;
           return;
         }
         const scrollX = window.scrollX;
@@ -712,7 +711,7 @@
         if (snapshotChanged) {
           document.getElementById("heroStatus").textContent = `已自动更新 · ${routeRows.length} 条现货`;
           document.getElementById("sourceMeta").textContent =
-            `地图快照 ${timeText(payload.updated_at_beijing || payload.updated_at)} | 来源 ${maybe(payload.source_message?.subject)} | 阅读位置保持不变`;
+            `地图快照 ${timeText(payload.updated_at_beijing || payload.updated_at)} | 漢洋海运 | 阅读位置保持不变`;
           requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
         }
       } catch (error) {
