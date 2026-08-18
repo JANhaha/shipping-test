@@ -4,7 +4,9 @@
   var params = new URLSearchParams(window.location.search);
   var isWechat =
     /MicroMessenger|WeChat|wxwork/i.test(navigator.userAgent) ||
-    params.get("wechat") === "1";
+    params.get("wechat") === "1" ||
+    params.get("lock") === "1" ||
+    document.documentElement.getAttribute("data-lock") === "always";
 
   if (!isWechat) {
     return;
