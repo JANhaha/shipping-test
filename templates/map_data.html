@@ -218,10 +218,12 @@
       #map{height:420px}
     }
   </style>
-  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260721r2">
+  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260818r2">
+  <script src="/assets/wechat-lock.js?v=20260818r2"></script>
 </head>
 <body class="page-map">
   <header class="site-header">
+    <div class="site-ops-note">公司网站运营维护：小编ANDY</div>
     <nav class="site-nav" aria-label="主导航">
       <a class="brand-link" href="/">
         <img class="brand-logo" src="/assets/company/logo.webp" alt="Mandarine Ocean">
@@ -528,10 +530,6 @@
           <div class="market-badge">
             <div class="label">Change</div>
             <div class="value ${signClass(marketData.change)}">${esc(maybe(marketData.change))}</div>
-          </div>
-          <div class="market-badge">
-            <div class="label">Source</div>
-            <div class="value" style="font-size:14px;line-height:1.25">${esc(maybe(marketData.source_report))}</div>
           </div>
         </div>
       `;
@@ -914,5 +912,6 @@
     loadData();
     setInterval(() => loadData({ background: true }), AUTO_REFRESH_MS);
   </script>
+  <div class="legal-disclaimer">免责声明：本文仅代表小编Andy个人观点及个人市场搜集数据汇总，不代表漢洋海运/MANDARINE OCEAN立场，亦不构成任何投资或经营建议。</div>
 </body>
 </html>
