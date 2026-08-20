@@ -12,6 +12,349 @@
 
 
 
+
+
+
+
+
+
+
+
+
+## 2026-08-20 10:45 +0800 - 修复网站不更新与缓存问题
+
+触发来源：site.refresh
+
+用户需求：
+- 网站看起来没有更新，要求排查并修复，确保页面显示最新数据。
+
+完成内容：
+- 排查确认数据管线正常：GitHub Actions 每 5 分钟成功运行，Gmail 同步正常，stable 分支数据已是 2026-08-20 最新报告。
+- 根因是 GitHub Pages/CDN 与浏览器缓存导致页面仍读取旧版本；为 11 个页面加入 no-cache meta，并将 CSS/JS 资源版本统一提升到 20260820r1。
+- 本地执行 full_refresh 成功同步 6 封邮件，最新源为 `SSY SINGAPORE REPORT- 20 AUG 2026`，静态数据于 10:40 重新生成。
+- 通过 GitHub API base64 二进制安全发布 18 个文件到 stable，提交 cfc9bbc92e6549c966b07bbd8d1addac402ea42f。
+
+关键文件：
+- docs/index.html、docs/wechat-home.html、docs/market-overview.html、docs/map-data.html、docs/route-rentals-v3.html、docs/market-section.html
+- docs/assets/ocean-ui.css、docs/assets/company.css、docs/assets/wechat-lock.js
+- docs/data/dashboard.json、docs/data/map_data.json、docs/data/refresh_status.json、docs/data/shipping_data.json
+- templates/ 下对应模板
+
+验证：
+- GitHub Pages 状态 built。
+- https://www.mandarineocean.cn/ 与 /market-overview.html、/map-data.html、/route-rentals-v3.html、/wechat-home.html 均返回 200。
+- 线上页面已包含 20260820r1、no-cache meta、小编ANDY维护注记和免责声明。
+- 线上 refresh_status 为 2026-08-20T10:40:43+08:00，dashboard/map_data 均指向 20 AUG 2026 报告，route_count 120、fallback false。
+- logo、CSS、wechat-lock.js 等资源均 200。
+
+发布状态：
+- stable 分支已更新，GitHub Pages 已构建完成。
+
+风险与待办：
+- GitHub Pages CDN 可能对最近更新的 HTML 仍缓存约 10 分钟；若浏览器仍显示旧版，请用强制刷新或带版本参数访问。
+- 数据文件继续由 5 分钟工作流自动更新，页面内使用时间戳参数拉取，避免浏览器复用旧 JSON。
+
+下次接手提示：
+- 若再次出现“网站没更新”，先看 https://www.mandarineocean.cn/data/refresh_status.json 与 GitHub Actions 最近一次运行，再判断是数据源还是缓存问题。
+
+## 2026-08-19 +0800 - 按最新航次表更新公司主页陈旧信息
+
+触发来源：site.content.update
+
+用户需求：
+- 根据最新 OcrmVoyagesContractEntity.xlsx 航次表更新公司主页陈旧信息，避免继续展示 2024/2025 旧航次和错误运力范围。
+
+完成内容：
+- 首页与微信主页统计条更新：98 → 230+，8.5K-81.6K → 24K-58K（对应公司自有船队载重吨范围）。
+- 近期业务实绩表替换为 2026 最新航次（Daisy / Ana / Cathy / Lucy / Joint Mandarine / Lily / Kira / Dina / Yu Ming），并修正 Novorossiysk 拼写。
+- 航线网络更新为西非、南美东岸、东南亚与大洋洲、欧洲与地中海、中东及印度洋等全球覆盖；远东市场网络改为全球航线网络。
+- 同步 docs/index.html、docs/wechat-home.html、templates/index.html、templates/wechat_home.html，并同步三个市场工具模板。
+
+验证：
+- 本地确认四个主页文件中无 98 / 8.5K / 81.6K / 远东市场等旧字段。
+- GitHub API 原子提交到 stable，提交 f417e19a6ec3cfe8ca60ab848d9ea8d988fb30e4。
+- 线上 https://www.mandarineocean.cn/ 与 /wechat-home.html 均返回 200，包含 230+、24K-58K、MV Yu Ming。
+
+发布状态：
+- stable 分支已更新，GitHub Pages 构建已触发。
+- 中文文件使用 base64 二进制安全方式发布。
+
+风险与待办：
+- 本地 Git 工作区仍保持未提交状态，与线上 stable 通过 API 发布保持一致即可；后续如需本地对齐需成功 fetch 后再处理。
+- 后续新航次表更新时继续以结束日期降序取最新航次替换业务实绩区。
+
+下次接手提示：
+- 公司主页实绩区改 docs/index.html、docs/wechat-home.html、templates/index.html、templates/wechat_home.html 四处同步。
+- 统计条口径：230+ 为航次表有效记录数，24K-58K 为公司自有船队载重吨范围。
+
+## 2026-08-18 17:30 +0800 - 新增微信主页落地页与小编反馈入口
+
+触发来源：site.content.update
+
+用户需求：
+- 新增公众号菜单可用的汉洋主页落地页，展示公司首页内容但不含三个市场工具跳转；首页联系租船团队下方增加公众号投稿与网站运维反馈邮箱。
+
+完成内容：
+- docs/wechat-home.html 与 templates/wechat_home.html 使用 data-lock=always 并移除导航、市场总览/航线地图/航线租金入口；docs/index.html 与 templates/index.html 增加小编ANDY反馈行，邮箱 deutjan@gmail.com；company.css 增加 feedback-note 样式。
+
+关键文件：
+- docs/wechat-home.html
+- templates/wechat_home.html
+- docs/index.html
+- templates/index.html
+- docs/assets/company.css
+
+验证：
+- GitHub Pages 构建 built；线上首页与 wechat-home.html 均返回 200，包含反馈邮箱与2014介绍，微信主页无 market-overview/map-data/route-rentals 链接。
+
+发布状态：
+- stable 分支已更新，微信菜单可使用 https://www.mandarineocean.cn/wechat-home.html
+
+风险与待办：
+- 项目内无公众号菜单 API 凭证，公众号后台菜单项需手动配置该链接。
+
+下次接手提示：
+- 在公众号后台自定义菜单中新增汉洋主页并指向 wechat-home.html
+
+## 2026-08-18 17:14 +0800 - 首页业务实绩精简为近期航次
+
+触发来源：site.content.update
+
+用户需求：
+- 按用户要求移除 2024 年旧航次，保留 2025-2026 近期航次，减少首页信息堆叠。
+
+完成内容：
+- docs/index.html 与 templates/index.html 业务实绩表现保留 Candour 8、Daisy Ocean、Lily Ocean、Cathy Ocean、Joint Mandarine、Lucy Ocean、Kira Ocean、Ana Ocean 等近期航次。
+
+关键文件：
+- docs/index.html
+- templates/index.html
+
+验证：
+- 线上 https://www.mandarineocean.cn/ 已确认无 MV Chang Ning / MV Pansolar 等 2024 旧记录，保留近期航次；Pages 构建状态 built。
+
+发布状态：
+- stable 分支已更新
+
+风险与待办：
+- 无
+
+下次接手提示：
+- 后续若 Excel 航次表更新，继续只补充近期航次
+
+## 2026-08-18 16:59 +0800 - 首页公司介绍与业务实绩更新
+
+触发来源：site.content.update
+
+用户需求：
+- 删除首页木材运输字样，更新为2014年上海7艘单层甲板重吊船中文介绍，并按Excel航次表补充近期业务实绩。
+
+完成内容：
+- 同步 docs/index.html 与 templates/index.html，按 OcrmVoyagesContractEntity.xlsx 补充 2024-2026 相关航次，仅保留与公司业务相关的新航次。
+
+关键文件：
+- docs/index.html
+- templates/index.html
+
+验证：
+- 线上 https://www.mandarineocean.cn/ 已显示2014年介绍、7艘重吊船及新增航次；已确认无木材运输字样；GitHub Pages 构建状态 built。
+
+发布状态：
+- stable 分支已更新 docs/index.html 与 templates/index.html
+
+风险与待办：
+- 无
+
+下次接手提示：
+- 后续航次表更新时继续同步业务实绩表
+
+## 2026-08-18 15:08 +0800 - 航运指数微信入口永久单页化
+
+触发来源：site.ui.update
+
+用户需求：
+- 用户反馈微信跳转仍可见导航和切换入口，原因是独立市场分栏页 market-section.html 未接入锁定且被桌面浏览器打开。现将该页改为永久锁定单页：移除顶部导航、品牌跳转和板块切换按钮，页面中不再存在任何可点击跳转链接。
+
+完成内容：
+- wechat-lock.js 增加 data-lock=always 与 ?lock=1 支持；market-section.html 标记 data-lock=always，导航与 view-switch 全部移除；其余正式页面升级锁定脚本版本。
+
+关键文件：
+- docs/assets/wechat-lock.js
+- docs/market-section.html
+- docs/index.html
+- docs/market-overview.html
+- docs/map-data.html
+- docs/route-rentals-v3.html
+- templates/index.html
+- templates/market_overview.html
+- templates/map_data.html
+- templates/route_rentals_v3.html
+
+验证：
+- node --check 通过；线上 market-section.html 仅剩 1 个 href（样式表），无任何 a 标签跳转；脚本支持永久锁定。
+
+发布状态：
+- 已通过 GitHub API 推送 stable，Pages 构建 32109772742 部署成功。
+
+风险与待办：
+- 普通浏览器打开 market-section.html 也会保持单页；如需市场总览等其它页面，仍使用市场总览、航线地图、航线租金正式页面。
+
+下次接手提示：
+- 继续查看本日志和最近 Git 变更。
+
+## 2026-08-18 14:53 +0800 - 微信阅读锁定：页面内只展示当前内容
+
+触发来源：site.ui.update
+
+用户需求：
+- 从微信打开网站时自动锁定当前页面，隐藏导航、首页项目入口和视图切换按钮，并拦截跳转到其他页面的点击，避免微信跳转后看到航线地图等其他内容。
+
+完成内容：
+- 新增 docs/assets/wechat-lock.js，微信 UA 或 ?wechat=1 时启用锁定；同步更新 docs 与 templates 所有正式页面及样式缓存版本。
+
+关键文件：
+- docs/assets/wechat-lock.js
+- docs/assets/ocean-ui.css
+- docs/index.html
+- docs/market-overview.html
+- docs/map-data.html
+- docs/route-rentals-v3.html
+- templates/index.html
+- templates/market_overview.html
+- templates/map_data.html
+- templates/route_rentals_v3.html
+- docs/market-section.html
+
+验证：
+- node --check 通过；线上 4 个正式页面均包含锁定脚本与新版 CSS，JS/CSS 静态资源返回 200。
+
+发布状态：
+- 已通过 GitHub API 推送 stable，Pages 构建 32108372532 部署成功。
+
+风险与待办：
+- 普通浏览器访问不受影响；如需强制预览微信模式，可在网址后追加 ?wechat=1。
+
+下次接手提示：
+- 继续查看本日志和最近 Git 变更。
+
+## 2026-08-18 14:42 +0800 - 全站添加运营维护标识与免责声明
+
+触发来源：site.ui.update
+
+用户需求：
+- 所有正式页面顶部增加「公司网站运营维护：小编ANDY」小字，底部增加指定免责声明，并刷新 CSS 缓存版本。
+
+完成内容：
+- 同步修改 docs 静态页与 Flask templates，统一使用 site-ops-note 与 legal-disclaimer 样式，保持公司官网风格且不引入多余宣传文字。
+
+关键文件：
+- docs/assets/ocean-ui.css
+- docs/index.html
+- docs/market-overview.html
+- docs/map-data.html
+- docs/route-rentals-v3.html
+- templates/index.html
+- templates/market_overview.html
+- templates/map_data.html
+- templates/route_rentals_v3.html
+- docs/market-section.html
+
+验证：
+- 线上 4 个正式页面均返回 200，且均包含顶部标识与免责声明；线上 CSS 已包含新样式。
+
+发布状态：
+- 已通过 GitHub API 推送 stable，Pages 构建 32107512942 部署成功。
+
+风险与待办：
+- 本地分支与 stable 仍有历史同步差异，属已知状态，不影响本次线上发布。
+
+下次接手提示：
+- 继续查看本日志和最近 Git 变更。
+
+## 2026-08-18 14:27 +0800 - 移除网站全部外部来源字样
+
+触发来源：site.content.cleanup
+
+用户需求：
+- 删除市场总览、航线地图、航线租金页面中的 SSY、来源、Source 字样，只保留 MANDARINE OCEAN / 漢洋海运
+
+完成内容：
+- 市场总览副标题改为最新市场快照；航线地图移除 Source 标签；航线租金移除 SSY/Baltic 说明、来源列、卡片来源信息和邮件主题，来源信息统一显示为漢洋海运；docs 与 templates 同步修改
+
+关键文件：
+- docs/market-overview.html
+- docs/map-data.html
+- docs/route-rentals-v3.html
+- templates/market_overview.html
+- templates/map_data.html
+- templates/route_rentals_v3.html
+
+验证：
+- 本地与 stable 三页 SSY=0、来源=0；live 页面 HTTP 200；route-rentals 页面含漢洋海运；Pages 构建 32106796837 success
+
+发布状态：
+- 已通过 GitHub API 更新 stable，线上已发布
+
+风险与待办：
+- 后续 Gmail 工作流仍会保留邮件主题等内部数据，但页面不再展示外部来源
+
+下次接手提示：
+- 继续观察页面刷新，若再出现 SSY 字样优先检查新增渲染逻辑是否重新引入 source_message.subject
+
+## 2026-08-18 11:08 +0800 - 恢复 Gmail 授权并刷新线上数据
+
+触发来源：gmail.refresh.recovered
+
+用户需求：
+- 确认 Gmail token 已过期或被撤销，重新完成 OAuth 授权并同步 GitHub Secret
+
+完成内容：
+- 最新工作流日志显示 Gmail token 已过期或被撤销；重新运行 gmail_oauth_setup.py 完成 OAuth，credentials/gmail_token.json 与 GMAIL_TOKEN_JSON 均已更新；本地实测可读取 8 封邮件；触发 30 天回溯工作流成功同步 22 封邮件
+
+关键文件：
+- credentials/gmail_token.json
+- GitHub Secret GMAIL_TOKEN_JSON
+- docs/data/refresh_status.json
+
+验证：
+- 本地 sync 成功；云端运行 32094203040 成功；线上 refresh_status.json gmail_sync_ok=true，last_attempt_at_beijing=2026-08-18T11:06:56+08:00；Gmail sync health check passed
+
+发布状态：
+- Update Shipping Data 已推送 stable，GitHub Pages 后续自动发布
+
+风险与待办：
+- Google Cloud OAuth consent screen 若仍为 Testing，refresh token 仍可能周期性失效；长期需发布为 Production
+
+下次接手提示：
+- 观察后续定时工作流；若再次 invalid_grant，优先检查 Google Cloud OAuth 发布状态
+
+## 2026-08-18 10:01 +0800 - 恢复公司官网本机访问
+
+触发来源：troubleshooting
+
+用户需求：
+- 排查并修复 Edge 经系统代理无法打开 www.mandarineocean.cn
+
+完成内容：
+- DNS/HTTPS/GitHub Pages 均正常；确认 Clash 代理链路 TLS 握手失败，系统代理白名单缺失；已加入 mandarineocean.cn 直连例外并写入 Clash Verge 持久配置，刷新 DNS 与 WinINet，重启 Edge 网络进程
+
+关键文件：
+- Windows Internet Settings ProxyOverride
+- Clash Verge verge.yaml
+- Edge NetworkService
+
+验证：
+- DNS 解析正常；直连 curl HTTP 200；Invoke-WebRequest HTTP 200；最新 Pages 构建 success；Edge 网络进程已重建
+
+发布状态：
+- 网站线上无需改动，www.mandarineocean.cn 在线
+
+风险与待办：
+- Clash 重启后需确认系统代理白名单仍保留；如仍有问题优先检查 Clash 侧直连规则
+
+下次接手提示：
+- 后续持续观察，若再出现打不开先看 ProxyOverride 是否被 Clash 覆盖
+
 ## 2026-07-24 13:45 +0800 - 恢复本机浏览器访问公司网站
 
 触发来源：site.access.recovered
