@@ -208,7 +208,7 @@
   </style>
   <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260820r1">
   <script src="./assets/wechat-lock.js?v=20260820r1"></script>
-  <script src="./assets/data-refresh.js?v=20261001r1"></script>
+  <script src="./assets/data-refresh.js?v=20261001r2"></script>
 </head>
 <body class="page-rentals">
   <header class="site-header">
@@ -681,7 +681,7 @@
     }
 
     async function loadData(options = {}) {
-      if (rentalLoading) return;
+      if (rentalLoading) return false;
       const background = Boolean(options.background);
       rentalLoading = true;
       const btn = document.getElementById("refreshBtn");
@@ -701,7 +701,7 @@
           document.getElementById("heroStatus").textContent = `${routeRows.length} 条现货航线`;
           document.getElementById("sourceMeta").textContent =
             `页面已检查 ${BEIJING_TIME_FORMATTER.format(new Date())} | 漢洋海运 | 更新时间 ${timeText(payload.source_message?.received_at)}`;
-          return;
+          return true;
         }
         const scrollX = window.scrollX;
         const scrollY = window.scrollY;
@@ -720,10 +720,12 @@
             `地图快照 ${timeText(payload.updated_at_beijing || payload.updated_at)} | 漢洋海运 | 阅读位置保持不变`;
           requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
         }
+        return true;
       } catch (error) {
         document.getElementById("heroStatus").textContent = "加载失败";
         document.getElementById("sourceMeta").textContent = String(error);
         document.getElementById("routeGrid").innerHTML = `<div class="empty">加载失败：${esc(String(error))}</div>`;
+        return false;
       } finally {
         if (!background) btn.disabled = false;
         rentalLoading = false;

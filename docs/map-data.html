@@ -223,7 +223,7 @@
   </style>
   <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260820r1">
   <script src="./assets/wechat-lock.js?v=20260820r1"></script>
-  <script src="./assets/data-refresh.js?v=20261001r1"></script>
+  <script src="./assets/data-refresh.js?v=20261001r2"></script>
 </head>
 <body class="page-map">
   <header class="site-header">
@@ -845,7 +845,7 @@
     }
 
     async function loadData(options = {}) {
-      if (dataLoading) return;
+      if (dataLoading) return false;
       const background = Boolean(options.background);
       dataLoading = true;
       const status = document.getElementById("status");
@@ -872,7 +872,7 @@
           status.textContent = nextPayload.error
             ? nextPayload.error
             : `后台检查完成 | 当前数据快照 ${boardTime} | 下次检查 ${nextCheck} 北京时间`;
-          return;
+          return true;
         }
         const scrollX = window.scrollX;
         const scrollY = window.scrollY;
@@ -893,10 +893,12 @@
         if (snapshotChanged) {
           requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
         }
+        return true;
       } catch (error) {
         status.textContent = `加载失败：${error.message}`;
         heroUpdatedAt.textContent = "加载失败";
         document.getElementById("tableRoot").innerHTML = `<div class="empty">加载失败：${esc(error.message)}</div>`;
+        return false;
       } finally {
         dataLoading = false;
       }

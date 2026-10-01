@@ -65,3 +65,39 @@ test("old snapshot cannot claim a newly requested refresh completed", () => {
   assert.equal(Boolean(ui.completed(status, { status: "queued" }, start)), false);
   assert.equal(Boolean(ui.completed(status, { run_id: "1" }, start)), true);
 });
+
+test("all production buttons use the shared cloud refresh, scripts parse", () => {
+  for (const page of ["map-data", "market-overview", "route-rentals-v3"]) {
+    const html = readFileSync(new URL(`../../docs/${page}.html`, import.meta.url), "utf8");
+    assert.match(html, /assets\/data-refresh.js/);
+    assert.match(html, /MandarineRefresh.attach\(/);
+    assert.doesNotMatch(html, /refreshBtn"\).addEventListener/);
+    for (const match of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)) {
+      if (match[1].trim()) new vm.Script(match[1]);
+    }
+  }
+});
+
+test("button waits past old status and reloads only after published completion", async () => {
+  let click, polls = 0, reloads = 0;
+  const notice = { style: {}, setAttribute() {} };
+  const button = { disabled: false, insertAdjacentElement() {}, addEventListener(event, fn) { click = fn; } };
+  const browser = vm.createContext({
+    Intl, Date, AbortSignal,
+    document: { getElementById: () => button, createElement: () => notice },
+    window: { addEventListener() {} },
+    setInterval() {}, setTimeout(fn) { fn(); },
+    async fetch(url, options) {
+      if (options.method === "POST") return Response.json({ status: "queued" });
+      polls++;
+      return Response.json({ gmail_sync_ok: true, last_attempt_at_beijing: polls < 3 ? "2020-01-01T00:00:00+08:00" : new Date(Date.now() + 1000).toISOString() });
+    },
+  });
+  vm.runInContext(readFileSync(new URL("../../docs/assets/data-refresh.js", import.meta.url), "utf8"), browser);
+  browser.MandarineRefresh.attach(async () => { reloads++; });
+  await click();
+  assert.ok(polls >= 3);
+  assert.equal(reloads, 1);
+  assert.equal(button.disabled, false);
+  assert.match(notice.textContent, /刷新完成/);
+});

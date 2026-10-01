@@ -52,7 +52,8 @@
           let status;
           try { status = await readStatus(); } catch { continue; }
           if (!completed(status, result, startedAt)) continue;
-          await reload({ background: true });
+          const loaded = await reload({ background: true });
+          if (loaded === false) throw new Error("云端同步已完成，但当前页面未能加载新快照，请重新打开页面");
           notice.textContent = status.gmail_sync_ok === true ? `刷新完成。${healthText(status)}` : healthText(status);
           verified = true;
           break;

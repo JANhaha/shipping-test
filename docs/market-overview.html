@@ -278,7 +278,7 @@
   </style>
   <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260820r1">
   <script src="./assets/wechat-lock.js?v=20260820r1"></script>
-  <script src="./assets/data-refresh.js?v=20261001r1"></script>
+  <script src="./assets/data-refresh.js?v=20261001r2"></script>
 </head>
 <body class="page-home page-market">
   <header class="site-header">
@@ -628,13 +628,14 @@
     }
 
     async function loadDashboard(options = {}) {
-      if (dashboardLoading) return;
+      if (dashboardLoading) return false;
       const background = Boolean(options.background);
       dashboardLoading = true;
       const btn = document.getElementById("refreshBtn");
       btn.disabled = true;
       try {
         const response = await fetch(`${DATA_URL}?ts=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json();
         const incomingSignature = dashboardPayloadSignature(payload);
         const checkedAt = new Date();
@@ -649,7 +650,7 @@
         if (background && !snapshotChanged) {
           document.getElementById("refreshMeta").textContent =
             `后台检查完成；当前数据快照 ${BEIJING_TIME_FORMATTER.format(statusDate)}。下次检查：${nextCheck} 北京时间。`;
-          return;
+          return true;
         }
         const scrollX = window.scrollX;
         const scrollY = window.scrollY;
@@ -669,9 +670,11 @@
         if (snapshotChanged) {
           requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
         }
+        return true;
       } catch (error) {
         document.getElementById("lastUpdated").textContent = "加载失败";
         document.getElementById("refreshMeta").textContent = `Error: ${error}`;
+        return false;
       } finally {
         btn.disabled = false;
         dashboardLoading = false;
