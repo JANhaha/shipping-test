@@ -30,17 +30,27 @@ def try_step(script_name: str) -> bool:
 
 
 def write_refresh_status(gmail_ready: bool, message: str) -> None:
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     now_beijing = datetime.now(BEIJING_TZ)
+    target = DATA_DIR / "refresh_status.json"
+    try:
+        previous = json.loads(target.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        previous = {}
+    last_success = previous.get("last_success_at_beijing")
+    if not last_success and previous.get("gmail_sync_ok"):
+        last_success = previous.get("last_attempt_at_beijing")
     payload = {
         "status": "ok" if gmail_ready else "warning",
         "gmail_sync_ok": gmail_ready,
         "message": message,
         "last_attempt_at": now.isoformat(),
         "last_attempt_at_beijing": now_beijing.isoformat(),
+        "last_success_at_beijing": now_beijing.isoformat() if gmail_ready else last_success,
+        "run_id": os.getenv("GITHUB_RUN_ID"),
+        "trigger": os.getenv("GITHUB_EVENT_NAME", "local"),
         "refresh_interval_minutes": int(os.getenv("DATA_REFRESH_INTERVAL_MINUTES", "5")),
     }
-    target = DATA_DIR / "refresh_status.json"
     target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"wrote {target}")
 

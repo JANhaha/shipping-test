@@ -223,6 +223,7 @@
   </style>
   <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260820r1">
   <script src="./assets/wechat-lock.js?v=20260820r1"></script>
+  <script src="./assets/data-refresh.js?v=20261001r1"></script>
 </head>
 <body class="page-map">
   <header class="site-header">
@@ -901,34 +902,7 @@
       }
     }
 
-    document.getElementById("refreshBtn").addEventListener("click", async () => {
-      const button = document.getElementById("refreshBtn");
-      const status = document.getElementById("status");
-      button.disabled = true;
-      status.textContent = "正在提交云端刷新请求…";
-      try {
-        const refreshResponse = await fetch("https://mandarine-refresh.mandarine-refresh-hy.workers.dev/refresh", {
-          method: "POST",
-          cache: "no-store"
-        });
-        if (!refreshResponse.ok) throw new Error(`HTTP ${refreshResponse.status}`);
-        status.textContent = "云端已开始重新读取 Gmail 与市场数据，完成后页面会自动更新…";
-        const startedAt = Date.now();
-        const checkForNewData = async () => {
-          await loadData({ background: true });
-          if (Date.now() - startedAt < 360000) {
-            setTimeout(checkForNewData, 10000);
-          } else {
-            status.textContent = "刷新任务仍在云端处理中；页面会继续自动检查最新数据。";
-          }
-        };
-        setTimeout(checkForNewData, 10000);
-      } catch (error) {
-        status.textContent = `刷新请求未能提交：${error.message}`;
-      } finally {
-        button.disabled = false;
-      }
-    });
+    MandarineRefresh.attach(loadData);
     window.addEventListener("focus", () => loadData({ background: true }));
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) loadData({ background: true });

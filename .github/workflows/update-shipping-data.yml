@@ -9,8 +9,8 @@ on:
         default: "30"
   schedule:
     # GitHub scheduled jobs are best-effort and can be delayed or skipped.
-    # Run every 5 minutes so missed slots recover quickly.
-    - cron: "*/5 * * * *"
+    # Cloudflare checks every 5 minutes; this fallback avoids peak minutes.
+    - cron: "17,47 * * * *"
 
 concurrency:
   group: shipping-data-refresh
@@ -94,4 +94,7 @@ jobs:
           exit 1
 
       - name: Report Gmail sync health
+        env:
+          # Publish cached data + failure status first, then fail visibly.
+          REQUIRE_GMAIL_SYNC: "true"
         run: python scripts/check_refresh_health.py
