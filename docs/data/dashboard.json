@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-10-03T04:37:21.395605",
-  "timestamp_beijing": "2026-10-03T12:37:21.395607+08:00",
+  "timestamp": "2026-10-03T04:46:56.293546",
+  "timestamp_beijing": "2026-10-03T12:46:56.293548+08:00",
   "date_beijing": "2026-10-03",
   "refresh_interval_minutes": 5,
   "source_message": {
     "gmail_message_id": "1a0fa745df3e6a23",
     "subject": "SSY SINGAPORE REPORT- 02 OCT 2029",
     "received_at": "2026-10-02T10:29:17+08:00",
-    "synced_at": "2026-10-03T12:36:22.728298+08:00"
+    "synced_at": "2026-10-03T12:46:34.265453+08:00"
   },
   "baltic": {
     "data": [
@@ -86,9 +86,7 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-10-03T04:37:21.394788",
-    "note": "HiFleet live fetch failed, showing last successful snapshot: HTTPSConnectionPool(host='www.hifleet.com', port=443): Max retries exceeded with url: /shipdetail/getBalticexchangeToTable (Caused by ReadTimeoutError(\"HTTPSConnectionPool(host='www.hifleet.com', port=443): Read timed out. (read timeout=15)\"))",
-    "fallback": true
+    "updated_at": "2026-10-03T04:46:50.630744"
   },
   "cbfi": {
     "name": "China Coastal Bulk Freight Index",
@@ -281,7 +279,7 @@
     "previous_date": "2026-09-24",
     "current_date": "2026-09-30",
     "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
-    "updated_at": "2026-10-03T04:36:36.128501"
+    "updated_at": "2026-10-03T04:46:50.731428"
   },
   "crude": {
     "cl": {
@@ -294,7 +292,7 @@
       "change_percent_from_open": 0.2729,
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:35.445015"
+      "updated_at": "2026-10-03T04:46:49.517511"
     },
     "oil": {
       "code": "OIL",
@@ -306,7 +304,7 @@
       "change_percent_from_open": 0.0419,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:35.444394"
+      "updated_at": "2026-10-03T04:46:49.511872"
     }
   },
   "iron_ore": {
@@ -321,7 +319,7 @@
     },
     "change_percent": -0.67,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-10-03T04:36:35.509975"
+    "updated_at": "2026-10-03T04:46:49.560004"
   },
   "boc_usd": {
     "currency": "美元",
@@ -333,7 +331,7 @@
     "published_at": "2026/10/03 10:30:00",
     "published_time": "10:30:00",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-10-03T04:36:38.129863"
+    "updated_at": "2026-10-03T04:46:52.061958"
   },
   "forex": {
     "DINIW": {
@@ -346,7 +344,7 @@
       "change_percent_from_open": -0.0926,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:36.166467"
+      "updated_at": "2026-10-03T04:46:49.511506"
     },
     "EURUSD": {
       "code": "EURUSD",
@@ -358,7 +356,7 @@
       "change_percent_from_open": 0.1246,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:35.444121"
+      "updated_at": "2026-10-03T04:46:49.512322"
     },
     "GBPUSD": {
       "code": "GBPUSD",
@@ -370,7 +368,7 @@
       "change_percent_from_open": 0.3258,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:35.444851"
+      "updated_at": "2026-10-03T04:46:49.517160"
     },
     "USDCNY": {
       "code": "USDCNY",
@@ -382,7 +380,7 @@
       "change_percent_from_open": 0.0,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:35.619124"
+      "updated_at": "2026-10-03T04:46:49.712270"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -394,7 +392,7 @@
       "change_percent_from_open": -0.0051,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:35.619659"
+      "updated_at": "2026-10-03T04:46:49.712660"
     },
     "USDJPY": {
       "code": "USDJPY",
@@ -406,7 +404,7 @@
       "change_percent_from_open": -0.1771,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-03T04:36:35.619406"
+      "updated_at": "2026-10-03T04:46:49.712949"
     }
   },
   "bunker_index": {
@@ -420,6 +418,28 @@
         "vlsfo_change": null,
         "mgo": 1429.5,
         "mgo_change": null,
+        "date": "02 Oct"
+      },
+      {
+        "port": "Fujairah",
+        "country": "AE",
+        "ifo380": "672.00",
+        "ifo380_change": "18.00",
+        "vlsfo": "941.50",
+        "vlsfo_change": "32.00",
+        "mgo": "1631.50",
+        "mgo_change": "47.00",
+        "date": "02 Oct"
+      },
+      {
+        "port": "Rotterdam",
+        "country": "NL",
+        "ifo380": "603.00",
+        "ifo380_change": "13.50",
+        "vlsfo": "652.50",
+        "vlsfo_change": "13.50",
+        "mgo": "1335.00",
+        "mgo_change": "14.50",
         "date": "02 Oct"
       },
       {
@@ -465,32 +485,10 @@
         "mgo": "1291.50",
         "mgo_change": "35.50",
         "date": "02 Oct"
-      },
-      {
-        "port": "Fujairah",
-        "country": "AE",
-        "ifo380": "672.00",
-        "ifo380_change": "18.00",
-        "vlsfo": "941.50",
-        "vlsfo_change": "32.00",
-        "mgo": "1631.50",
-        "mgo_change": "47.00",
-        "date": "02 Oct"
-      },
-      {
-        "port": "Rotterdam",
-        "country": "NL",
-        "ifo380": "603.00",
-        "ifo380_change": "13.50",
-        "vlsfo": "652.50",
-        "vlsfo_change": "13.50",
-        "mgo": "1335.00",
-        "mgo_change": "14.50",
-        "date": "02 Oct"
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-10-03T04:36:38.672826",
+    "updated_at": "2026-10-03T04:46:56.292619",
     "fallback_used": false,
     "fallback_source": null,
     "error": null
