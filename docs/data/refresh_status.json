@@ -1,11 +1,11 @@
 {
-  "status": "warning",
-  "gmail_sync_ok": false,
-  "message": "Gmail sync failed; showing the latest previously published shipping email snapshot with freshly regenerated market dashboards.",
-  "last_attempt_at": "2026-10-09T02:42:24.947655+00:00",
-  "last_attempt_at_beijing": "2026-10-09T10:42:24.947664+08:00",
-  "last_success_at_beijing": "2026-10-09T10:32:29.844528+08:00",
-  "run_id": "37875759613",
+  "status": "ok",
+  "gmail_sync_ok": true,
+  "message": "Gmail sync completed and static snapshots were regenerated.",
+  "last_attempt_at": "2026-10-09T02:47:28.379955+00:00",
+  "last_attempt_at_beijing": "2026-10-09T10:47:28.379971+08:00",
+  "last_success_at_beijing": "2026-10-09T10:47:28.379971+08:00",
+  "run_id": "37876149071",
   "trigger": "workflow_dispatch",
   "refresh_interval_minutes": 5
 }
