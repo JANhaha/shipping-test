@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-10-25T01:52:31.822264",
-  "timestamp_beijing": "2026-10-25T09:52:31.822269+08:00",
+  "timestamp": "2026-10-25T02:01:06.992679",
+  "timestamp_beijing": "2026-10-25T10:01:06.992682+08:00",
   "date_beijing": "2026-10-25",
   "refresh_interval_minutes": 5,
   "source_message": {
     "gmail_message_id": "1a16170257ac5934",
     "subject": "SSY SINGAPORE REPORT-22 OCT 2026",
     "received_at": "2026-10-22T10:25:58+08:00",
-    "synced_at": "2026-10-25T09:50:51.876958+08:00"
+    "synced_at": "2026-10-25T10:00:55.750814+08:00"
   },
   "baltic": {
     "data": [
@@ -86,7 +86,7 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-10-25T01:51:00.433757"
+    "updated_at": "2026-10-25T02:01:04.565569"
   },
   "cbfi": {
     "name": "China Coastal Bulk Freight Index",
@@ -279,7 +279,7 @@
     "previous_date": "2026-10-16",
     "current_date": "2026-10-23",
     "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
-    "updated_at": "2026-10-25T01:51:00.465523"
+    "updated_at": "2026-10-25T02:01:04.226089"
   },
   "crude": {
     "cl": {
@@ -292,7 +292,7 @@
       "change_percent_from_open": 0.0609,
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:50:59.603151"
+      "updated_at": "2026-10-25T02:01:04.428817"
     },
     "oil": {
       "code": "OIL",
@@ -304,7 +304,7 @@
       "change_percent_from_open": 0.2361,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:50:59.621661"
+      "updated_at": "2026-10-25T02:01:04.429371"
     }
   },
   "iron_ore": {
@@ -319,11 +319,19 @@
     },
     "change_percent": -0.73,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-10-25T01:50:59.500446"
+    "updated_at": "2026-10-25T02:01:03.861668"
   },
   "boc_usd": {
-    "error": "BOC USD conversion price load failed: HTTPSConnectionPool(host='www.boc.cn', port=443): Max retries exceeded with url: /sourcedb/whpj/ (Caused by NewConnectionError(\"HTTPSConnection(host='www.boc.cn', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
-    "updated_at": "2026-10-25T01:52:31.821256"
+    "currency": "美元",
+    "spot_buy": 666.06,
+    "cash_buy": 666.06,
+    "spot_sell": 668.86,
+    "cash_sell": 668.86,
+    "conversion_price": 671.8,
+    "published_at": "2026/10/25 05:30:00",
+    "published_time": "05:30:00",
+    "source_url": "https://www.boc.cn/sourcedb/whpj/",
+    "updated_at": "2026-10-25T02:01:04.704947"
   },
   "forex": {
     "DINIW": {
@@ -336,7 +344,7 @@
       "change_percent_from_open": 0.1259,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:50:59.602428"
+      "updated_at": "2026-10-25T02:01:04.434068"
     },
     "EURUSD": {
       "code": "EURUSD",
@@ -348,7 +356,7 @@
       "change_percent_from_open": -0.1337,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:50:59.593682"
+      "updated_at": "2026-10-25T02:01:04.433134"
     },
     "GBPUSD": {
       "code": "GBPUSD",
@@ -360,7 +368,7 @@
       "change_percent_from_open": -0.2015,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:50:59.611619"
+      "updated_at": "2026-10-25T02:01:04.429488"
     },
     "USDCNY": {
       "code": "USDCNY",
@@ -372,7 +380,7 @@
       "change_percent_from_open": -0.039,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:51:00.004834"
+      "updated_at": "2026-10-25T02:01:04.432836"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -384,7 +392,7 @@
       "change_percent_from_open": 0.0702,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:50:59.751061"
+      "updated_at": "2026-10-25T02:01:04.767020"
     },
     "USDJPY": {
       "code": "USDJPY",
@@ -396,7 +404,7 @@
       "change_percent_from_open": 0.0638,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-10-25T01:50:59.760412"
+      "updated_at": "2026-10-25T02:01:04.604742"
     }
   },
   "bunker_index": {
@@ -480,9 +488,9 @@
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-10-25T01:51:02.258371",
-    "fallback_used": true,
-    "fallback_source": "docs/data/dashboard.json",
-    "error": "BunkerIndex load failed: HTTPSConnectionPool(host='www.bunkerindex.com', port=443): Max retries exceeded with url: / (Caused by ProtocolError('Connection aborted.', RemoteDisconnected('Remote end closed connection without response')))"
+    "updated_at": "2026-10-25T02:01:06.991662",
+    "fallback_used": false,
+    "fallback_source": null,
+    "error": null
   }
 }
