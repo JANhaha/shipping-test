@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-11-09T04:21:10.597581",
-  "timestamp_beijing": "2026-11-09T12:21:10.597583+08:00",
+  "timestamp": "2026-11-09T04:31:11.903163",
+  "timestamp_beijing": "2026-11-09T12:31:11.903166+08:00",
   "date_beijing": "2026-11-09",
   "refresh_interval_minutes": 5,
   "source_message": {
     "gmail_message_id": "1a1aeb774d7e804a",
     "subject": "SSY SINGAPORE REPORT- 06 NOV 2026",
     "received_at": "2026-11-06T10:36:33+08:00",
-    "synced_at": "2026-11-09T12:20:49.319369+08:00"
+    "synced_at": "2026-11-09T12:30:51.859671+08:00"
   },
   "baltic": {
     "data": [
@@ -86,7 +86,7 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-11-09T04:21:04.179551"
+    "updated_at": "2026-11-09T04:31:09.156137"
   },
   "cbfi": {
     "name": "China Coastal Bulk Freight Index",
@@ -279,32 +279,32 @@
     "previous_date": "2026-10-30",
     "current_date": "2026-11-06",
     "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
-    "updated_at": "2026-11-09T04:21:04.138501"
+    "updated_at": "2026-11-09T04:31:09.272027"
   },
   "crude": {
     "cl": {
       "code": "CL",
       "name": "WTI Crude",
-      "latest": 91.337,
-      "open": 91.33,
+      "latest": 91.183,
+      "open": 91.16,
       "previous_close": 90.83,
-      "change_from_open": 0.007,
-      "change_percent_from_open": 0.0077,
+      "change_from_open": 0.023,
+      "change_percent_from_open": 0.0252,
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.217111"
+      "updated_at": "2026-11-09T04:31:07.967826"
     },
     "oil": {
       "code": "OIL",
       "name": "Brent Crude CFD",
-      "latest": 98.375,
-      "open": 98.36,
+      "latest": 98.23,
+      "open": 98.2,
       "previous_close": 98.32,
-      "change_from_open": 0.015,
-      "change_percent_from_open": 0.0153,
+      "change_from_open": 0.03,
+      "change_percent_from_open": 0.0305,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.218548"
+      "updated_at": "2026-11-09T04:31:07.969204"
     }
   },
   "iron_ore": {
@@ -319,7 +319,7 @@
     },
     "change_percent": 0.78,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-11-09T04:21:04.743925"
+    "updated_at": "2026-11-09T04:31:08.171448"
   },
   "boc_usd": {
     "currency": "美元",
@@ -328,83 +328,83 @@
     "spot_sell": 669.15,
     "cash_sell": 669.15,
     "conversion_price": 671.88,
-    "published_at": "2026/11/09 12:19:52",
-    "published_time": "12:19:52",
+    "published_at": "2026/11/09 12:29:52",
+    "published_time": "12:29:52",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-11-09T04:21:04.274399"
+    "updated_at": "2026-11-09T04:31:10.946300"
   },
   "forex": {
     "DINIW": {
       "code": "DINIW",
       "title": "US Dollar Index",
-      "latest": 102.1628,
+      "latest": 102.153,
       "open": 102.2541,
       "previous_close": 102.2864,
-      "change_from_open": -0.0913,
-      "change_percent_from_open": -0.0893,
+      "change_from_open": -0.1011,
+      "change_percent_from_open": -0.0989,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.217438"
+      "updated_at": "2026-11-09T04:31:07.967405"
     },
     "EURUSD": {
       "code": "EURUSD",
       "title": "EUR/USD",
-      "latest": 1.1154,
+      "latest": 1.1156,
       "open": 1.1135,
       "previous_close": 1.1143,
-      "change_from_open": 0.0019,
-      "change_percent_from_open": 0.1706,
+      "change_from_open": 0.0021,
+      "change_percent_from_open": 0.1886,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.217967"
+      "updated_at": "2026-11-09T04:31:07.968137"
     },
     "GBPUSD": {
       "code": "GBPUSD",
       "title": "GBP/USD",
-      "latest": 1.3372,
+      "latest": 1.3369,
       "open": 1.3359,
       "previous_close": 1.3349,
-      "change_from_open": 0.0013,
-      "change_percent_from_open": 0.0973,
+      "change_from_open": 0.001,
+      "change_percent_from_open": 0.0749,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.218423"
+      "updated_at": "2026-11-09T04:31:07.968438"
     },
     "USDCNY": {
       "code": "USDCNY",
       "title": "USD/CNY",
-      "latest": 6.676,
-      "open": 6.6766,
+      "latest": 6.6745,
+      "open": 6.675,
       "previous_close": 6.6763,
-      "change_from_open": -0.0006,
-      "change_percent_from_open": -0.009,
+      "change_from_open": -0.0005,
+      "change_percent_from_open": -0.0075,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.371257"
+      "updated_at": "2026-11-09T04:31:08.116387"
     },
     "USDHKD": {
       "code": "USDHKD",
       "title": "USD/HKD",
-      "latest": 7.8404,
+      "latest": 7.8403,
       "open": 7.8396,
       "previous_close": 7.8396,
-      "change_from_open": 0.0008,
-      "change_percent_from_open": 0.0102,
+      "change_from_open": 0.0007,
+      "change_percent_from_open": 0.0089,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.371618"
+      "updated_at": "2026-11-09T04:31:08.115962"
     },
     "USDJPY": {
       "code": "USDJPY",
       "title": "USD/JPY",
-      "latest": 158.31,
+      "latest": 158.29,
       "open": 158.3,
       "previous_close": 158.45,
-      "change_from_open": 0.01,
-      "change_percent_from_open": 0.0063,
+      "change_from_open": -0.01,
+      "change_percent_from_open": -0.0063,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-09T04:21:03.371953"
+      "updated_at": "2026-11-09T04:31:08.115568"
     }
   },
   "bunker_index": {
@@ -419,39 +419,6 @@
         "mgo": 1427.5,
         "mgo_change": null,
         "date": "23 Oct"
-      },
-      {
-        "port": "Singapore",
-        "country": "SG",
-        "ifo380": "736.50",
-        "ifo380_change": "-4.00",
-        "vlsfo": "854.00",
-        "vlsfo_change": "0.00",
-        "mgo": "1209.00",
-        "mgo_change": "-0.50",
-        "date": "06 Nov"
-      },
-      {
-        "port": "Fujairah",
-        "country": "AE",
-        "ifo380": "665.00",
-        "ifo380_change": "40.00",
-        "vlsfo": "886.00",
-        "vlsfo_change": "40.50",
-        "mgo": "1610.50",
-        "mgo_change": "67.50",
-        "date": "06 Nov"
-      },
-      {
-        "port": "Rotterdam",
-        "country": "NL",
-        "ifo380": "599.00",
-        "ifo380_change": "5.00",
-        "vlsfo": "727.50",
-        "vlsfo_change": "35.00",
-        "mgo": "1356.00",
-        "mgo_change": "82.00",
-        "date": "06 Nov"
       },
       {
         "port": "Kaohsiung",
@@ -485,10 +452,43 @@
         "mgo": "1255.00",
         "mgo_change": "45.00",
         "date": "06 Nov"
+      },
+      {
+        "port": "Singapore",
+        "country": "SG",
+        "ifo380": "736.50",
+        "ifo380_change": "-4.00",
+        "vlsfo": "854.00",
+        "vlsfo_change": "0.00",
+        "mgo": "1209.00",
+        "mgo_change": "-0.50",
+        "date": "06 Nov"
+      },
+      {
+        "port": "Fujairah",
+        "country": "AE",
+        "ifo380": "665.00",
+        "ifo380_change": "40.00",
+        "vlsfo": "886.00",
+        "vlsfo_change": "40.50",
+        "mgo": "1610.50",
+        "mgo_change": "67.50",
+        "date": "06 Nov"
+      },
+      {
+        "port": "Rotterdam",
+        "country": "NL",
+        "ifo380": "599.00",
+        "ifo380_change": "5.00",
+        "vlsfo": "727.50",
+        "vlsfo_change": "35.00",
+        "mgo": "1356.00",
+        "mgo_change": "82.00",
+        "date": "06 Nov"
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-11-09T04:21:10.596683",
+    "updated_at": "2026-11-09T04:31:11.902176",
     "fallback_used": false,
     "fallback_source": null,
     "error": null
