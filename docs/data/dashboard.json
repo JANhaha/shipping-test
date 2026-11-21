@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-21T16:31:11.183212",
-  "timestamp_beijing": "2026-11-22T00:31:11.183214+08:00",
+  "timestamp": "2026-11-21T16:41:06.624739",
+  "timestamp_beijing": "2026-11-22T00:41:06.624741+08:00",
   "date_beijing": "2026-11-22",
   "refresh_interval_minutes": 5,
   "source_message": {
@@ -86,7 +86,7 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-11-21T16:31:09.611456"
+    "updated_at": "2026-11-21T16:41:04.320166"
   },
   "cbfi": {
     "name": "China Coastal Bulk Freight Index",
@@ -279,7 +279,7 @@
     "previous_date": "2026-11-13",
     "current_date": "2026-11-20",
     "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
-    "updated_at": "2026-11-21T16:31:09.642273"
+    "updated_at": "2026-11-21T16:41:04.336667"
   },
   "crude": {
     "cl": {
@@ -292,7 +292,7 @@
       "change_percent_from_open": 0.0718,
       "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.360284"
+      "updated_at": "2026-11-21T16:41:03.348839"
     },
     "oil": {
       "code": "OIL",
@@ -304,7 +304,7 @@
       "change_percent_from_open": 0.0951,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.360800"
+      "updated_at": "2026-11-21T16:41:03.349181"
     }
   },
   "iron_ore": {
@@ -319,7 +319,7 @@
     },
     "change_percent": 0.31,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-11-21T16:31:09.033425"
+    "updated_at": "2026-11-21T16:41:02.722895"
   },
   "boc_usd": {
     "currency": "美元",
@@ -331,7 +331,7 @@
     "published_at": "2026/11/22 00:00:05",
     "published_time": "00:00:05",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-11-21T16:31:11.182539"
+    "updated_at": "2026-11-21T16:41:06.272637"
   },
   "forex": {
     "DINIW": {
@@ -344,7 +344,7 @@
       "change_percent_from_open": -0.1125,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.359325"
+      "updated_at": "2026-11-21T16:41:03.349987"
     },
     "EURUSD": {
       "code": "EURUSD",
@@ -356,7 +356,7 @@
       "change_percent_from_open": 0.0091,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.360565"
+      "updated_at": "2026-11-21T16:41:03.349804"
     },
     "GBPUSD": {
       "code": "GBPUSD",
@@ -368,7 +368,7 @@
       "change_percent_from_open": -0.0458,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.359767"
+      "updated_at": "2026-11-21T16:41:03.349559"
     },
     "USDCNY": {
       "code": "USDCNY",
@@ -380,7 +380,7 @@
       "change_percent_from_open": -0.0839,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.541343"
+      "updated_at": "2026-11-21T16:41:03.350124"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -392,7 +392,7 @@
       "change_percent_from_open": 0.0,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.556848"
+      "updated_at": "2026-11-21T16:41:03.555137"
     },
     "USDJPY": {
       "code": "USDJPY",
@@ -404,7 +404,7 @@
       "change_percent_from_open": -0.7264,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-21T16:31:09.531258"
+      "updated_at": "2026-11-21T16:41:03.554789"
     }
   },
   "bunker_index": {
@@ -488,9 +488,9 @@
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-11-21T16:31:10.819148",
-    "fallback_used": true,
-    "fallback_source": "docs/data/dashboard.json",
-    "error": "BunkerIndex load failed: HTTPSConnectionPool(host='www.bunkerindex.com', port=443): Max retries exceeded with url: / (Caused by ProtocolError('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer')))"
+    "updated_at": "2026-11-21T16:41:06.624242",
+    "fallback_used": false,
+    "fallback_source": null,
+    "error": null
   }
 }
