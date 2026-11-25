@@ -24,7 +24,6 @@ class ShippingDashboardService:
     HIFLEET_BALTIC_TABLE_API = "https://www.hifleet.com/shipdetail/getBalticexchangeToTable"
     BOC_URL = "https://www.boc.cn/sourcedb/whpj/"
     BUNKER_INDEX_URL = "https://www.bunkerindex.com/"
-    ZHOUSHAN_API_URL = "https://www.hyqfocus.com/app/findBunkerPriceListByPortId"
     CBFI_URL = "https://www.sse.net.cn/index/singleIndex?indexType=cbfi"
     MYSTEEL_APP_KEY = "47EE3F12CF0C443F8FD51EFDA73AC815"
     MYSTEEL_APP_SECRET = "3BA6477330684B19AA6AF4485497B5F2"
@@ -410,35 +409,14 @@ class ShippingDashboardService:
         rows = []
         error = None
         try:
-            rows = self._load_bunker_index_ports()
+            rows = self._exclude_zhoushan(self._load_bunker_index_ports())
         except Exception as exc:
             error = f"BunkerIndex load failed: {exc}"
 
-        zhoushan = self._call_safe(self.get_zhoushan_bunker, "Zhoushan bunker prices")
-        fallback_ports = self._load_latest_bunker_ports()
         used_static_fallback = False
-        if not rows and fallback_ports:
-            rows = fallback_ports
-            used_static_fallback = True
-
-        if zhoushan.get("prices"):
-            rows = [row for row in rows if (row.get("port") or "").lower() != "zhoushan"]
-            rows.insert(
-                0,
-                {
-                    "port": zhoushan.get("port") or "Zhoushan",
-                    "country": "CN",
-                    "ifo380": zhoushan["prices"].get("IFO380"),
-                    "ifo380_change": None,
-                    "vlsfo": zhoushan["prices"].get("VLSFO"),
-                    "vlsfo_change": None,
-                    "mgo": zhoushan["prices"].get("LSMGO"),
-                    "mgo_change": None,
-                    "date": zhoushan.get("date"),
-                },
-            )
-        elif zhoushan.get("error"):
-            error = f"{error}; {zhoushan['error']}" if error else zhoushan["error"]
+        if not rows:
+            rows = self._exclude_zhoushan(self._load_latest_bunker_ports())
+            used_static_fallback = bool(rows)
 
         return {
             "ports": rows,
@@ -488,25 +466,13 @@ class ShippingDashboardService:
         except Exception:
             return []
 
-    def get_zhoushan_bunker(self):
-        response = self.session.get(
-            self.ZHOUSHAN_API_URL,
-            params={"portId": 177, "max": 30},
-            timeout=30,
-        )
-        rows = response.json()
-        latest = rows[0] if rows else {}
-        return {
-            "port": latest.get("portName", "Zhoushan"),
-            "date": self._format_bunker_date(latest.get("updateDate")),
-            "prices": {
-                "IFO380": self._to_float(latest.get("ifo380")),
-                "LSMGO": self._to_float(latest.get("lsmgo")),
-                "VLSFO": self._to_float(latest.get("vlsfo")),
-            },
-            "source_url": "https://www.zsbunker.cn/bunker_zhoushan.jsp",
-            "updated_at": datetime.now().isoformat(),
-        }
+    @staticmethod
+    def _exclude_zhoushan(ports):
+        return [
+            row
+            for row in ports
+            if (row.get("port") or "").strip().casefold() not in {"zhoushan", "舟山"}
+        ]
 
     def _cached(self, key, loader):
         now = time.time()
@@ -614,12 +580,6 @@ class ShippingDashboardService:
     def _extract_date(text):
         match = re.search(r"\d{4}-\d{2}-\d{2}", text or "")
         return match.group(0) if match else None
-
-    @staticmethod
-    def _format_bunker_date(value):
-        if value in (None, ""):
-            return None
-        return datetime.fromtimestamp(int(value) / 1000).strftime("%d %b")
 
     @staticmethod
     def _to_float(value):

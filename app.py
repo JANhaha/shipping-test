@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-from flask import Flask, jsonify, redirect, render_template
+from flask import Flask, jsonify, redirect, render_template, send_from_directory
 
 from data.dashboard_service import ShippingDashboardService
 from data.gmail_service import GmailShippingDataService
@@ -73,6 +73,11 @@ def dashboard():
     payload = service.get_dashboard()
     payload["served_at"] = datetime.now().isoformat()
     return jsonify(payload)
+
+
+@app.route("/api/mysteel-reports")
+def mysteel_reports():
+    return send_from_directory("docs/data", "mysteel_reports.json")
 
 
 @app.route("/api/shipping-data", methods=["GET"])

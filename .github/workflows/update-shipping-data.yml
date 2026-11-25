@@ -71,6 +71,10 @@ jobs:
       - name: Run full refresh pipeline
         run: python scripts/full_refresh.py
 
+      - name: Check Mysteel daily reports
+        continue-on-error: true
+        run: python scripts/sync_mysteel_reports.py
+
       - name: Commit updated shipping data
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -78,7 +82,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json docs/data/refresh_status.json
+          git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json docs/data/refresh_status.json docs/data/mysteel_reports.json
           if git diff --cached --quiet; then
             echo "No shipping data changes to publish."
             exit 0

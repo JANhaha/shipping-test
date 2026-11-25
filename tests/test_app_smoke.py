@@ -180,23 +180,26 @@ class AppSmokeTest(unittest.TestCase):
                 service,
                 "_load_bunker_index_ports",
                 side_effect=RuntimeError("connection reset"),
-            ), patch.object(
-                service,
-                "get_zhoushan_bunker",
-                return_value={
-                    "port": "Zhoushan",
-                    "date": "02 Jul",
-                    "prices": {"IFO380": 452, "VLSFO": 648, "LSMGO": 939},
-                },
             ):
                 payload = service.get_bunker_prices()
 
         self.assertTrue(payload["fallback_used"])
         self.assertEqual(payload["fallback_source"], "docs/data/dashboard.json")
         self.assertIn("BunkerIndex load failed", payload["error"])
-        self.assertEqual(payload["ports"][0]["port"], "Zhoushan")
-        self.assertEqual(payload["ports"][0]["vlsfo"], 648)
-        self.assertEqual([row["port"] for row in payload["ports"]], ["Zhoushan", "Singapore"])
+        self.assertEqual(payload["ports"], [static_ports[1]])
+
+    def test_bunker_prices_exclude_zhoushan_from_live_source(self):
+        service = ShippingDashboardService()
+        singapore = {"port": "Singapore", "vlsfo": "664.00"}
+        with patch.object(
+            service,
+            "_load_bunker_index_ports",
+            return_value=[{"port": "舟山"}, {"port": " ZHOUSHAN "}, singapore],
+        ):
+            payload = service.get_bunker_prices()
+
+        self.assertEqual(payload["ports"], [singapore])
+        self.assertFalse(payload["fallback_used"])
 
 
 if __name__ == "__main__":

@@ -1462,3 +1462,35 @@ html.wechat-lock .brand-link {
 html.wechat-lock a {
   cursor: default;
 }
+
+.mysteel-reports ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+
+.mysteel-reports li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+
+.mysteel-reports a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.mysteel-reports li a {
+  font-weight: 700;
+}
+
+.mysteel-reports time {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
