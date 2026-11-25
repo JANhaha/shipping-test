@@ -550,6 +550,24 @@ body.page-company {
   border-color: var(--company-sea);
 }
 
+.company-home .project-card[data-featured] {
+  border-color: #163a43;
+  background: linear-gradient(115deg, #163a43, #154851);
+}
+
+.company-home .project-card[data-featured]:hover {
+  background: #1b515d;
+}
+
+.company-home [data-featured] h3,
+.company-home [data-featured] .project-arrow {
+  color: #fff;
+}
+
+.company-home [data-featured] p {
+  color: #dceeed;
+}
+
 .project-card:focus-visible {
   outline: 2px solid var(--company-sea);
   outline-offset: 3px;

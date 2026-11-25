@@ -2,43 +2,99 @@
 .route-tool .tool-hero {
   overflow: hidden;
   border-top: 3px solid var(--accent) !important;
+  padding-bottom: 16px !important;
 }
 
 .route-tool .tool-hero .hero-top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(250px, 350px);
-  align-items: start;
-  gap: clamp(18px, 3vw, 36px);
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 400px) !important;
+  align-items: start !important;
+  gap: clamp(14px, 2vw, 26px) !important;
 }
 
 .route-tool .tool-hero h1 {
-  font-size: clamp(31px, 4vw, 45px) !important;
+  font-size: clamp(29px, 3vw, 40px) !important;
+}
+
+.route-tool .tool-hero :is(.hero-copy, .subtitle) {
+  margin-top: 6px !important;
+  line-height: 1.55 !important;
 }
 
 .route-tool .tool-hero .status-card {
-  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 3px 10px;
   min-width: 0;
+  padding: 10px 12px !important;
+}
+
+.route-tool .tool-hero .status-label {
+  grid-column: 1;
 }
 
 .route-tool .tool-hero .status-value {
-  font-size: clamp(17px, 2vw, 21px) !important;
+  grid-column: 1;
+  margin-top: 0 !important;
+  font-size: clamp(14px, 1.6vw, 18px) !important;
   font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.route-tool .tool-hero .status-card > :is(#status, #sourceMeta) {
+  grid-column: 1 / -1;
+  margin-top: 2px !important;
+  overflow-wrap: anywhere;
 }
 
 .route-tool .tool-hero .toolbar {
-  display: block;
-  margin-top: 12px;
+  display: contents !important;
+}
+
+.route-tool .tool-hero .toolbar > .button {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  min-height: 38px !important;
+  white-space: nowrap;
 }
 
 .route-tool .tool-hero .toolbar > p[role="status"] {
-  margin-bottom: 0 !important;
+  grid-column: 1 / -1;
+  margin: 1px 0 0 !important;
+  font-size: 12px !important;
+  overflow-wrap: anywhere;
+}
+
+.route-tool .tool-hero .metrics {
+  gap: 6px !important;
+  margin-top: 11px !important;
+}
+
+.route-tool .tool-hero .metrics .metric {
+  min-width: 0;
+  padding: 8px 10px !important;
+}
+
+.route-tool .tool-hero .metrics :is(.metric-value, #updatedAt) {
+  margin-top: 3px !important;
+  font-size: clamp(17px, 2vw, 22px) !important;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.route-tool .tool-hero .metric-note {
+  margin-top: 2px;
+  overflow-wrap: anywhere;
 }
 
 .route-tool .tool-jumps {
   display: flex;
   flex-wrap: wrap;
   gap: 6px 14px;
-  margin-top: 13px;
+  margin-top: 9px;
 }
 
 .route-tool .tool-jumps a {
@@ -207,12 +263,25 @@
 }
 
 @media (max-width: 760px) {
+  .route-tool .tool-hero .hero-top {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 9px !important;
+  }
+
+  .route-tool .tool-hero .metrics #updatedAt {
+    font-size: 14px !important;
+  }
+
+  .route-tool .tool-hero .toolbar > .button {
+    padding-inline: 10px;
+  }
+
   .route-tool .tool-jumps {
     gap: 6px;
   }
 
   .route-tool .tool-jumps a {
-    min-height: 40px;
+    min-height: 36px;
     padding: 0 9px;
   }
 

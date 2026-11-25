@@ -7,6 +7,10 @@ on:
         description: "Gmail lookback days for manual force refresh"
         required: false
         default: "30"
+      mysteel_force_reparse:
+        description: "Revalidate the recent Mysteel report graphics"
+        type: boolean
+        default: false
   schedule:
     # GitHub scheduled jobs are best-effort and can be delayed or skipped.
     # Cloudflare checks every 5 minutes; this fallback avoids peak minutes.
@@ -73,7 +77,18 @@ jobs:
 
       - name: Check Mysteel daily reports
         continue-on-error: true
-        run: python scripts/sync_mysteel_reports.py
+        env:
+          FORCE_MYSTEEL_REPARSE: ${{ inputs.mysteel_force_reparse }}
+        run: |
+          if [[ "$FORCE_MYSTEEL_REPARSE" == "true" ]]; then
+            python -m pip install --timeout 20 rapidocr-onnxruntime==1.4.4 onnxruntime==1.31.0
+            python scripts/sync_mysteel_reports.py --force
+          else
+            if [[ "$(python scripts/sync_mysteel_reports.py --needs-ocr)" == "yes" ]]; then
+              python -m pip install --timeout 20 rapidocr-onnxruntime==1.4.4 onnxruntime==1.31.0
+            fi
+            python scripts/sync_mysteel_reports.py
+          fi
 
       - name: Commit updated shipping data
         env:

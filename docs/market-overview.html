@@ -276,10 +276,10 @@
       th,td{padding:10px 8px}
     }
   </style>
-  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20261125r2">
-  <link rel="stylesheet" href="./assets/market-brief.css?v=20261125r2">
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20261125r3">
+  <link rel="stylesheet" href="./assets/market-brief.css?v=20261125r3">
   <script src="./assets/wechat-lock.js?v=20260820r1"></script>
-  <script defer src="./assets/mysteel-reports.js?v=20261125r2"></script>
+  <script defer src="./assets/mysteel-reports.js?v=20261125r3"></script>
   <script src="./assets/data-refresh.js?v=20261001r2"></script>
 </head>
 <body class="page-home page-market">
@@ -304,7 +304,6 @@
       <div class="hero-top">
         <div>
           <h1 id="marketTitle">市场总览</h1>
-          <p class="subtitle">干散货日报、波罗的海指数与航运相关行情。</p>
         </div>
         <div class="market-status">
           <div class="market-status-time">
@@ -327,23 +326,32 @@
 
     <div class="panel-grid">
       <section class="panel span-12 market-brief" id="dry-bulk-report" aria-labelledby="mysteelReportHeading" data-source="./data/mysteel_reports.json">
-        <div class="panel-head">
+        <div class="panel-head report-brief-header">
           <div>
-            <div class="eyebrow">Mysteel · 我的钢铁网</div>
+            <div class="eyebrow report-publisher">Mysteel · 我的钢铁网</div>
             <h2 id="mysteelReportHeading">国际干散货航运市场日报</h2>
           </div>
           <label class="report-picker" hidden id="mysteelReportPicker">
-            <span>选择日期</span>
+            <span>报告日期</span>
             <select id="mysteelReportDate"></select>
           </label>
         </div>
         <p id="mysteelReportStatus" class="dense-note report-message" role="status">正在读取日报行情…</p>
         <div id="mysteelReportContent" hidden>
-          <p class="report-publication"><time id="mysteelReportPublished"></time> · 北京时间</p>
-          <dl class="report-quotes" id="mysteelReportFacts"></dl>
-          <ul class="report-signals" id="mysteelReportSignals" aria-label="市场要点" hidden></ul>
+          <div class="report-publication" aria-label="报告时间（北京时间）">
+            <span>日报发布 <time id="mysteelReportPublished"></time></span>
+            <span id="mysteelReportCheckMeta" hidden>网站检查 <time id="mysteelReportChecked"></time></span>
+            <span class="report-timezone">北京时间</span>
+          </div>
+          <nav id="mysteelReportVesselNav" class="report-vessel-nav" aria-label="按船型查看日报" hidden></nav>
+          <div class="report-overview" id="mysteelReportOverview">
+            <h3>盘面速览</h3>
+            <dl class="report-quotes" id="mysteelReportFacts"></dl>
+            <ul class="report-signals" id="mysteelReportSignals" aria-label="市场要点" hidden></ul>
+          </div>
+          <div id="mysteelReportGroups" class="report-vessel-groups"></div>
           <div class="report-provenance">
-            <a id="mysteelReportSource" target="_blank" rel="noopener">来源：Mysteel 日报 ↗</a>
+            <a id="mysteelReportSource" target="_blank" rel="noopener">核对 Mysteel 原报 ↗</a>
           </div>
         </div>
       </section>

@@ -190,9 +190,16 @@ def parse_mysteel_report_details(html, title):
     return {"facts": list(facts.values()), "summary": _market_signals(clauses)}
 
 
-def get_mysteel_report_details(report):
+def get_mysteel_report_details(report, include_image=False):
     """Read only an article already identified on the official public index."""
     url = urlsplit(report["url"])
     if url.scheme != "https" or url.netloc != "haiyun.mysteel.com" or url.query or url.fragment or not ARTICLE_PATH.fullmatch(url.path):
         raise MysteelReportError("Unrecognized Mysteel article URL.")
-    return parse_mysteel_report_details(_read_public_html(report["url"]), report["title"])
+    html = _read_public_html(report["url"])
+    details = parse_mysteel_report_details(html, report["title"])
+    if include_image:
+        soup = BeautifulSoup(html, "html.parser", from_encoding="utf-8")
+        details["image_candidates"] = [
+            image["src"] for image in soup.select("#article-content > p > img[src]")
+        ]
+    return details

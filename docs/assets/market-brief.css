@@ -4,8 +4,9 @@
   gap: 18px !important;
 }
 
-.page-market .market-intro .subtitle {
-  margin-top: 8px;
+.page-market .market-intro h1 {
+  margin: 0 !important;
+  font-size: clamp(29px, 3vw, 40px) !important;
 }
 
 .page-market .market-intro .hero-top > .market-status {
@@ -49,11 +50,11 @@
 
 .market-navigation {
   display: flex;
-  gap: 4px 18px;
+  gap: 3px 16px;
   flex-wrap: wrap;
-  margin-top: 18px;
+  margin-top: 12px;
   border-top: 1px solid var(--line);
-  padding-top: 10px;
+  padding-top: 8px;
 }
 
 .market-navigation a {
@@ -83,7 +84,27 @@
 }
 
 .page-market .market-brief {
-  border-top: 3px solid var(--accent) !important;
+  --report-navy: #15363e;
+  --report-tint: #f1f6f6;
+  border-top: 3px solid #1a5861 !important;
+}
+
+.report-brief-header {
+  align-items: center !important;
+  padding: clamp(12px, 1.7vw, 22px);
+  border-radius: 7px;
+  background: linear-gradient(110deg, #15363e 6%, #205966);
+  color: #fff;
+}
+
+.report-brief-header .eyebrow.report-publisher {
+  color: #c0e0e2 !important;
+}
+
+.report-brief-header h2 {
+  margin-top: 4px !important;
+  color: #fff;
+  font-size: clamp(19px, 2.1vw, 27px) !important;
 }
 
 .report-picker {
@@ -92,30 +113,68 @@
   flex-wrap: wrap;
   gap: 8px;
   font-size: 13px;
-  color: var(--muted);
+  color: #e1f0f0;
 }
 
 .report-picker select {
   min-height: 38px;
   max-width: 100%;
   padding: 5px 10px;
-  border: 1px solid var(--line-strong);
+  border: 1px solid #cde0e2;
   border-radius: 6px;
   color: var(--ink);
   background: var(--panel);
 }
 
-.report-publication, .report-message {
+.report-picker select:focus-visible {
+  outline-color: #fff;
+}
+
+.report-publication,
+.report-message {
   margin-top: 10px;
   color: var(--muted);
   font-size: 13px;
+}
+
+.report-publication {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-publication time {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.report-timezone {
+  font-size: 12px;
+}
+
+.report-overview {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--report-tint);
+}
+
+.report-overview:not(:has(.report-quote, .report-signals li)) {
+  display: none;
 }
 
 .report-quotes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
   gap: 10px;
-  margin: 14px 0 0;
+  margin: 9px 0 0;
+}
+
+.report-quotes:empty {
+  display: none;
 }
 
 .report-quote {
@@ -123,8 +182,8 @@
   align-content: start;
   min-width: 0;
   gap: 7px;
-  padding: 14px;
-  background: var(--card);
+  padding: 10px 12px;
+  background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 7px;
 }
@@ -145,7 +204,7 @@
 }
 
 .report-number {
-  font-size: clamp(24px, 3.6vw, 34px);
+  font-size: clamp(21px, 2.7vw, 28px);
   font-weight: 780;
   line-height: 1.15;
 }
@@ -165,7 +224,7 @@
   gap: 6px 20px;
   list-style: none;
   padding-left: 0;
-  margin: 14px 0 0;
+  margin: 9px 0 0;
   font-size: 13px;
   line-height: 1.6;
 }
@@ -186,6 +245,131 @@
   background: var(--accent);
 }
 
+.report-vessel-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.report-vessel-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 6px 11px;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--panel);
+  color: var(--report-navy);
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.report-vessel-nav a:hover,
+.report-vessel-nav a[aria-current] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.report-vessel-groups {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.report-vessel-groups:empty {
+  display: none;
+}
+
+.report-vessel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  scroll-margin-top: 100px;
+}
+
+.report-vessel-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  padding: 10px 13px;
+  border-left: 3px solid #256372;
+  border-bottom: 1px solid var(--line);
+  background: var(--report-tint);
+}
+
+.report-vessel-header h3 {
+  font-size: 17px !important;
+}
+
+.report-vessel-header :is(.report-vessel-language, .report-vessel-count),
+.report-route-meta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.report-vessel-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(285px, 100%), 1fr));
+  gap: 5px 18px;
+  margin: 0;
+  padding: 10px 13px 10px 32px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.report-vessel-points:empty {
+  display: none;
+}
+
+.report-route-table-wrap {
+  min-width: 0;
+  margin: 0;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.report-route-table-wrap:focus-visible {
+  outline-offset: -2px;
+}
+
+.report-route-table {
+  width: 100%;
+  margin: 0;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.report-route-table thead th {
+  color: var(--report-navy);
+  background: #eef2f3;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.report-route-table :is(th, td) {
+  padding: 8px 12px !important;
+}
+
+.report-route-table tr:last-child td {
+  border-bottom: 0 !important;
+}
+
+.report-route-table .report-numeric {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.report-route-table td.report-numeric {
+  font-weight: 680;
+}
+
 .report-provenance {
   margin-top: 12px;
   border-top: 1px solid var(--line);
@@ -204,7 +388,22 @@
 
   .market-navigation {
     gap: 2px 12px;
-    margin-top: 12px;
+  }
+
+  .market-navigation a {
+    min-height: 32px;
+  }
+
+  .report-brief-header {
+    gap: 8px !important;
+  }
+
+  .report-picker select {
+    min-height: 34px;
+  }
+
+  .report-overview {
+    padding: 10px;
   }
 
   .report-quotes {
@@ -213,5 +412,13 @@
 
   .report-quote {
     padding: 10px;
+  }
+
+  .report-quotes > .report-quote:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .report-route-table {
+    min-width: 390px;
   }
 }
