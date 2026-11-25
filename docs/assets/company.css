@@ -26,6 +26,14 @@ body.page-company {
   border-top-color: var(--company-orange);
 }
 
+.company-home .site-header {
+  position: sticky;
+}
+
+.company-home [id] {
+  scroll-margin-top: 100px;
+}
+
 .page-company .site-nav {
   width: min(100% - 40px, 1320px);
 }
@@ -66,6 +74,18 @@ body.page-company {
 
 .company-hero-inner {
   padding-top: 72px;
+}
+
+.company-home .company-hero {
+  min-height: 470px;
+}
+
+.company-home .company-hero::before {
+  background: linear-gradient(90deg, rgba(6, 24, 29, 0.88), rgba(6, 24, 29, 0.72) 55%, rgba(6, 24, 29, 0.34));
+}
+
+.company-home .company-hero-inner {
+  padding-block: 68px;
 }
 
 .hero-kicker,
@@ -151,6 +171,24 @@ body.page-company {
   background: rgba(12, 41, 47, 0.72);
 }
 
+.company-home .company-button:not(.secondary) {
+  color: #132b31;
+  background: #f6af4c;
+}
+
+.company-home .company-button:not(.secondary):hover {
+  background: #ffbe65;
+}
+
+.company-home .company-button.secondary {
+  color: #fff !important;
+}
+
+.company-home .company-button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
 .proof-strip {
   position: relative;
   z-index: 2;
@@ -191,6 +229,25 @@ body.page-company {
 
 .company-section {
   padding: 92px 0;
+}
+
+.company-home .company-section {
+  padding-block: clamp(38px, 5vw, 75px);
+}
+
+.company-home .market-tools {
+  padding-block: 28px 34px;
+  border-bottom: 1px solid var(--company-line);
+  background: #eef3f2;
+}
+
+.market-tools .section-heading h2 {
+  margin: 0;
+  font-size: clamp(22px, 2.5vw, 28px);
+}
+
+.company-home .proof-grid {
+  min-height: 110px;
 }
 
 .company-section.white {
@@ -306,6 +363,14 @@ body.page-company {
   line-height: 1.7;
 }
 
+.company-home .service-card {
+  min-height: 0;
+}
+
+.company-home .service-card h3 {
+  margin-top: 0;
+}
+
 .cargo-gallery {
   margin-top: 38px;
   display: grid;
@@ -324,6 +389,16 @@ body.page-company {
 
 .cargo-figure:first-child {
   grid-row: 1 / 3;
+}
+
+.company-home .cargo-gallery {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: none;
+  grid-auto-rows: clamp(155px, 19vw, 270px);
+}
+
+.company-home .cargo-figure:first-child {
+  grid-area: auto;
 }
 
 .cargo-figure img {
@@ -418,6 +493,11 @@ body.page-company {
   border-bottom: 1px solid var(--company-line);
 }
 
+.fixture-table-wrap:focus-visible {
+  outline: 2px solid var(--company-sea);
+  outline-offset: 4px;
+}
+
 .fixture-table {
   width: 100%;
   min-width: 820px;
@@ -446,80 +526,51 @@ body.page-company {
 }
 
 .project-grid {
-  margin-top: 38px;
+  margin-top: 14px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
 .project-card {
-  position: relative;
-  min-height: 330px;
-  overflow: hidden;
-  display: flex;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 14px;
+  padding: 17px 20px;
+  border: 1px solid var(--company-line);
   border-radius: 8px;
-  color: #fff;
+  color: var(--company-ink);
   text-decoration: none;
-  background: var(--company-deep);
-  isolation: isolate;
+  background: #fff;
 }
 
-.project-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: rgba(5, 26, 31, 0.56);
+.project-card:hover {
+  background: #f6fbfa;
+  border-color: var(--company-sea);
 }
 
-.project-card img {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.28s ease;
+.project-card:focus-visible {
+  outline: 2px solid var(--company-sea);
+  outline-offset: 3px;
 }
 
-.project-card:hover img {
-  transform: scale(1.035);
+.project-card h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--company-deep);
 }
 
-.project-content {
-  width: 100%;
-  padding: 24px;
-}
-
-.project-label {
-  color: var(--company-orange);
-  font-size: 11px;
-  font-weight: 850;
-  text-transform: uppercase;
-}
-
-.project-content h3 {
-  margin: 8px 0 0;
-  color: #fff;
-  font-size: 26px;
-}
-
-.project-content p {
-  margin: 10px 0 0;
-  color: rgba(255, 255, 255, 0.82);
+.project-card p {
+  margin: 4px 0 0;
+  color: var(--company-muted);
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.55;
 }
 
-.project-action {
-  margin-top: 18px;
-  display: inline-block;
-  padding-bottom: 3px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
+.project-arrow {
+  color: var(--company-sea);
+  font-size: 18px;
 }
 
 .contact-section {
@@ -623,13 +674,12 @@ body.page-company {
     gap: 38px;
   }
 
-  .service-grid,
-  .project-grid {
+  .service-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .project-card:last-child {
-    grid-column: 1 / -1;
+  .company-home .cargo-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .cargo-gallery {
@@ -658,6 +708,19 @@ body.page-company {
 
   .company-hero-inner {
     padding: 110px 0 58px;
+  }
+
+  .company-home .company-hero {
+    min-height: 370px;
+    align-items: center;
+  }
+
+  .company-home .company-hero::before {
+    background: linear-gradient(90deg, rgba(6, 24, 29, 0.87), rgba(6, 24, 29, 0.57));
+  }
+
+  .company-home .company-hero-inner {
+    padding-block: 42px;
   }
 
   .company-hero h1 {
@@ -696,6 +759,23 @@ body.page-company {
 
   .proof-value {
     font-size: 28px;
+  }
+
+  .company-home .proof-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .company-home .proof-item:nth-child(-n + 2) {
+    border-top: 0;
+  }
+
+  .company-home .proof-item:nth-child(even) {
+    border-left: 1px solid var(--company-line);
+    padding-left: 14px;
+  }
+
+  .company-home .proof-value {
+    font-size: clamp(21px, 6vw, 28px);
   }
 
   .company-section {
@@ -751,17 +831,14 @@ body.page-company {
     font-size: 46px;
   }
 
-  .project-card,
-  .project-card:last-child {
-    min-height: 290px;
-    grid-column: auto;
+  .project-card {
+    padding: 12px 14px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .company-button,
-  .cargo-figure img,
-  .project-card img {
+  .cargo-figure img {
     transition: none;
   }
 }
@@ -773,6 +850,11 @@ body.page-company {
   color: var(--company-muted);
   font-size: 14px;
   line-height: 1.8;
+}
+
+.company-home .feedback-note {
+  grid-column: 1 / -1;
+  margin-top: 0;
 }
 
 .feedback-note a {

@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>航线租金</title>
+  <title>航线租金 · Mandarine Ocean</title>
   <style>
     :root{
       --ink:#18343b;
@@ -206,11 +206,12 @@
       .leader-code{font-size:32px}
     }
   </style>
-  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20260820r1">
+  <link rel="stylesheet" href="./assets/ocean-ui.css?v=20261125r2">
+  <link rel="stylesheet" href="./assets/route-tools.css?v=20261125r1">
   <script src="./assets/wechat-lock.js?v=20260820r1"></script>
   <script src="./assets/data-refresh.js?v=20261001r2"></script>
 </head>
-<body class="page-rentals">
+<body class="page-rentals route-tool">
   <header class="site-header">
     <div class="site-ops-note">公司网站运营维护：小编ANDY</div>
     <nav class="site-nav" aria-label="主导航">
@@ -227,53 +228,59 @@
       <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
     </nav>
   </header>
-  <div class="shell">
-    <section class="hero">
+  <main class="shell">
+    <section class="hero tool-hero" aria-labelledby="rentalTitle">
       <div class="hero-top">
         <div>
-          <div class="eyebrow">Mandarine Ocean · Spot Freight</div>
-          <h1>航线租金</h1>
-          <div class="subtitle">按船型与路线判断现货租金强弱。Dry FFA 独立展示，仅作远期参考，不进入现货排行、均值或涨跌面。</div>
+          <div class="eyebrow">Dry Bulk Spot Freight</div>
+          <h1 id="rentalTitle">航线租金</h1>
+          <p class="subtitle">比较干散货现货租金、船型表现与航线涨跌。Dry FFA 在远期参考区单独展示。</p>
+          <nav class="tool-jumps" aria-label="航线租金页内导航">
+            <a href="#spot-market">现货概览</a>
+            <a href="#vessel-filters">按船型查价</a>
+            <a href="#rental-table">完整运价表</a>
+            <a href="#ffa-reference">Dry FFA</a>
+          </nav>
         </div>
         <div class="status-card">
           <div class="status-label">最新市场快照</div>
           <div id="heroStatus" class="status-value">加载中</div>
           <div id="sourceMeta" class="meta" style="margin-top:8px">正在读取航线租金快照</div>
+          <div class="toolbar">
+            <button id="refreshBtn" class="button" type="button">刷新数据</button>
+          </div>
         </div>
-      </div>
-      <div class="toolbar">
-        <button id="refreshBtn" class="button" type="button">刷新数据</button>
       </div>
       <div class="metrics">
         <div class="metric"><div class="sub">现货航线</div><div id="linkedRoutes" class="metric-value">-</div><div class="metric-note">不含 Dry FFA</div></div>
-        <div class="metric"><div class="sub">现货上涨航线</div><div id="upRoutes" class="metric-value up">-</div><div class="metric-note">Change 大于 0</div></div>
-        <div class="metric"><div class="sub">现货下跌航线</div><div id="downRoutes" class="metric-value down">-</div><div class="metric-note">Change 小于 0</div></div>
+        <div class="metric"><div class="sub">上涨航线</div><div id="upRoutes" class="metric-value up">-</div></div>
+        <div class="metric"><div class="sub">下跌航线</div><div id="downRoutes" class="metric-value down">-</div></div>
         <div class="metric"><div class="sub">现货最大波动</div><div id="largestMove" class="metric-value">-</div><div id="largestMoveMeta" class="metric-note">-</div></div>
       </div>
     </section>
 
-    <section class="panel">
+    <section id="spot-market" class="panel tool-section" aria-labelledby="spotMarketTitle">
       <div class="section-head">
         <div>
           <div class="eyebrow">Spot Market Dashboard</div>
-          <h2>现货行情图</h2>
+          <h2 id="spotMarketTitle">现货市场概览</h2>
         </div>
-        <div id="chartMeta" class="meta">Dry FFA 已单独剥离</div>
+        <div id="chartMeta" class="meta"></div>
       </div>
       <div class="chart-grid">
         <article class="chart-card">
-          <div class="chart-title">船型平均涨跌</div>
+          <h3 class="chart-title">船型平均涨跌</h3>
           <div id="groupChangeChart" class="group-bars"></div>
         </article>
         <article class="chart-card">
-          <div class="chart-title">上涨 / 下跌面</div>
+          <h3 class="chart-title">现货市场涨跌分布</h3>
           <div id="breadthChart"></div>
         </article>
-        <article class="chart-card wide">
-          <div class="chart-title">现货航线波动排行</div>
-          <div id="moveChart" class="move-bars"></div>
-        </article>
       </div>
+      <details class="rental-compare">
+        <summary>查看波动最大的现货航线</summary>
+        <div id="moveChart" class="move-bars"></div>
+      </details>
     </section>
 
     <section class="panel">
@@ -287,13 +294,13 @@
       <div id="leaderGrid" class="leader-grid"></div>
     </section>
 
-    <section class="panel">
+    <section id="vessel-filters" class="panel tool-section" aria-labelledby="vesselFilterTitle">
       <div class="section-head">
         <div>
           <div class="eyebrow">Vessel Group</div>
-          <h2>船型筛选</h2>
+          <h2 id="vesselFilterTitle">按船型查现货租金</h2>
         </div>
-        <div id="filters" class="filters"></div>
+        <div id="filters" class="filters" role="group" aria-label="船型筛选"></div>
       </div>
       <div id="routeGrid" class="route-grid"></div>
     </section>
@@ -309,28 +316,28 @@
       <div id="heatList" class="heat-list"></div>
     </section>
 
-    <section class="panel ffa-panel">
-      <div class="section-head">
-        <div>
-          <div class="eyebrow">FFA Reference</div>
-          <h2>Dry FFA 单独参考</h2>
-        </div>
-        <div id="ffaMeta" class="meta">不参与现货排行榜、上涨面和船型均值</div>
-      </div>
-      <div id="ffaRoot" class="ffa-grid" style="margin-top:16px"></div>
-    </section>
-
-    <section class="panel">
+    <section id="rental-table" class="panel tool-section" aria-labelledby="rentalTableTitle">
       <div class="section-head">
         <div>
           <div class="eyebrow">Route Matrix</div>
-          <h2>完整航线矩阵</h2>
+          <h2 id="rentalTableTitle">现货航线运价表</h2>
         </div>
         <div id="tableMeta" class="meta">-</div>
       </div>
       <div id="tableRoot"></div>
     </section>
-  </div>
+
+    <section id="ffa-reference" class="panel ffa-panel tool-section" aria-labelledby="ffaTitle">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">FFA Reference</div>
+          <h2 id="ffaTitle">Dry FFA 远期参考</h2>
+        </div>
+        <div id="ffaMeta" class="meta"></div>
+      </div>
+      <div id="ffaRoot" class="ffa-grid" style="margin-top:16px"></div>
+    </section>
+  </main>
 
   <script>
     const DATA_URL = "./data/map_data.json";
@@ -442,11 +449,12 @@
 
     function renderFilters() {
       const root = document.getElementById("filters");
-      root.innerHTML = GROUPS.map((group) => `<button class="chip ${group === activeGroup ? "active" : ""}" data-group="${group}">${group}</button>`).join("");
+      root.innerHTML = GROUPS.map((group) => `<button type="button" class="chip ${group === activeGroup ? "active" : ""}" aria-pressed="${group === activeGroup}" data-group="${group}">${group}</button>`).join("");
       root.querySelectorAll("button").forEach((button) => {
         button.addEventListener("click", () => {
           activeGroup = button.dataset.group;
           renderFilteredViews();
+          root.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true });
         });
       });
     }
@@ -493,7 +501,7 @@
           <div class="chart-row">
             <div class="chart-label">${esc(item.group)}<span>${item.count} 条 / ${item.up} 涨 ${item.down} 跌</span></div>
             <div class="chart-track diverging"><div class="chart-fill ${cls}" style="width:${width}"></div></div>
-            <div class="change ${cls}">${esc(formatSignedNumber(item.average))}</div>
+            <div class="change ${cls}">${item.count ? esc(formatSignedNumber(item.average)) : "-"}</div>
           </div>
         `;
       }).join("");
@@ -501,18 +509,22 @@
 
     function renderBreadthChart() {
       const valid = routeRows.filter((row) => row.changeNumber !== null);
+      if (!valid.length) {
+        document.getElementById("breadthChart").innerHTML = '<div class="empty">暂无可计算涨跌的数据。</div>';
+        return;
+      }
       const up = valid.filter((row) => row.changeNumber > 0).length;
       const down = valid.filter((row) => row.changeNumber < 0).length;
       const flat = Math.max(0, valid.length - up - down);
-      const total = Math.max(valid.length, 1);
+      const total = valid.length;
       const upPct = Math.round(up / total * 100);
-      const flatPct = Math.round(flat / total * 100);
-      const downPct = Math.max(0, 100 - upPct - flatPct);
+      const flatPct = flat / total * 100;
+      const downPct = down / total * 100;
       document.getElementById("breadthChart").innerHTML = `
         <div class="breadth-number">${upPct}%</div>
         <div class="sub">现货航线上涨面，FFA 不计入</div>
         <div class="split-bar">
-          <div class="split-part up" style="width:${upPct}%"></div>
+          <div class="split-part up" style="width:${up / total * 100}%"></div>
           <div class="split-part flat" style="width:${flatPct}%"></div>
           <div class="split-part down" style="width:${downPct}%"></div>
         </div>
@@ -609,7 +621,10 @@
     }
 
     function renderHeatList() {
-      const rows = filteredRows().slice(0, 10);
+      const rows = filteredRows()
+        .filter((row) => row.changeNumber !== null)
+        .sort((a, b) => Math.abs(b.changeNumber) - Math.abs(a.changeNumber))
+        .slice(0, 10);
       const maxAbs = Math.max(...rows.map((row) => Math.abs(row.changeNumber || 0)), 1);
       document.getElementById("rankMeta").textContent = `${activeGroup} / ${rows.length} 条重点航线`;
       document.getElementById("heatList").innerHTML = rows.map((row) => {
@@ -655,9 +670,9 @@
       const rows = filteredRows();
       document.getElementById("tableMeta").textContent = `${activeGroup} / ${rows.length} 条现货`;
       document.getElementById("tableRoot").innerHTML = rows.length ? `
-        <div class="table-wrap">
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="rentalTableTitle">
           <table>
-            <thead><tr><th>代码</th><th>航线</th><th>船型</th><th>最新租金</th><th>涨跌</th><th>更新时间</th></tr></thead>
+            <thead><tr><th scope="col">代码</th><th scope="col">航线</th><th scope="col">船型</th><th scope="col">最新租金</th><th scope="col">涨跌</th><th scope="col">报价时间</th></tr></thead>
             <tbody>
               ${rows.map((row) => `<tr>
                 <td><strong>${esc(row.code)}</strong></td>

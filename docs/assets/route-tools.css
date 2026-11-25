@@ -1,0 +1,238 @@
+/* Layout and interaction styles scoped to the map and spot freight tools. */
+.route-tool .tool-hero {
+  overflow: hidden;
+  border-top: 3px solid var(--accent) !important;
+}
+
+.route-tool .tool-hero .hero-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 350px);
+  align-items: start;
+  gap: clamp(18px, 3vw, 36px);
+}
+
+.route-tool .tool-hero h1 {
+  font-size: clamp(31px, 4vw, 45px) !important;
+}
+
+.route-tool .tool-hero .status-card {
+  width: 100%;
+  min-width: 0;
+}
+
+.route-tool .tool-hero .status-value {
+  font-size: clamp(17px, 2vw, 21px) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.route-tool .tool-hero .toolbar {
+  display: block;
+  margin-top: 12px;
+}
+
+.route-tool .tool-hero .toolbar > p[role="status"] {
+  margin-bottom: 0 !important;
+}
+
+.route-tool .tool-jumps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 13px;
+}
+
+.route-tool .tool-jumps a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 11px;
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--card);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.route-tool .tool-jumps a:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.route-tool :is(a, button, .table-wrap):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.route-tool .tool-section {
+  scroll-margin-top: 95px;
+}
+
+.route-tool .tool-section :is(.metric-value, .value, .rent-value, .change, td) {
+  font-variant-numeric: tabular-nums;
+}
+
+.route-tool .table-wrap:focus-visible,
+.route-tool .route-list button:focus-visible {
+  outline-offset: -2px;
+}
+
+.route-tool .tool-filter {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  padding-top: 8px;
+}
+
+.route-tool .tool-filter-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.route-tool .tool-filter .pills {
+  margin-top: 0 !important;
+}
+
+.page-map.route-tool .route-list {
+  display: block;
+}
+
+.page-map.route-tool .route-item {
+  width: 100%;
+  margin: 0 0 6px;
+  text-align: left;
+  color: var(--ink);
+}
+
+.page-map.route-tool .route-item :is(.route-code, .route-name) {
+  display: block;
+}
+
+.page-map.route-tool .route-item .route-name {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.page-map.route-tool .route-item .route-quote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 10px;
+  margin-top: 6px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.page-map.route-tool .route-quote b {
+  font-weight: 750;
+}
+
+.page-map.route-tool .route-code-button {
+  border: 0;
+  border-radius: 4px;
+  padding: 3px 5px;
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.page-map.route-tool .route-code-button[aria-pressed="true"] {
+  color: #fff;
+  background: var(--accent);
+}
+
+.page-map.route-tool tr.active-route-row td {
+  background: var(--accent-soft);
+}
+
+.page-map.route-tool tr[data-route-row] {
+  cursor: pointer;
+}
+
+.page-map.route-tool .route-detail-facts {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.page-map.route-tool .route-detail-facts div {
+  overflow-wrap: anywhere;
+}
+
+.page-map.route-tool .route-detail-facts dt {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.page-map.route-tool .route-detail-facts dd {
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+
+.page-map.route-tool .map-overlay {
+  max-width: min(300px, calc(100% - 24px)) !important;
+  pointer-events: none;
+}
+
+.page-map.route-tool #map-fallback {
+  display: grid;
+  min-height: 160px;
+  place-items: center;
+  padding: 20px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.page-rentals.route-tool .rental-compare {
+  margin-top: 16px;
+}
+
+.page-rentals.route-tool .rental-compare summary {
+  min-height: 36px;
+  padding: 7px 0;
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.page-rentals.route-tool .rental-compare summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 760px) {
+  .route-tool .tool-jumps {
+    gap: 6px;
+  }
+
+  .route-tool .tool-jumps a {
+    min-height: 40px;
+    padding: 0 9px;
+  }
+
+  .route-tool .tool-filter {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .route-tool .button,
+  .route-tool .tool-filter .pill,
+  .route-tool .filters .chip {
+    min-height: 40px !important;
+  }
+
+  .page-map.route-tool .route-list {
+    max-height: 176px !important;
+  }
+
+  .page-map.route-tool #map {
+    height: clamp(300px, 62svh, 410px) !important;
+    min-height: 300px !important;
+  }
+}

@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>航线地图</title>
+  <title>航线地图 · Mandarine Ocean</title>
   <style>
     :root{
       --bg:#f3eee6;
@@ -221,10 +221,11 @@
       #map{height:420px}
     }
   </style>
-  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20260820r1">
+  <link rel="stylesheet" href="/assets/ocean-ui.css?v=20261125r2">
+  <link rel="stylesheet" href="/assets/route-tools.css?v=20261125r1">
   <script src="/assets/wechat-lock.js?v=20260820r1"></script>
 </head>
-<body class="page-map">
+<body class="page-map route-tool">
   <header class="site-header">
     <div class="site-ops-note">公司网站运营维护：小编ANDY</div>
     <nav class="site-nav" aria-label="主导航">
@@ -241,33 +242,32 @@
       <div class="nav-health"><span class="live-dot" aria-hidden="true"></span><span>北京时间 · 自动更新</span></div>
     </nav>
   </header>
-  <div class="shell">
-    <section class="hero">
+  <main class="shell">
+    <section class="hero tool-hero" aria-labelledby="routeMapTitle">
       <div class="hero-top">
         <div>
           <div class="hero-head">
             <div>
-              <div class="eyebrow">MAP DATA</div>
-              <h1>航线地图</h1>
+              <div class="eyebrow">Baltic Route Map</div>
+              <h1 id="routeMapTitle">航线地图</h1>
             </div>
           </div>
           <div class="hero-copy">
             按航线族、指数与路线代码查看 Baltic 全球航线，并联动最新可用航线价格和涨跌。
           </div>
-          <div class="hero-badges">
-            <span class="pill active" style="cursor:default">全球航线</span>
-            <span class="pill" style="cursor:default">价格联动</span>
-            <span class="pill" style="cursor:default">邮件快照</span>
-          </div>
+          <nav class="tool-jumps" aria-label="航线地图页内导航">
+            <a href="#route-map">查看地图</a>
+            <a href="#route-table">查看运价表</a>
+          </nav>
         </div>
         <div class="status-card">
           <div class="status-label">页面检查时间</div>
           <div class="status-value" id="heroUpdatedAt">-</div>
           <div class="sub" id="status" style="margin-top:8px">正在读取最新有效邮箱数据和航线快照。</div>
+          <div class="toolbar">
+            <button id="refreshBtn" class="button" type="button">刷新数据</button>
+          </div>
         </div>
-      </div>
-      <div class="toolbar">
-        <button id="refreshBtn" class="button" type="button">刷新数据</button>
       </div>
       <div class="metrics">
         <div class="metric">
@@ -283,13 +283,13 @@
           <div id="routeCount" class="metric-value">-</div>
         </div>
         <div class="metric">
-          <div class="sub">更新时间</div>
+          <div class="sub">数据快照时间</div>
           <div id="updatedAt" class="metric-value" style="font-size:20px">-</div>
         </div>
       </div>
     </section>
 
-    <section class="section">
+    <section id="route-map" class="section tool-section" aria-labelledby="pageTitle">
       <div class="section-head">
         <div>
           <div class="eyebrow">Route Families</div>
@@ -298,11 +298,17 @@
         </div>
         <div class="sub" id="pageDescription">最新航线数据将在这里显示。</div>
       </div>
-      <div id="segmentPills" class="pills"></div>
-      <div id="indexPills" class="pills"></div>
+      <div class="tool-filter">
+        <div class="tool-filter-label" id="segmentLabel">航线类别</div>
+        <div id="segmentPills" class="pills" role="group" aria-labelledby="segmentLabel"></div>
+      </div>
+      <div class="tool-filter">
+        <div class="tool-filter-label" id="indexLabel">指数分组</div>
+        <div id="indexPills" class="pills" role="group" aria-labelledby="indexLabel"></div>
+      </div>
 
       <div class="map-layout">
-        <aside class="panel">
+        <aside class="panel" aria-labelledby="routeListTitle">
           <div class="section-head">
             <div>
               <div class="eyebrow">Routes</div>
@@ -316,12 +322,13 @@
         <div class="panel map-stage">
           <div class="map-overlay">
             <strong id="mapOverlayTitle">选择一条航线</strong>
-            <span class="sub" id="mapOverlayText">选择任意航线后，地图和右侧详情会显示最新联动市场值。</span>
+            <span class="sub" id="mapOverlayText">选择航线后查看走向和市场报价。</span>
           </div>
+          <p id="map-fallback" hidden>地图暂不可用。航线详情和运价表仍可查看。</p>
           <div id="map"></div>
         </div>
 
-        <aside class="panel">
+        <aside class="panel" aria-labelledby="detailTitle">
           <div class="section-head">
             <div>
               <div class="eyebrow">Selected Route</div>
@@ -334,7 +341,7 @@
       </div>
     </section>
 
-    <section class="section">
+    <section id="route-table" class="section tool-section" aria-labelledby="tableTitle">
       <div class="section-head">
         <div>
           <div class="eyebrow">Current Index</div>
@@ -345,12 +352,12 @@
       </div>
       <div id="tableRoot"></div>
     </section>
-  </div>
+  </main>
 
   <script src="https://cdn.amcharts.com/lib/4/core.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/maps.js"></script>
   <script src="https://cdn.amcharts.com/lib/4/geodata/worldLow.js"></script>
-    <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
+  <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
   <script>
     const DATA_URL = "/api/map-data";
     const AUTO_REFRESH_MS = 5 * 60 * 1000;
@@ -400,7 +407,10 @@
     let mapSignature = "";
 
     function initMap() {
-      am4core.useTheme(am4themes_animated);
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!reducedMotion && typeof am4themes_animated !== "undefined") {
+        am4core.useTheme(am4themes_animated);
+      }
       map = am4core.create("map", am4maps.MapChart);
       map.geodata = am4geodata_worldLow;
       map.projection = new am4maps.projections.Miller();
@@ -550,6 +560,7 @@
     }
 
     function animateLine(line, direction) {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const loop = () => {
         if (!line || line.isDisposed()) return;
         const animation = line.animate(
@@ -620,7 +631,7 @@
 
     function addRouteSeries(route) {
       drawRouteSelection(route, false);
-      if (route.reverse_route) {
+      if (route.reverse_route && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         let reversePhase = false;
         reverseTimer = setInterval(() => {
           const current = getActiveRoute();
@@ -637,7 +648,7 @@
     function renderSegmentPills() {
       const root = document.getElementById("segmentPills");
       root.innerHTML = payload.segments.map((segment, idx) => `
-        <button class="pill ${idx === activeSegmentIndex ? "active" : ""}" data-segment="${idx}">
+        <button type="button" class="pill ${idx === activeSegmentIndex ? "active" : ""}" aria-pressed="${idx === activeSegmentIndex}" data-segment="${idx}">
           ${esc(segment.title)}
         </button>
       `).join("");
@@ -647,6 +658,7 @@
           activeIndexIndex = 0;
           activeRouteIndex = 0;
           renderAll();
+          root.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true });
         });
       });
     }
@@ -659,7 +671,7 @@
         return;
       }
       root.innerHTML = segment.indexes.map((index, idx) => `
-        <button class="pill ${idx === activeIndexIndex ? "active" : ""}" data-index="${idx}">
+        <button type="button" class="pill ${idx === activeIndexIndex ? "active" : ""}" aria-pressed="${idx === activeIndexIndex}" data-index="${idx}">
           ${esc(index.title)}
         </button>
       `).join("");
@@ -668,6 +680,7 @@
           activeIndexIndex = Number(button.dataset.index);
           activeRouteIndex = 0;
           renderAll();
+          root.querySelector('[aria-pressed="true"]')?.focus({ preventScroll: true });
         });
       });
     }
@@ -676,37 +689,47 @@
       const index = getActiveIndex();
       const root = document.getElementById("routeList");
       document.getElementById("routeListTitle").textContent = index ? index.title : "航线列表";
-      document.getElementById("routeListMeta").textContent = index ? `${index.routes.length} routes` : "-";
+      document.getElementById("routeListMeta").textContent = index ? `${index.routes.length} 条航线` : "-";
       if (!index || !index.routes.length) {
         root.innerHTML = `<div class="empty">暂无航线数据。</div>`;
         return;
       }
       root.innerHTML = index.routes.map((route, idx) => `
-        <div class="route-item ${idx === activeRouteIndex ? "active" : ""}" data-route="${idx}">
-          <div class="route-code">${esc(route.code)}</div>
-          <div class="route-name">${esc(routeLegText(route))}</div>
-          ${route.market_data ? `<div class="market-badge-wrap"><div class="market-badge"><div class="label">Latest</div><div class="value">${esc(route.market_data.value)}</div></div><div class="market-badge"><div class="label">Change</div><div class="value ${signClass(route.market_data.change)}">${esc(route.market_data.change)}</div></div></div>` : ""}
-        </div>
+        <button type="button" class="route-item ${idx === activeRouteIndex ? "active" : ""}" aria-pressed="${idx === activeRouteIndex}" data-route="${idx}">
+          <span class="route-code">${esc(route.code)}</span>
+          <span class="route-name">${esc(routeLegText(route))}</span>
+          ${route.market_data ? `<span class="route-quote"><span>最新 <b>${esc(maybe(route.market_data.value))}</b></span><span>涨跌 <b class="${signClass(route.market_data.change)}">${esc(maybe(route.market_data.change))}</b></span></span>` : ""}
+        </button>
       `).join("");
-      root.querySelectorAll(".route-item").forEach((item) => {
-        item.addEventListener("click", () => {
-          activeRouteIndex = Number(item.dataset.route);
-          renderMap();
-          renderRouteDetail();
-          renderTable();
-          renderRouteList();
-        });
+      root.querySelectorAll("[data-route]").forEach((button) => {
+        button.addEventListener("click", () => selectRoute(Number(button.dataset.route)));
       });
+    }
+
+    function selectRoute(index) {
+      if (index === activeRouteIndex) return;
+      activeRouteIndex = index;
+      document.querySelectorAll("[data-route], [data-route-button]").forEach((button) => {
+        const selected = Number(button.dataset.route ?? button.dataset.routeButton) === index;
+        button.setAttribute("aria-pressed", String(selected));
+        if (button.dataset.route !== undefined) button.classList.toggle("active", selected);
+      });
+      document.querySelectorAll("[data-route-row]").forEach((row) => {
+        row.classList.toggle("active-route-row", Number(row.dataset.routeRow) === index);
+      });
+      const route = getActiveRoute();
+      document.getElementById("tableMeta").textContent = route ? `${route.code} · 当前航线` : "-";
+      renderRouteDetail();
+      renderMap();
     }
 
     function renderRouteDetail() {
       const route = getActiveRoute();
-      const segment = getActiveSegment();
       const root = document.getElementById("routeDetail");
       if (!route) {
         document.getElementById("detailTitle").textContent = "尚未选择航线";
         document.getElementById("detailMeta").textContent = "-";
-        root.innerHTML = `<div class="empty">请从左侧列表选择一条航线。</div>`;
+        root.innerHTML = `<div class="empty">请从航线列表选择一条航线。</div>`;
         return;
       }
       const extraPoints = (route.points || []).filter((point) => point.additional_point);
@@ -716,30 +739,14 @@
       root.innerHTML = `
         <div class="detail-block">
           <div class="route-meta">
-            <div class="eyebrow">Route Summary</div>
-            <div class="sub">${route.path_points?.length || 0} plotted points</div>
+            <div class="eyebrow">航线报价</div>
+            <div class="sub">${route.path_points?.length || 0} 个绘图点</div>
           </div>
           ${renderMarketBadges(route.market_data)}
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Route</th>
-                  <th>Key Ports</th>
-                  <th>Updated</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>${esc(route.code)}</td>
-                  <td>${esc(route.tooltip || "-")}</td>
-                  <td>${esc(keyPorts.join(" / ") || "-")}</td>
-                  <td>${esc(timeText(route.market_data?.received_at))}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <dl class="route-detail-facts">
+            <div><dt>主要港口</dt><dd>${esc(keyPorts.join(" / ") || "-")}</dd></div>
+            <div><dt>报价时间</dt><dd>${esc(timeText(route.market_data?.received_at))}</dd></div>
+          </dl>
           <div class="detail-text">${esc(route.description || route.tooltip || route.title)}</div>
         </div>
         ${extraPoints.length ? `
@@ -774,8 +781,8 @@
         return;
       }
       const rows = index.routes.map((item, idx) => `
-        <tr data-route-row="${idx}" style="${idx === activeRouteIndex ? "background:#f4fbfd" : ""}">
-          <td>${esc(item.code)}</td>
+        <tr data-route-row="${idx}" class="${idx === activeRouteIndex ? "active-route-row" : ""}">
+          <td><button type="button" class="route-code-button" aria-pressed="${idx === activeRouteIndex}" data-route-button="${idx}">${esc(item.code)}</button></td>
           <td>${esc(item.tooltip || "-")}</td>
           <td>${esc(routePointLabels(item).join(" / ") || "-")}</td>
           <td>${item.market_data ? `<span class="${signClass(item.market_data.change)}">${esc(item.market_data.value)}</span>` : "-"}</td>
@@ -783,15 +790,15 @@
         </tr>
       `).join("");
       root.innerHTML = `
-        <div class="table-wrap">
+        <div class="table-wrap" tabindex="0" role="region" aria-labelledby="tableTitle">
           <table>
             <thead>
               <tr>
-                <th>Code</th>
-                <th>Route</th>
-                <th>Key Ports</th>
-                <th>Latest</th>
-                <th>Change</th>
+                <th scope="col">航线代码</th>
+                <th scope="col">航线</th>
+                <th scope="col">主要港口</th>
+                <th scope="col">最新值</th>
+                <th scope="col">涨跌</th>
               </tr>
             </thead>
             <tbody>${rows}</tbody>
@@ -799,22 +806,16 @@
         </div>
       `;
       root.querySelectorAll("tr[data-route-row]").forEach((row) => {
-        row.addEventListener("click", () => {
-          activeRouteIndex = Number(row.dataset.routeRow);
-          renderMap();
-          renderRouteDetail();
-          renderRouteList();
-          renderTable();
-        });
+        row.addEventListener("click", () => selectRoute(Number(row.dataset.routeRow)));
       });
     }
 
     function renderMap() {
-      clearMapRoutes();
+      if (map) clearMapRoutes();
       const selected = getActiveRoute();
       if (!selected) return;
 
-      addRouteSeries(selected);
+      if (map) addRouteSeries(selected);
 
       document.getElementById("mapOverlayTitle").textContent = selected.code || selected.title;
       document.getElementById("mapOverlayText").textContent = selected.market_data
@@ -933,7 +934,15 @@
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden) loadData({ background: true });
     });
-    initMap();
+    try {
+      initMap();
+    } catch (error) {
+      console.warn("Route map is unavailable:", error);
+      map = null;
+      document.getElementById("map").hidden = true;
+      document.querySelector(".map-overlay").hidden = true;
+      document.getElementById("map-fallback").hidden = false;
+    }
     loadData();
     setInterval(() => loadData({ background: true }), AUTO_REFRESH_MS);
   </script>
