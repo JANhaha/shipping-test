@@ -1,6 +1,7 @@
 """Read public shipping report metadata and selected factual observations."""
 
 import re
+from time import sleep
 from datetime import datetime, timedelta, timezone
 from unicodedata import normalize
 from urllib.parse import urljoin, urlsplit
@@ -76,14 +77,18 @@ def parse_mysteel_reports(html):
 
 
 def _read_public_html(url):
-    try:
-        response = requests.get(url, headers=REQUEST_HEADERS, timeout=(5, 8), allow_redirects=False)
-    except requests.RequestException as exc:
-        raise MysteelReportError(f"Mysteel page could not be reached ({type(exc).__name__}).") from exc
-
-    if response.status_code != 200:
-        raise MysteelReportError(f"Mysteel page returned HTTP {response.status_code}.")
-    return response.content
+    for attempt in range(3):
+        try:
+            response = requests.get(url, headers=REQUEST_HEADERS, timeout=(5, 12), allow_redirects=False)
+        except requests.RequestException as exc:
+            if attempt == 2 or not isinstance(exc, (requests.Timeout, requests.ConnectionError)):
+                raise MysteelReportError(f"Mysteel page could not be reached ({type(exc).__name__}).") from exc
+        else:
+            if response.status_code == 200:
+                return response.content
+            if attempt == 2 or response.status_code not in {502, 503, 504}:
+                raise MysteelReportError(f"Mysteel page returned HTTP {response.status_code}.")
+        sleep(1 + attempt)
 
 
 def get_mysteel_reports():

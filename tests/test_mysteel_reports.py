@@ -66,8 +66,9 @@ class MysteelReportsTest(unittest.TestCase):
         self.assertEqual(request.call_args.args[0], MYSTEEL_REPORTS_URL)
         self.assertFalse(request.call_args.kwargs["allow_redirects"])
 
+    @patch("data.mysteel_reports.sleep")
     @patch("data.mysteel_reports.requests.get")
-    def test_fetch_surfaces_upstream_failures_for_cached_fallback(self, request):
+    def test_fetch_surfaces_upstream_failures_for_cached_fallback(self, request, wait):
         request.return_value = Mock(status_code=403)
         with self.assertRaisesRegex(MysteelReportError, "HTTP 403"):
             get_mysteel_reports()
@@ -79,6 +80,17 @@ class MysteelReportsTest(unittest.TestCase):
         request.side_effect = requests.Timeout
         with self.assertRaisesRegex(MysteelReportError, "Timeout"):
             get_mysteel_reports()
+        self.assertEqual(wait.call_count, 2)
+
+    @patch("data.mysteel_reports.sleep")
+    @patch("data.mysteel_reports.requests.get")
+    def test_short_retry_recovers_index_after_transient_timeout(self, request, wait):
+        request.side_effect = [
+            requests.ConnectTimeout(),
+            Mock(status_code=200, content=NEWEST_ROW.encode("utf-8")),
+        ]
+        self.assertEqual(get_mysteel_reports()[0]["url"], NEWEST_URL)
+        wait.assert_called_once_with(1)
 
     def test_does_not_conflate_fixture_price_and_published_change(self):
         overview = "国际干散货市场稳中走强。西澳询船活跃，运力偏紧，C5成交价15.8美元/吨；C3航线涨0.2美元/吨至34.4美元/吨。"
