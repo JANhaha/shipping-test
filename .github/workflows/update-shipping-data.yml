@@ -73,6 +73,8 @@ jobs:
           fi
 
       - name: Run full refresh pipeline
+        id: shipping_refresh
+        continue-on-error: true
         run: python scripts/full_refresh.py
 
       - name: Check Mysteel daily reports
@@ -81,23 +83,26 @@ jobs:
           FORCE_MYSTEEL_REPARSE: ${{ inputs.mysteel_force_reparse }}
         run: |
           if [[ "$FORCE_MYSTEEL_REPARSE" == "true" ]]; then
-            python -m pip install --timeout 20 rapidocr-onnxruntime==1.4.4 onnxruntime==1.31.0
-            python scripts/sync_mysteel_reports.py --force
+            python scripts/sync_mysteel_reports.py --ci --force
           else
-            if [[ "$(python scripts/sync_mysteel_reports.py --needs-ocr)" == "yes" ]]; then
-              python -m pip install --timeout 20 rapidocr-onnxruntime==1.4.4 onnxruntime==1.31.0
-            fi
-            python scripts/sync_mysteel_reports.py
+            python scripts/sync_mysteel_reports.py --ci
           fi
 
       - name: Commit updated shipping data
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          SHIPPING_REFRESH: ${{ steps.shipping_refresh.outcome }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
-          git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json docs/data/refresh_status.json docs/data/mysteel_reports.json
+          git add docs/data/mysteel_reports.json
+          if [[ "$SHIPPING_REFRESH" == "success" ]]; then
+            git add docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json docs/data/refresh_status.json
+          else
+            # Drop partial outputs from this disposable runner checkout before rebasing.
+            git restore -- docs/data/shipping_data.json docs/data/map_data.json docs/data/dashboard.json docs/data/refresh_status.json
+          fi
           if git diff --cached --quiet; then
             echo "No shipping data changes to publish."
             exit 0
@@ -113,7 +118,12 @@ jobs:
           exit 1
 
       - name: Report Gmail sync health
+        if: steps.shipping_refresh.outcome == 'success'
         env:
           # Publish cached data + failure status first, then fail visibly.
           REQUIRE_GMAIL_SYNC: "true"
         run: python scripts/check_refresh_health.py
+
+      - name: Report full refresh failure
+        if: steps.shipping_refresh.outcome == 'failure'
+        run: exit 1

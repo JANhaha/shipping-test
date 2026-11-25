@@ -5,6 +5,7 @@
   const date = document.getElementById("mysteelReportDate");
   const status = document.getElementById("mysteelReportStatus");
   const content = document.getElementById("mysteelReportContent");
+  const publishedMeta = document.getElementById("mysteelReportPublishedMeta");
   const published = document.getElementById("mysteelReportPublished");
   const facts = document.getElementById("mysteelReportFacts");
   const signals = document.getElementById("mysteelReportSignals");
@@ -34,6 +35,13 @@
     month: "long",
     day: "numeric",
   });
+  const dayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const staleAfter = 90 * 60 * 1000;
   const number = new Intl.NumberFormat("zh-CN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -41,7 +49,10 @@
   const whole = new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 });
   let reports = [];
   let signature = "";
-  let followingLatest = true;
+  let shownReport = null;
+  let shownDay = "";
+  let sourceCheck = {};
+  let browserUnavailable = false;
   let request = null;
 
   function element(tag, className, text) {
@@ -232,8 +243,11 @@
     return representatives;
   }
 
-  function showReport() {
-    const report = reports.find(item => item.url === date.value);
+  function renderReport(report) {
+    if (shownReport === report) return;
+    shownReport = report;
+    content.hidden = !report;
+    publishedMeta.hidden = !report;
     if (!report) return;
     const groupedQuotes = renderGroups(report);
     const data = groupedQuotes.length ? groupedQuotes : quoteList(report.facts);
@@ -247,57 +261,107 @@
     signals.replaceChildren(...summary.map(item => element("li", "", item)));
     signals.hidden = summary.length === 0;
     if (overview) overview.hidden = !data.length && !summary.length;
-    content.hidden = false;
-    status.textContent = groupedQuotes.length
-      ? "本期部分航线待核对，已核对的数据见下方。"
-      : "本期分船型数据待同步，已披露的摘要见下方。";
-    status.hidden = report.grouped_complete === true;
+  }
+
+  function todayReport(today) {
+    return reports.find(report => dayKey.format(new Date(report.published_at)) === today);
+  }
+
+  function setReportStatus(tone, text) {
+    if (status.dataset.tone === tone && status.textContent === text) return;
+    status.dataset.tone = tone;
+    status.textContent = text;
+  }
+
+  function updateView() {
+    const now = Date.now();
+    const today = dayKey.format(now);
+    const current = todayReport(today);
+    const checkedAt = Date.parse(sourceCheck.checked_at);
+    const indexedAt = Date.parse(sourceCheck.source_latest_published_at);
+    const indexHasToday = Number.isFinite(indexedAt) && dayKey.format(indexedAt) === today;
+    const recent = Number.isFinite(checkedAt) && dayKey.format(checkedAt) === today
+      && checkedAt <= now + 5 * 60 * 1000 && now - checkedAt <= staleAfter;
+    const requested = date.value ? reports.find(item => item.url === date.value) : null;
+    const selected = requested || current || null;
+    const history = selected && selected !== current;
+    const needsSync = selected && selected.grouped_complete !== true;
+    checkedMeta.hidden = !Number.isFinite(checkedAt);
+    if (!checkedMeta.hidden) {
+      checked.dateTime = sourceCheck.checked_at;
+      checked.textContent = publicationTime.format(checkedAt);
+    }
+    renderReport(selected);
+
+    if (history) {
+      const label = dateLabel.format(new Date(selected.published_at));
+      setReportStatus("history", `正在查看 ${label} 历史日报。${needsSync ? "本期部分明细待核对。" : ""}`);
+    } else if (browserUnavailable) {
+      setReportStatus("warning", selected ? "网页暂时无法获取更新，当前显示已载入的今日日报。" : "网页暂时无法获取日报，稍后自动重试。");
+    } else if (sourceCheck.source_status === "unavailable") {
+      setReportStatus("warning", selected ? "Mysteel 源站暂时无法访问，当前显示已载入的今日日报。" : "Mysteel 源站暂时无法访问，可以选择往期日报。");
+    } else if (sourceCheck.source_status === "lagging" || !recent) {
+      setReportStatus("warning", selected ? "Mysteel 最新发布情况待确认，当前显示已载入的今日日报。" : "Mysteel 最新发布情况待确认，可以选择往期日报。");
+    } else if (current && !needsSync) {
+      setReportStatus("current", "今日日报已同步。");
+    } else if (current || indexHasToday) {
+      setReportStatus("warning", "Mysteel 已发布今日日报，分船型明细正在同步。");
+    } else {
+      setReportStatus("waiting", "截至上次检查，Mysteel 尚未发布今日日报。可以选择往期日报。");
+    }
+  }
+
+  function updatePicker(rebuild = false) {
+    const today = dayKey.format(Date.now());
+    if (!rebuild && shownDay === today) return;
+    shownDay = today;
+    const current = todayReport(today);
+    const prior = date.value;
+    const history = reports.filter(item => item !== current);
+    const defaultOption = element("option", "", "今日日报");
+    defaultOption.value = "";
+    date.replaceChildren(defaultOption, ...history.map(report => {
+      const label = dateLabel.format(new Date(report.published_at));
+      const option = element("option", "", `${label}（历史）`);
+      option.value = report.url;
+      return option;
+    }));
+    date.value = history.some(item => item.url === prior) ? prior : "";
+    picker.hidden = !history.length;
   }
 
   function loadReports() {
     if (request) return request;
     request = (async () => {
-      const response = await fetch(section.dataset.source, {
+      const url = new URL(section.dataset.source, document.baseURI);
+      url.searchParams.set("ts", Date.now());
+      const response = await fetch(url, {
         cache: "no-store",
         signal: AbortSignal.timeout(10000),
       });
       if (!response.ok) throw new Error("Report list unavailable");
       const result = await response.json();
-      const next = Array.isArray(result.reports) ? result.reports.filter(validReport) : [];
-      if (!next.length) throw new Error("Report list empty");
-      const checkedAt = Date.parse(result.checked_at);
-      if (checkedMeta && checked) {
-        checkedMeta.hidden = !Number.isFinite(checkedAt);
-        if (Number.isFinite(checkedAt)) {
-          checked.dateTime = result.checked_at;
-          checked.textContent = publicationTime.format(new Date(checkedAt));
-        }
-      }
+      if (!Array.isArray(result.reports)) throw new Error("Invalid report list");
+      const next = result.reports.filter(validReport).sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at));
+      sourceCheck = result;
+      browserUnavailable = false;
       const nextSignature = JSON.stringify(next);
-      if (signature === nextSignature) return;
-      const prior = followingLatest ? "" : date.value;
-      reports = next;
-      signature = nextSignature;
-      date.replaceChildren(...reports.map((report, index) => {
-        const label = dateLabel.format(new Date(report.published_at));
-        const option = element("option", "", index === 0 ? `${label}（最新）` : label);
-        option.value = report.url;
-        return option;
-      }));
-      date.value = reports.some(item => item.url === prior) ? prior : reports[0].url;
-      followingLatest = date.value === reports[0].url;
-      picker.hidden = reports.length < 2;
-      showReport();
+      const changed = signature !== nextSignature;
+      if (changed) {
+        reports = next;
+        signature = nextSignature;
+      }
+      updatePicker(changed);
+      updateView();
     })().catch(() => {
-      if (!reports.length) status.textContent = "日报行情暂时无法加载，页面会自动重试。";
+      browserUnavailable = true;
+      updatePicker();
+      updateView();
     }).finally(() => { request = null; });
     return request;
   }
 
-  date.addEventListener("change", () => {
-    followingLatest = date.value === reports[0]?.url;
-    showReport();
-  });
+  date.addEventListener("change", updateView);
   window.addEventListener("mandarine:dashboard-updated", loadReports);
   loadReports();
   window.addEventListener("focus", loadReports);

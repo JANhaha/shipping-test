@@ -150,8 +150,22 @@
   font-weight: 700;
 }
 
-.report-timezone {
-  font-size: 12px;
+.report-message[data-tone] {
+  padding: 7px 10px;
+  border-left: 3px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--report-tint);
+}
+
+.report-message[data-tone="current"] {
+  color: #146350;
+  border-left-color: #18826d;
+}
+
+.report-message[data-tone="warning"] {
+  color: #694515 !important;
+  border-left-color: #b88731;
+  background: #fff5df;
 }
 
 .report-overview {

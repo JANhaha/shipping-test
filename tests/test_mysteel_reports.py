@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from datetime import datetime
 from html import escape
 from pathlib import Path
 from unittest.mock import Mock, patch
@@ -147,3 +148,52 @@ class MysteelReportsTest(unittest.TestCase):
                 sync_mysteel_reports.sync_reports(force=True)
             result = json.loads(snapshot.read_text(encoding="utf-8"))
             self.assertEqual(result["reports"][0], cached)
+
+    def test_checks_quicker_in_publication_window_or_after_an_outage(self):
+        attempt = "2026-11-25T17:00:00+08:00"
+        latest = {"published_at": "2026-11-24T17:32+08:00", "grouped_complete": True}
+        snapshot = {"attempted_at": attempt, "reports": [latest], "source_status": "ok"}
+        six_minutes_later = datetime.fromisoformat("2026-11-25T17:06:00+08:00")
+        self.assertFalse(sync_mysteel_reports.recently_checked(snapshot, six_minutes_later))
+        snapshot["reports"] = [{**latest, "published_at": "2026-11-25T17:00+08:00"}]
+        self.assertTrue(sync_mysteel_reports.recently_checked(snapshot, six_minutes_later))
+        snapshot["source_status"] = "unavailable"
+        self.assertFalse(sync_mysteel_reports.recently_checked(snapshot, six_minutes_later))
+
+    @patch("scripts.sync_mysteel_reports.write_snapshot")
+    @patch("scripts.sync_mysteel_reports.read_snapshot")
+    @patch("scripts.sync_mysteel_reports.get_mysteel_reports")
+    def test_index_outage_preserves_success_time_and_marks_failure(self, index, snapshot, write):
+        previous = {"checked_at": "2026-11-24T17:40:00+08:00", "reports": [{"published_at": "2026-11-24T17:32+08:00"}]}
+        snapshot.return_value = previous
+        index.side_effect = MysteelReportError("timeout")
+        sync_mysteel_reports.sync_reports(force=True)
+        result = write.call_args.args[0]
+        self.assertEqual(result["source_status"], "unavailable")
+        self.assertEqual(result["checked_at"], previous["checked_at"])
+        self.assertEqual(result["reports"], previous["reports"])
+        self.assertIn("attempted_at", result)
+
+    @patch("scripts.sync_mysteel_reports.install_ocr")
+    @patch("scripts.sync_mysteel_reports.get_report_groups")
+    @patch("scripts.sync_mysteel_reports.get_mysteel_report_details")
+    @patch("scripts.sync_mysteel_reports.write_snapshot")
+    @patch("scripts.sync_mysteel_reports.read_snapshot")
+    @patch("scripts.sync_mysteel_reports.get_mysteel_reports")
+    def test_new_issue_installs_after_one_index_read_and_never_gets_previous_quotes(
+        self, index, snapshot, write, details, groups, install,
+    ):
+        prior = {"url": NEWEST_URL, "published_at": "2026-11-24T17:32+08:00",
+                 "groups": {"capesize": [{"value": 15.96}]}, "grouped_complete": True}
+        new = {"url": NEWEST_URL, "published_at": "2026-11-25T17:32+08:00"}
+        snapshot.return_value = {"reports": [prior]}
+        index.return_value = [new]
+        details.return_value = {"facts": [], "summary": [], "image_candidates": []}
+        groups.side_effect = MysteelReportError("unreadable")
+        sync_mysteel_reports.sync_reports(provision_ocr=True)
+        install.assert_called_once()
+        index.assert_called_once()
+        result = write.call_args.args[0]
+        self.assertEqual(result["source_latest_published_at"], new["published_at"])
+        self.assertEqual(result["reports"][0]["published_at"], new["published_at"])
+        self.assertNotIn("groups", result["reports"][0])

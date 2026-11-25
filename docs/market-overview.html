@@ -277,9 +277,9 @@
     }
   </style>
   <link rel="stylesheet" href="./assets/ocean-ui.css?v=20261125r3">
-  <link rel="stylesheet" href="./assets/market-brief.css?v=20261125r3">
+  <link rel="stylesheet" href="./assets/market-brief.css?v=20261125r4">
   <script src="./assets/wechat-lock.js?v=20260820r1"></script>
-  <script defer src="./assets/mysteel-reports.js?v=20261125r3"></script>
+  <script defer src="./assets/mysteel-reports.js?v=20261125r4"></script>
   <script src="./assets/data-refresh.js?v=20261001r2"></script>
 </head>
 <body class="page-home page-market">
@@ -336,13 +336,12 @@
             <select id="mysteelReportDate"></select>
           </label>
         </div>
+        <div class="report-publication" aria-label="报告时间（北京时间）">
+          <span id="mysteelReportPublishedMeta" hidden>日报发布 <time id="mysteelReportPublished"></time> 北京时间</span>
+          <span id="mysteelReportCheckMeta" hidden>最近成功检查 <time id="mysteelReportChecked"></time> 北京时间</span>
+        </div>
         <p id="mysteelReportStatus" class="dense-note report-message" role="status">正在读取日报行情…</p>
         <div id="mysteelReportContent" hidden>
-          <div class="report-publication" aria-label="报告时间（北京时间）">
-            <span>日报发布 <time id="mysteelReportPublished"></time></span>
-            <span id="mysteelReportCheckMeta" hidden>网站检查 <time id="mysteelReportChecked"></time></span>
-            <span class="report-timezone">北京时间</span>
-          </div>
           <nav id="mysteelReportVesselNav" class="report-vessel-nav" aria-label="按船型查看日报" hidden></nav>
           <div class="report-overview" id="mysteelReportOverview">
             <h3>盘面速览</h3>
