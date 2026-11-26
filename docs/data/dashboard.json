@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-11-26T04:45:52.582862",
-  "timestamp_beijing": "2026-11-26T12:45:52.582865+08:00",
+  "timestamp": "2026-11-26T04:57:03.057133",
+  "timestamp_beijing": "2026-11-26T12:57:03.057139+08:00",
   "date_beijing": "2026-11-26",
   "refresh_interval_minutes": 5,
   "source_message": {
     "gmail_message_id": "1a215a4539038fc0",
     "subject": "SSY SINGAPORE REPORT- 26 NOV 2026",
     "received_at": "2026-11-26T10:16:22+08:00",
-    "synced_at": "2026-11-26T12:45:37.605756+08:00"
+    "synced_at": "2026-11-26T12:55:44.652771+08:00"
   },
   "baltic": {
     "data": [
@@ -86,7 +86,7 @@
     ],
     "error": null,
     "source_url": "https://www.hifleet.com/shipping/",
-    "updated_at": "2026-11-26T04:45:50.933630"
+    "updated_at": "2026-11-26T04:55:57.953041"
   },
   "cbfi": {
     "name": "China Coastal Bulk Freight Index",
@@ -279,32 +279,24 @@
     "previous_date": "2026-11-13",
     "current_date": "2026-11-20",
     "source_url": "https://www.sse.net.cn/index/singleIndex?indexType=cbfi",
-    "updated_at": "2026-11-26T04:45:51.131011"
+    "updated_at": "2026-11-26T04:55:56.979815"
   },
   "crude": {
     "cl": {
-      "code": "CL",
-      "name": "WTI Crude",
-      "latest": 84.379,
-      "open": 84.36,
-      "previous_close": 83.68,
-      "change_from_open": 0.019,
-      "change_percent_from_open": 0.0225,
-      "source_url": "https://finance.sina.com.cn/futures/quotes/CL.shtml?id=27",
-      "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:49.947700"
+      "error": "WTI Crude load failed: HTTPSConnectionPool(host='hq.sinajs.cn', port=443): Max retries exceeded with url: /?list=hf_CL (Caused by NewConnectionError(\"HTTPSConnection(host='hq.sinajs.cn', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+      "updated_at": "2026-11-26T04:57:01.334593"
     },
     "oil": {
       "code": "OIL",
       "name": "Brent Crude CFD",
-      "latest": 91.157,
-      "open": 91.14,
+      "latest": 91.158,
+      "open": 91.15,
       "previous_close": 90.64,
-      "change_from_open": 0.017,
-      "change_percent_from_open": 0.0187,
+      "change_from_open": 0.008,
+      "change_percent_from_open": 0.0088,
       "source_url": "https://finance.sina.com.cn/futures/quotes/OIL.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:49.947196"
+      "updated_at": "2026-11-26T04:56:00.195949"
     }
   },
   "iron_ore": {
@@ -319,7 +311,7 @@
     },
     "change_percent": 0.58,
     "source_url": "https://index.mysteel.com/xpic/detail.html?tabName=kuangsi",
-    "updated_at": "2026-11-26T04:45:50.015330"
+    "updated_at": "2026-11-26T04:55:56.057267"
   },
   "boc_usd": {
     "currency": "美元",
@@ -328,59 +320,43 @@
     "spot_sell": 668.08,
     "cash_sell": 668.08,
     "conversion_price": 670.96,
-    "published_at": "2026/11/26 12:41:28",
-    "published_time": "12:41:28",
+    "published_at": "2026/11/26 12:46:28",
+    "published_time": "12:46:28",
     "source_url": "https://www.boc.cn/sourcedb/whpj/",
-    "updated_at": "2026-11-26T04:45:52.581721"
+    "updated_at": "2026-11-26T04:55:56.981836"
   },
   "forex": {
     "DINIW": {
       "code": "DINIW",
       "title": "US Dollar Index",
-      "latest": 103.794,
+      "latest": 103.8203,
       "open": 103.7189,
       "previous_close": 103.701,
-      "change_from_open": 0.0751,
-      "change_percent_from_open": 0.0724,
+      "change_from_open": 0.1014,
+      "change_percent_from_open": 0.0978,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/DINIW.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:49.946748"
+      "updated_at": "2026-11-26T04:56:09.138162"
     },
     "EURUSD": {
       "code": "EURUSD",
       "title": "EUR/USD",
-      "latest": 1.0961,
+      "latest": 1.0959,
       "open": 1.0971,
       "previous_close": 1.0971,
-      "change_from_open": -0.001,
-      "change_percent_from_open": -0.0911,
+      "change_from_open": -0.0012,
+      "change_percent_from_open": -0.1094,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/EURUSD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:49.960736"
+      "updated_at": "2026-11-26T04:56:08.852112"
     },
     "GBPUSD": {
-      "code": "GBPUSD",
-      "title": "GBP/USD",
-      "latest": 1.31,
-      "open": 1.3115,
-      "previous_close": 1.3112,
-      "change_from_open": -0.0015,
-      "change_percent_from_open": -0.1144,
-      "source_url": "https://finance.sina.com.cn/money/forex/hq/GBPUSD.shtml",
-      "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:49.949166"
+      "error": "GBP/USD load failed: HTTPSConnectionPool(host='hq.sinajs.cn', port=443): Max retries exceeded with url: /?list=fx_sgbpusd (Caused by NewConnectionError(\"HTTPSConnection(host='hq.sinajs.cn', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+      "updated_at": "2026-11-26T04:56:58.655804"
     },
     "USDCNY": {
-      "code": "USDCNY",
-      "title": "USD/CNY",
-      "latest": 6.6634,
-      "open": 6.67,
-      "previous_close": 6.6681,
-      "change_from_open": -0.0066,
-      "change_percent_from_open": -0.099,
-      "source_url": "https://finance.sina.com.cn/money/forex/hq/USDCNY.shtml",
-      "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:50.131830"
+      "error": "USD/CNY load failed: HTTPSConnectionPool(host='hq.sinajs.cn', port=443): Max retries exceeded with url: /?list=fx_susdcny (Caused by NewConnectionError(\"HTTPSConnection(host='hq.sinajs.cn', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+      "updated_at": "2026-11-26T04:57:03.056125"
     },
     "USDHKD": {
       "code": "USDHKD",
@@ -392,23 +368,37 @@
       "change_percent_from_open": -0.014,
       "source_url": "https://finance.sina.com.cn/money/forex/hq/USDHKD.shtml",
       "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:50.132845"
+      "updated_at": "2026-11-26T04:56:05.245361"
     },
     "USDJPY": {
-      "code": "USDJPY",
-      "title": "USD/JPY",
-      "latest": 159.1,
-      "open": 159.2,
-      "previous_close": 159.17,
-      "change_from_open": -0.1,
-      "change_percent_from_open": -0.0628,
-      "source_url": "https://finance.sina.com.cn/money/forex/hq/USDJPY.shtml",
-      "quote_source": "Sina HQ",
-      "updated_at": "2026-11-26T04:45:50.132265"
+      "error": "USD/JPY load failed: HTTPSConnectionPool(host='hq.sinajs.cn', port=443): Max retries exceeded with url: /?list=fx_susdjpy (Caused by NewConnectionError(\"HTTPSConnection(host='hq.sinajs.cn', port=443): Failed to establish a new connection: [Errno 101] Network is unreachable\"))",
+      "updated_at": "2026-11-26T04:57:01.334815"
     }
   },
   "bunker_index": {
     "ports": [
+      {
+        "port": "Rotterdam",
+        "country": "NL",
+        "ifo380": "541.50",
+        "ifo380_change": "12.50",
+        "vlsfo": "676.50",
+        "vlsfo_change": "6.50",
+        "mgo": "1066.50",
+        "mgo_change": "-12.50",
+        "date": "25 Nov"
+      },
+      {
+        "port": "Fujairah",
+        "country": "AE",
+        "ifo380": "523.50",
+        "ifo380_change": "5.50",
+        "vlsfo": "783.50",
+        "vlsfo_change": "6.50",
+        "mgo": "1444.50",
+        "mgo_change": "12.00",
+        "date": "25 Nov"
+      },
       {
         "port": "Hong Kong",
         "country": "HK",
@@ -452,32 +442,10 @@
         "mgo": "1075.00",
         "mgo_change": "-16.00",
         "date": "25 Nov"
-      },
-      {
-        "port": "Rotterdam",
-        "country": "NL",
-        "ifo380": "541.50",
-        "ifo380_change": "12.50",
-        "vlsfo": "676.50",
-        "vlsfo_change": "6.50",
-        "mgo": "1066.50",
-        "mgo_change": "-12.50",
-        "date": "25 Nov"
-      },
-      {
-        "port": "Fujairah",
-        "country": "AE",
-        "ifo380": "523.50",
-        "ifo380_change": "5.50",
-        "vlsfo": "783.50",
-        "vlsfo_change": "6.50",
-        "mgo": "1444.50",
-        "mgo_change": "12.00",
-        "date": "25 Nov"
       }
     ],
     "source_url": "https://www.bunkerindex.com/",
-    "updated_at": "2026-11-26T04:45:52.188641",
+    "updated_at": "2026-11-26T04:55:58.483505",
     "fallback_used": false,
     "fallback_source": null,
     "error": null
