@@ -1,9 +1,212 @@
 {
-  "checked_at": "2026-11-27T09:20:48+00:00",
-  "attempted_at": "2026-11-27T09:20:48+00:00",
+  "checked_at": "2026-11-27T09:30:53+00:00",
+  "attempted_at": "2026-11-27T09:30:53+00:00",
   "source_status": "ok",
-  "source_latest_published_at": "2026-11-26T17:37+08:00",
+  "source_latest_published_at": "2026-11-27T17:23+08:00",
   "reports": [
+    {
+      "title": "11月27日国际干散货航运市场日报",
+      "url": "https://haiyun.mysteel.com/a/26112717/57861AD8873D1E35.html",
+      "published_at": "2026-11-27T17:23+08:00",
+      "facts": [
+        {
+          "code": "C5",
+          "label": "西澳黑德兰 → 青岛",
+          "value": 15.98,
+          "change": -0.5,
+          "unit": "美元/吨",
+          "kind": "航线运价"
+        },
+        {
+          "code": "C3",
+          "label": "巴西图巴朗 → 青岛",
+          "value": 35.3,
+          "change": 0.13,
+          "unit": "美元/吨",
+          "kind": "航线运价"
+        }
+      ],
+      "summary": [
+        "整体市场：市场偏强"
+      ],
+      "groups": {
+        "capesize": [
+          {
+            "code": "MC5",
+            "label": "澳洲黑德兰 → 中国青岛",
+            "value": 15.98,
+            "change": -0.5,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MC3",
+            "label": "巴西图巴朗 → 中国青岛",
+            "value": 35.3,
+            "change": 0.13,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MC17",
+            "label": "南非萨尔达尼亚 → 中国青岛",
+            "value": 26.69,
+            "change": 0.1,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MC18",
+            "label": "秘鲁卡亚俄 → 中国唐山",
+            "value": 33.89,
+            "change": 0.13,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MC19",
+            "label": "智利瓦斯科 → 中国北仑",
+            "value": 34.24,
+            "change": 0.13,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MC4",
+            "label": "几内亚卡姆萨尔 → 中国青岛",
+            "value": 35.55,
+            "change": 0.05,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MC6",
+            "label": "澳洲纽卡斯尔 → 中国青岛",
+            "value": 23.14,
+            "change": -0.16,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          }
+        ],
+        "panamax": [
+          {
+            "code": "MP11",
+            "label": "南非萨尔达尼亚 → 中国青岛",
+            "value": 25.7,
+            "change": 0.5,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MP9",
+            "label": "印度巴拉迪布 → 中国唐山",
+            "value": 13.97,
+            "change": -0.03,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MP12",
+            "label": "马来西亚关丹 → 中国镇江",
+            "value": 14.2,
+            "change": 0.0,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          },
+          {
+            "code": "MP13",
+            "label": "澳洲纽卡斯尔 → 中国青岛",
+            "value": 22.8,
+            "change": 0.1,
+            "unit": "美元/吨",
+            "kind": "程租运价指数"
+          }
+        ],
+        "supramax": [
+          {
+            "code": null,
+            "label": "中国南方 → 印尼 → 中国南方",
+            "value": 14590.0,
+            "change": 87.0,
+            "unit": "美元/天",
+            "kind": "期租运价指数"
+          },
+          {
+            "code": null,
+            "label": "新加坡 → 印尼 → 中国",
+            "value": 16309.0,
+            "change": 59.0,
+            "unit": "美元/天",
+            "kind": "期租运价指数"
+          },
+          {
+            "code": null,
+            "label": "印度东海岸 → 中国北方",
+            "value": 12280.0,
+            "change": -85.0,
+            "unit": "美元/天",
+            "kind": "期租运价指数"
+          }
+        ]
+      },
+      "fixtures": [
+        {
+          "label": "巴西图巴朗 → 中国青岛",
+          "vessel": "海岬型",
+          "contract": "程租",
+          "value": 35.3,
+          "unit": "美元"
+        },
+        {
+          "label": "南非萨尔达尼亚 → 中国青岛",
+          "vessel": "海岬型",
+          "contract": "程租",
+          "value": 26.69,
+          "unit": "美元"
+        },
+        {
+          "label": "澳洲黑德兰 → 中国青岛",
+          "vessel": "海岬型",
+          "contract": "程租",
+          "value": 15.99,
+          "unit": "美元"
+        }
+      ],
+      "sales": [
+        {
+          "name": "FRIENDSHIP",
+          "vessel": "海岬型散货船",
+          "dwt": 176948,
+          "year": 2009,
+          "builder": "日本名村",
+          "value": 3300.0,
+          "unit": "万美元"
+        },
+        {
+          "name": "NEW HALO",
+          "vessel": "卡姆萨尔型散货船",
+          "dwt": 87450,
+          "year": 2011,
+          "builder": "沪东中华",
+          "value": 1600.0,
+          "unit": "万美元"
+        }
+      ],
+      "market_signals": {
+        "capesize": [
+          "巴西航线 · 交投清淡"
+        ],
+        "panamax": [
+          "船型走势 · 可用船舶偏紧"
+        ],
+        "market": [
+          "整体干散货 · 市场偏强",
+          "整体干散货 · 交投较活跃",
+          "日报展望 · 预期运价略有上行"
+        ]
+      },
+      "grouped_complete": true
+    },
     {
       "title": "11月26日国际干散货航运市场日报",
       "url": "https://haiyun.mysteel.com/a/26112617/0B48AA225A477DE8.html",
@@ -749,209 +952,6 @@
           "整体干散货 · 走势分化",
           "整体干散货 · 交投较活跃",
           "日报展望 · 预期运价略有上行"
-        ]
-      },
-      "grouped_complete": true
-    },
-    {
-      "title": "11月20日国际干散货航运市场日报",
-      "url": "https://haiyun.mysteel.com/a/26112017/484AC32A97992437.html",
-      "published_at": "2026-11-20T17:46+08:00",
-      "facts": [
-        {
-          "code": "C5",
-          "label": "西澳黑德兰 → 青岛",
-          "value": 14.43,
-          "change": 0.11,
-          "unit": "美元/吨",
-          "kind": "航线运价"
-        },
-        {
-          "code": "C3",
-          "label": "巴西图巴朗 → 青岛",
-          "value": 34.85,
-          "change": -0.12,
-          "unit": "美元/吨",
-          "kind": "航线运价"
-        }
-      ],
-      "summary": [
-        "整体市场：盘面分化"
-      ],
-      "groups": {
-        "capesize": [
-          {
-            "code": "MC5",
-            "label": "澳洲黑德兰 → 中国青岛",
-            "value": 14.43,
-            "change": 0.11,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MC3",
-            "label": "巴西图巴朗 → 中国青岛",
-            "value": 34.85,
-            "change": -0.12,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MC17",
-            "label": "南非萨尔达尼亚 → 中国青岛",
-            "value": 26.35,
-            "change": -0.09,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MC18",
-            "label": "秘鲁卡亚俄 → 中国唐山",
-            "value": 33.46,
-            "change": -0.11,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MC19",
-            "label": "智利瓦斯科 → 中国北仑",
-            "value": 33.8,
-            "change": -0.12,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MC4",
-            "label": "几内亚卡姆萨尔 → 中国青岛",
-            "value": 35.0,
-            "change": -0.55,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MC6",
-            "label": "澳洲纽卡斯尔 → 中国青岛",
-            "value": 20.95,
-            "change": 0.15,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          }
-        ],
-        "panamax": [
-          {
-            "code": "MP11",
-            "label": "南非萨尔达尼亚 → 中国青岛",
-            "value": 25.5,
-            "change": 0.0,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MP9",
-            "label": "印度巴拉迪布 → 中国唐山",
-            "value": 14.15,
-            "change": -0.05,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MP12",
-            "label": "马来西亚关丹 → 中国镇江",
-            "value": 13.95,
-            "change": -0.05,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          },
-          {
-            "code": "MP13",
-            "label": "澳洲纽卡斯尔 → 中国青岛",
-            "value": 21.9,
-            "change": 0.5,
-            "unit": "美元/吨",
-            "kind": "程租运价指数"
-          }
-        ],
-        "supramax": [
-          {
-            "code": null,
-            "label": "中国南方 → 印尼 → 中国南方",
-            "value": 14364.0,
-            "change": -30.0,
-            "unit": "美元/天",
-            "kind": "期租运价指数"
-          },
-          {
-            "code": null,
-            "label": "新加坡 → 印尼 → 中国",
-            "value": 16191.0,
-            "change": -21.0,
-            "unit": "美元/天",
-            "kind": "期租运价指数"
-          },
-          {
-            "code": null,
-            "label": "印度东海岸 → 中国北方",
-            "value": 12336.0,
-            "change": -35.0,
-            "unit": "美元/天",
-            "kind": "期租运价指数"
-          }
-        ]
-      },
-      "fixtures": [
-        {
-          "label": "巴西图巴朗 → 中国青岛",
-          "vessel": "海岬型",
-          "contract": "程租",
-          "value": 34.85,
-          "unit": "美元"
-        },
-        {
-          "label": "南非萨尔达尼亚 → 中国青岛",
-          "vessel": "海岬型",
-          "contract": "程租",
-          "value": 26.35,
-          "unit": "美元"
-        },
-        {
-          "label": "澳洲丹皮尔 → 中国青岛",
-          "vessel": "海岬型",
-          "contract": "程租",
-          "value": 14.4,
-          "unit": "美元"
-        }
-      ],
-      "sales": [
-        {
-          "name": "SHUN CHANG",
-          "vessel": "超巴拿马型散货船",
-          "dwt": 93322,
-          "year": 2010,
-          "builder": "扬帆船厂",
-          "value": 1550.0,
-          "unit": "万美元"
-        },
-        {
-          "name": "ZHEN NING",
-          "vessel": "巴拿马型散货船",
-          "dwt": 79463,
-          "year": 2012,
-          "builder": "金海重工",
-          "value": 2039.0,
-          "unit": "万美元"
-        }
-      ],
-      "market_signals": {
-        "capesize": [
-          "船型走势 · 走势分化",
-          "澳洲航线 · 询盘有限、天气影响港口作业、报价偏高、交投清淡"
-        ],
-        "panamax": [
-          "船型走势 · 运力供需较均衡"
-        ],
-        "market": [
-          "整体干散货 · 走势分化",
-          "日报展望 · 预期运价偏弱"
         ]
       },
       "grouped_complete": true
